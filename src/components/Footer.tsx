@@ -1,0 +1,242 @@
+import { Facebook, Instagram, Linkedin, Phone, Mail, MapPin } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import hasaceLogo from "@/assets/hasace-logo.jpg";
+
+const Footer = () => {
+  const { theme } = useTheme();
+
+  const getFooterStyles = () => {
+    switch (theme) {
+      case "corporate":
+        return "bg-primary text-primary-foreground";
+      case "modern":
+        return "bg-slate-900 text-white";
+      case "warm":
+        return "bg-secondary text-foreground";
+      default:
+        return "bg-primary text-primary-foreground";
+    }
+  };
+
+  const getLinkStyles = () => {
+    switch (theme) {
+      case "corporate":
+        return "text-primary-foreground/70 hover:text-primary-foreground transition-colors";
+      case "modern":
+        return "text-white/70 hover:text-hasace-red transition-colors";
+      case "warm":
+        return "text-muted-foreground hover:text-hasace-green transition-colors";
+      default:
+        return "text-primary-foreground/70 hover:text-primary-foreground";
+    }
+  };
+
+  const getHeadingStyles = () => {
+    switch (theme) {
+      case "corporate":
+        return "text-primary-foreground font-semibold";
+      case "modern":
+        return "text-white font-bold uppercase tracking-wide";
+      case "warm":
+        return "text-foreground font-semibold";
+      default:
+        return "text-primary-foreground font-semibold";
+    }
+  };
+
+  const getSocialIconStyles = () => {
+    switch (theme) {
+      case "corporate":
+        return "p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20 transition-colors";
+      case "modern":
+        return "p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors";
+      case "warm":
+        return "p-2 bg-hasace-green/10 rounded-full hover:bg-hasace-green/20 transition-colors";
+      default:
+        return "p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20";
+    }
+  };
+
+  const quickLinks = [
+    { label: "Inicio", href: "#" },
+    { label: "Sobre Nosotros", href: "#about" },
+    { label: "Cursos", href: "#courses" },
+    { label: "Blog", href: "#blog" },
+  ];
+
+  const services = [
+    { label: "Rehabilitación Física", href: "#" },
+    { label: "Medicina Deportiva", href: "#" },
+    { label: "Terapia Física", href: "#" },
+    { label: "Rehabilitación Pediátrica", href: "#" },
+  ];
+
+  const getLogoStyles = () => {
+    switch (theme) {
+      case "corporate":
+      case "modern":
+        return "brightness-0 invert";
+      case "warm":
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <footer className={getFooterStyles()}>
+      <div className="container mx-auto px-4 py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Column 1: Logo & Description */}
+          <div className="lg:col-span-1">
+            <img
+              src={hasaceLogo}
+              alt="HASACE"
+              className={`h-12 w-auto mb-4 rounded ${getLogoStyles()}`}
+            />
+            <p className={`text-sm ${getLinkStyles()} leading-relaxed`}>
+              Clínica especializada en Medicina Deportiva y Rehabilitación Física 
+              en Querétaro, México. Combinamos tecnología avanzada con un enfoque 
+              humano y holístico.
+            </p>
+          </div>
+
+          {/* Column 2: Quick Links */}
+          <div>
+            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+              Enlaces Rápidos
+            </h4>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <a href={link.href} className={`text-sm ${getLinkStyles()}`}>
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Services */}
+          <div>
+            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+              Servicios
+            </h4>
+            <ul className="space-y-3">
+              {services.map((service) => (
+                <li key={service.label}>
+                  <a href={service.href} className={`text-sm ${getLinkStyles()}`}>
+                    {service.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Contact */}
+          <div>
+            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+              Contacto
+            </h4>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="tel:+524421234567"
+                  className={`flex items-center gap-2 text-sm ${getLinkStyles()}`}
+                >
+                  <Phone className="h-4 w-4" />
+                  +52 442 123 4567
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:contacto@hasace.mx"
+                  className={`flex items-center gap-2 text-sm ${getLinkStyles()}`}
+                >
+                  <Mail className="h-4 w-4" />
+                  contacto@hasace.mx
+                </a>
+              </li>
+              <li>
+                <div className={`flex items-start gap-2 text-sm ${getLinkStyles()}`}>
+                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Av. Constituyentes 123,<br />
+                    Col. Centro, Querétaro, Qro.
+                  </span>
+                </div>
+              </li>
+            </ul>
+
+            {/* Social Links */}
+            <div className="flex gap-3 mt-6">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={getSocialIconStyles()}
+                aria-label="Facebook"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={getSocialIconStyles()}
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={getSocialIconStyles()}
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a
+                href="https://wa.me/524421234567"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={getSocialIconStyles()}
+                aria-label="WhatsApp"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className={`mt-12 pt-8 border-t ${
+          theme === "warm" ? "border-border" : "border-white/10"
+        }`}>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className={`text-sm ${getLinkStyles()}`}>
+              © 2025 HASACE - Clínica de Rehabilitación Física. Todos los derechos reservados.
+            </p>
+            <div className="flex gap-6">
+              <a href="#" className={`text-sm ${getLinkStyles()}`}>
+                Política de Privacidad
+              </a>
+              <a href="#" className={`text-sm ${getLinkStyles()}`}>
+                Términos de Servicio
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
