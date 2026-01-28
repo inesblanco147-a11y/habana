@@ -1,78 +1,22 @@
-import { ShoppingCart, Check, X } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useState } from "react";
+import { ShoppingCart, Check, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { products } from "@/data/mockData";
+import { Product } from "@/types/product";
 import productDefaultImage from "@/assets/product-default.jpg";
 
 const ProductsSection = () => {
-  const { theme } = useTheme();
-
-  const getSectionStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-background";
-      case "modern":
-        return "bg-muted/20";
-      case "warm":
-        return "bg-secondary/30";
-      default:
-        return "bg-background";
-    }
-  };
-
-  const getTitleStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary font-serif";
-      case "modern":
-        return "text-foreground font-bold";
-      case "warm":
-        return "text-hasace-green font-semibold";
-      default:
-        return "text-primary font-serif";
-    }
-  };
-
-  const getCardStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-card border-border hover:shadow-lg transition-all";
-      case "modern":
-        return "bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all";
-      case "warm":
-        return "bg-card/80 border-border/50 rounded-2xl hover:shadow-md transition-all";
-      default:
-        return "bg-card border-border hover:shadow-lg transition-all";
-    }
-  };
-
-  const getButtonStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-primary hover:bg-primary/90";
-      case "modern":
-        return "bg-hasace-red hover:bg-hasace-red/90 font-bold";
-      case "warm":
-        return "bg-hasace-green hover:bg-hasace-green/90";
-      default:
-        return "bg-primary hover:bg-primary/90";
-    }
-  };
-
-  const getCategoryBadgeStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-primary/10 text-primary";
-      case "modern":
-        return "bg-hasace-red/10 text-hasace-red border-hasace-red/20";
-      case "warm":
-        return "bg-hasace-green/10 text-hasace-green border-hasace-green/20";
-      default:
-        return "bg-primary/10 text-primary";
-    }
-  };
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-MX", {
@@ -86,18 +30,23 @@ const ProductsSection = () => {
     window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
   };
 
+  const openProductModal = (product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
   // Get unique categories
   const categories = [...new Set(products.map(p => p.category))];
 
   return (
-    <section id="store" className={`py-16 lg:py-24 ${getSectionStyles()}`}>
+    <section id="store" className="py-16 lg:py-24 bg-muted/20">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <ShoppingCart className="h-8 w-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
+            <ShoppingCart className="h-8 w-8 text-hasace-red" />
           </div>
-          <h2 className={`text-3xl lg:text-4xl mb-4 ${getTitleStyles()}`}>
+          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground font-bold">
             Tienda
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -107,14 +56,14 @@ const ProductsSection = () => {
 
         {/* Category Pills */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          <Badge variant="outline" className={`cursor-pointer ${getCategoryBadgeStyles()}`}>
+          <Badge variant="outline" className="cursor-pointer bg-hasace-red/10 text-hasace-red border-hasace-red/20">
             Todos
           </Badge>
           {categories.map(category => (
             <Badge 
               key={category} 
               variant="outline" 
-              className={`cursor-pointer hover:bg-muted ${getCategoryBadgeStyles()}`}
+              className="cursor-pointer hover:bg-muted bg-hasace-red/10 text-hasace-red border-hasace-red/20"
             >
               {category}
             </Badge>
@@ -124,7 +73,7 @@ const ProductsSection = () => {
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map(product => (
-            <Card key={product.id} className={getCardStyles()}>
+            <Card key={product.id} className="bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
               <CardHeader className="p-0">
                 <div className="relative">
                   <img
@@ -154,27 +103,26 @@ const ProductsSection = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-4">
-                <Badge variant="outline" className={`mb-2 text-xs ${getCategoryBadgeStyles()}`}>
+                <Badge variant="outline" className="mb-2 text-xs bg-hasace-red/10 text-hasace-red border-hasace-red/20">
                   {product.category}
                 </Badge>
-                <h3 className={`font-semibold mb-2 line-clamp-2 ${getTitleStyles()}`}>
+                <h3 className="font-bold mb-2 line-clamp-2 text-foreground">
                   {product.name}
                 </h3>
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                   {product.description}
                 </p>
-                <p className="text-xl font-bold text-primary">
+                <p className="text-xl font-bold text-hasace-red">
                   {formatPrice(product.price)}
                 </p>
               </CardContent>
               <CardFooter className="p-4 pt-0">
                 <Button
-                  onClick={() => handleWhatsApp(product.name)}
-                  disabled={!product.inStock}
-                  className={`w-full ${getButtonStyles()}`}
+                  onClick={() => openProductModal(product)}
+                  className="w-full bg-hasace-red hover:bg-hasace-red/90 font-bold"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {product.inStock ? "Consultar" : "No disponible"}
+                  Consultar
                 </Button>
               </CardFooter>
             </Card>
@@ -192,11 +140,86 @@ const ProductsSection = () => {
               const message = encodeURIComponent("Hola, estoy buscando un producto específico para rehabilitación.");
               window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
             }}
+            className="border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white"
           >
             Consultar por WhatsApp
           </Button>
         </div>
       </div>
+
+      {/* Product Detail Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          {selectedProduct && (
+            <>
+              <DialogHeader>
+                <div className="flex gap-2 mb-2">
+                  <Badge variant="outline" className="bg-hasace-red/10 text-hasace-red border-hasace-red/20">
+                    {selectedProduct.category}
+                  </Badge>
+                  <Badge 
+                    variant="outline" 
+                    className={
+                      selectedProduct.inStock 
+                        ? "bg-green-100 text-green-800 border-green-200" 
+                        : "bg-red-100 text-red-800 border-red-200"
+                    }
+                  >
+                    {selectedProduct.inStock ? "En stock" : "Agotado"}
+                  </Badge>
+                </div>
+                <DialogTitle className="text-xl">{selectedProduct.name}</DialogTitle>
+                <DialogDescription>{selectedProduct.description}</DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Product Image */}
+                <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted">
+                  <img
+                    src={selectedProduct.image || productDefaultImage}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Price */}
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground">Precio</p>
+                  <p className="text-3xl font-bold text-hasace-red">
+                    {formatPrice(selectedProduct.price)}
+                  </p>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h4 className="font-semibold mb-2">Descripción del producto</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedProduct.description}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4 border-t">
+                  <Button
+                    onClick={() => handleWhatsApp(selectedProduct.name)}
+                    disabled={!selectedProduct.inStock}
+                    className="flex-1 gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    {selectedProduct.inStock ? "Consultar por WhatsApp" : "No disponible"}
+                  </Button>
+                </div>
+
+                {!selectedProduct.inStock && (
+                  <p className="text-center text-sm text-muted-foreground">
+                    Este producto no está disponible actualmente. Contáctanos para conocer la fecha de reposición.
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

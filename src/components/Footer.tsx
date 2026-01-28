@@ -1,62 +1,7 @@
 import { Facebook, Instagram, Linkedin, Phone, Mail, MapPin } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
 import hasaceLogo from "@/assets/hasace-logo.jpg";
 
 const Footer = () => {
-  const { theme } = useTheme();
-
-  const getFooterStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-primary text-primary-foreground";
-      case "modern":
-        return "bg-slate-900 text-white";
-      case "warm":
-        return "bg-secondary text-foreground";
-      default:
-        return "bg-primary text-primary-foreground";
-    }
-  };
-
-  const getLinkStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary-foreground/70 hover:text-primary-foreground transition-colors";
-      case "modern":
-        return "text-white/70 hover:text-hasace-red transition-colors";
-      case "warm":
-        return "text-muted-foreground hover:text-hasace-green transition-colors";
-      default:
-        return "text-primary-foreground/70 hover:text-primary-foreground";
-    }
-  };
-
-  const getHeadingStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary-foreground font-semibold";
-      case "modern":
-        return "text-white font-bold uppercase tracking-wide";
-      case "warm":
-        return "text-foreground font-semibold";
-      default:
-        return "text-primary-foreground font-semibold";
-    }
-  };
-
-  const getSocialIconStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20 transition-colors";
-      case "modern":
-        return "p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors";
-      case "warm":
-        return "p-2 bg-hasace-green/10 rounded-full hover:bg-hasace-green/20 transition-colors";
-      default:
-        return "p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20";
-    }
-  };
-
   const quickLinks = [
     { label: "Inicio", href: "#" },
     { label: "Sobre Nosotros", href: "#about" },
@@ -71,20 +16,8 @@ const Footer = () => {
     { label: "Rehabilitación Pediátrica", href: "#" },
   ];
 
-  const getLogoStyles = () => {
-    switch (theme) {
-      case "corporate":
-      case "modern":
-        return "brightness-0 invert";
-      case "warm":
-        return "";
-      default:
-        return "";
-    }
-  };
-
   return (
-    <footer className={getFooterStyles()}>
+    <footer className="bg-slate-900 text-white">
       <div className="container mx-auto px-4 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Column 1: Logo & Description */}
@@ -92,9 +25,9 @@ const Footer = () => {
             <img
               src={hasaceLogo}
               alt="HASACE"
-              className={`h-12 w-auto mb-4 rounded ${getLogoStyles()}`}
+              className="h-12 w-auto mb-4 rounded brightness-0 invert"
             />
-            <p className={`text-sm ${getLinkStyles()} leading-relaxed`}>
+            <p className="text-sm text-white/70 hover:text-hasace-red transition-colors leading-relaxed">
               Clínica especializada en Medicina Deportiva y Rehabilitación Física 
               en Querétaro, México. Combinamos tecnología avanzada con un enfoque 
               humano y holístico.
@@ -103,13 +36,13 @@ const Footer = () => {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+            <h4 className="text-lg mb-4 text-white font-bold uppercase tracking-wide">
               Enlaces Rápidos
             </h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className={`text-sm ${getLinkStyles()}`}>
+                  <a href={link.href} className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -119,13 +52,13 @@ const Footer = () => {
 
           {/* Column 3: Services */}
           <div>
-            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+            <h4 className="text-lg mb-4 text-white font-bold uppercase tracking-wide">
               Servicios
             </h4>
             <ul className="space-y-3">
               {services.map((service) => (
                 <li key={service.label}>
-                  <a href={service.href} className={`text-sm ${getLinkStyles()}`}>
+                  <a href={service.href} className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                     {service.label}
                   </a>
                 </li>
@@ -135,14 +68,14 @@ const Footer = () => {
 
           {/* Column 4: Contact */}
           <div>
-            <h4 className={`text-lg mb-4 ${getHeadingStyles()}`}>
+            <h4 className="text-lg mb-4 text-white font-bold uppercase tracking-wide">
               Contacto
             </h4>
             <ul className="space-y-3">
               <li>
                 <a
                   href="tel:+524421234567"
-                  className={`flex items-center gap-2 text-sm ${getLinkStyles()}`}
+                  className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
                 >
                   <Phone className="h-4 w-4" />
                   +52 442 123 4567
@@ -151,14 +84,14 @@ const Footer = () => {
               <li>
                 <a
                   href="mailto:contacto@hasace.mx"
-                  className={`flex items-center gap-2 text-sm ${getLinkStyles()}`}
+                  className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
                 >
                   <Mail className="h-4 w-4" />
                   contacto@hasace.mx
                 </a>
               </li>
               <li>
-                <div className={`flex items-start gap-2 text-sm ${getLinkStyles()}`}>
+                <div className="flex items-start gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <span>
                     Av. Constituyentes 123,<br />
@@ -174,7 +107,7 @@ const Footer = () => {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={getSocialIconStyles()}
+                className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="h-5 w-5" />
@@ -183,7 +116,7 @@ const Footer = () => {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={getSocialIconStyles()}
+                className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -192,7 +125,7 @@ const Footer = () => {
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={getSocialIconStyles()}
+                className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
@@ -201,7 +134,7 @@ const Footer = () => {
                 href="https://wa.me/524421234567"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={getSocialIconStyles()}
+                className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
                 aria-label="WhatsApp"
               >
                 <svg
@@ -217,18 +150,16 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className={`mt-12 pt-8 border-t ${
-          theme === "warm" ? "border-border" : "border-white/10"
-        }`}>
+        <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className={`text-sm ${getLinkStyles()}`}>
+            <p className="text-sm text-white/70">
               © 2025 HASACE - Clínica de Rehabilitación Física. Todos los derechos reservados.
             </p>
             <div className="flex gap-6">
-              <a href="#" className={`text-sm ${getLinkStyles()}`}>
+              <a href="#" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                 Política de Privacidad
               </a>
-              <a href="#" className={`text-sm ${getLinkStyles()}`}>
+              <a href="#" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                 Términos de Servicio
               </a>
             </div>

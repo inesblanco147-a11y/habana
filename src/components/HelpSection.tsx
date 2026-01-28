@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Send, Phone, Mail, User, MessageSquare, HelpCircle } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const HelpSection = () => {
-  const { theme } = useTheme();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,71 +23,6 @@ const HelpSection = () => {
     subject: "",
     message: ""
   });
-
-  const getSectionStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-muted/50";
-      case "modern":
-        return "bg-background";
-      case "warm":
-        return "bg-muted/30";
-      default:
-        return "bg-muted/50";
-    }
-  };
-
-  const getTitleStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary font-serif";
-      case "modern":
-        return "text-foreground font-bold";
-      case "warm":
-        return "text-hasace-green font-semibold";
-      default:
-        return "text-primary font-serif";
-    }
-  };
-
-  const getCardStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-card shadow-md rounded-lg";
-      case "modern":
-        return "bg-card shadow-xl border-t-4 border-hasace-red";
-      case "warm":
-        return "bg-card/80 shadow-lg rounded-2xl";
-      default:
-        return "bg-card shadow-md rounded-lg";
-    }
-  };
-
-  const getInputStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "";
-      case "modern":
-        return "border-2 focus:border-hasace-red";
-      case "warm":
-        return "rounded-xl border-hasace-green/30 focus:border-hasace-green";
-      default:
-        return "";
-    }
-  };
-
-  const getButtonStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-primary hover:bg-primary/90";
-      case "modern":
-        return "bg-hasace-red hover:bg-hasace-red/90 font-bold";
-      case "warm":
-        return "bg-hasace-green hover:bg-hasace-green/90";
-      default:
-        return "bg-primary hover:bg-primary/90";
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,15 +61,15 @@ const HelpSection = () => {
   ];
 
   return (
-    <section id="help" className={`py-16 lg:py-24 ${getSectionStyles()}`}>
+    <section id="help" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <HelpCircle className="h-8 w-8 text-primary" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
+              <HelpCircle className="h-8 w-8 text-hasace-red" />
             </div>
-            <h2 className={`text-3xl lg:text-4xl mb-4 ${getTitleStyles()}`}>
+            <h2 className="text-3xl lg:text-4xl mb-4 text-foreground font-bold">
               ¿Cómo podemos ayudarte?
             </h2>
             <p className="text-muted-foreground">
@@ -145,7 +78,7 @@ const HelpSection = () => {
           </div>
 
           {/* Form Card */}
-          <div className={`p-6 lg:p-8 ${getCardStyles()}`}>
+          <div className="p-6 lg:p-8 bg-card shadow-xl border-t-4 border-hasace-red">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name & Phone Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,7 +94,7 @@ const HelpSection = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className={getInputStyles()}
+                    className="border-2 focus:border-hasace-red"
                   />
                 </div>
                 <div className="space-y-2">
@@ -177,7 +110,7 @@ const HelpSection = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    className={getInputStyles()}
+                    className="border-2 focus:border-hasace-red"
                   />
                 </div>
               </div>
@@ -196,7 +129,7 @@ const HelpSection = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className={getInputStyles()}
+                  className="border-2 focus:border-hasace-red"
                 />
               </div>
 
@@ -210,7 +143,7 @@ const HelpSection = () => {
                   value={formData.subject}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
                 >
-                  <SelectTrigger className={getInputStyles()}>
+                  <SelectTrigger className="border-2 focus:border-hasace-red">
                     <SelectValue placeholder="Selecciona un tema" />
                   </SelectTrigger>
                   <SelectContent className="bg-card border shadow-lg z-50">
@@ -237,14 +170,14 @@ const HelpSection = () => {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className={getInputStyles()}
+                  className="border-2 focus:border-hasace-red"
                 />
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className={`w-full gap-2 ${getButtonStyles()}`}
+                className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -267,14 +200,14 @@ const HelpSection = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
                 href="tel:+524421234567"
-                className="inline-flex items-center justify-center gap-2 text-primary hover:underline"
+                className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Phone className="h-4 w-4" />
                 +52 442 123 4567
               </a>
               <a
                 href="mailto:contacto@hasace.mx"
-                className="inline-flex items-center justify-center gap-2 text-primary hover:underline"
+                className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Mail className="h-4 w-4" />
                 contacto@hasace.mx

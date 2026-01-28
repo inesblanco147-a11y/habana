@@ -6,7 +6,6 @@ import HelpSection from "@/components/HelpSection";
 import AppointmentSection from "@/components/AppointmentSection";
 import ProductsSection from "@/components/ProductsSection";
 import Footer from "@/components/Footer";
-import DesignSelector from "@/components/DesignSelector";
 
 const Index = () => {
   return (
@@ -21,7 +20,6 @@ const Index = () => {
         <ProductsSection />
       </main>
       <Footer />
-      <DesignSelector />
     </div>
   );
 };
