@@ -1,5 +1,66 @@
 import { Course, PastCourse } from "@/types/course";
 import { Product } from "@/types/product";
+import { Doctor } from "@/types/doctor";
+
+export const doctors: Doctor[] = [
+  {
+    id: "doc1",
+    name: "Dr. Carlos Mendoza",
+    title: "Director Médico",
+    specialty: "Medicina Deportiva",
+    summary: "Especialista en medicina deportiva con más de 15 años de experiencia en rehabilitación de atletas de alto rendimiento.",
+    experience: "15 años de experiencia tratando atletas profesionales de fútbol, básquetbol y atletismo. Ha sido médico de equipos de primera división.",
+    education: [
+      "Médico Cirujano - UNAM",
+      "Especialidad en Medicina del Deporte - Instituto Nacional de Rehabilitación",
+      "Maestría en Ciencias del Deporte - Universidad de Barcelona"
+    ],
+    certifications: [
+      "Certificación en Medicina Deportiva - CONADE",
+      "Fellow American College of Sports Medicine",
+      "Certificación en Terapia de Ondas de Choque"
+    ],
+    image: ""
+  },
+  {
+    id: "doc2",
+    name: "Dra. María González",
+    title: "Especialista en Rehabilitación",
+    specialty: "Rehabilitación Neurológica",
+    summary: "Experta en neurorehabilitación con enfoque en pacientes con lesiones cerebrales y medulares.",
+    experience: "12 años especializándose en rehabilitación de pacientes con daño neurológico, incluyendo EVC, lesiones medulares y Parkinson.",
+    education: [
+      "Médico Cirujano - UAQ",
+      "Especialidad en Medicina de Rehabilitación - Hospital Español",
+      "Subespecialidad en Neurorehabilitación - Hospital ABC"
+    ],
+    certifications: [
+      "Certificación en Terapia Bobath",
+      "Certificación en Facilitación Neuromuscular Propioceptiva",
+      "Diplomado en Neuroplasticidad"
+    ],
+    image: ""
+  },
+  {
+    id: "doc3",
+    name: "Lic. Ana Martínez",
+    title: "Fisioterapeuta Senior",
+    specialty: "Rehabilitación Pediátrica",
+    summary: "Fisioterapeuta especializada en el desarrollo motor infantil y tratamiento de niños con necesidades especiales.",
+    experience: "10 años trabajando con niños con parálisis cerebral, síndrome de Down, autismo y retrasos del desarrollo motor.",
+    education: [
+      "Licenciatura en Fisioterapia - UNAM",
+      "Especialidad en Fisioterapia Pediátrica - Hospital Infantil de México",
+      "Diplomado en Estimulación Temprana"
+    ],
+    certifications: [
+      "Certificación en Método Vojta",
+      "Certificación en Integración Sensorial",
+      "Especialista en Hidroterapia Pediátrica"
+    ],
+    image: ""
+  }
+];
 
 export const upcomingCourses: Course[] = [
   {

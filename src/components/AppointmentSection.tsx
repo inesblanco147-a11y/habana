@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, MessageCircle, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { Calendar, Clock, MessageCircle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -13,75 +12,9 @@ import {
 } from "@/components/ui/select";
 
 const AppointmentSection = () => {
-  const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedService, setSelectedService] = useState("");
-
-  const getSectionStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-secondary";
-      case "modern":
-        return "bg-muted/10";
-      case "warm":
-        return "bg-background";
-      default:
-        return "bg-secondary";
-    }
-  };
-
-  const getTitleStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary font-serif";
-      case "modern":
-        return "text-foreground font-bold";
-      case "warm":
-        return "text-hasace-green font-semibold";
-      default:
-        return "text-primary font-serif";
-    }
-  };
-
-  const getCardStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-card shadow-md";
-      case "modern":
-        return "bg-card shadow-xl border-b-4 border-hasace-red";
-      case "warm":
-        return "bg-card/90 shadow-lg rounded-2xl";
-      default:
-        return "bg-card shadow-md";
-    }
-  };
-
-  const getButtonStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-destructive hover:bg-destructive/90";
-      case "modern":
-        return "bg-hasace-red hover:bg-hasace-red/90 font-bold";
-      case "warm":
-        return "bg-hasace-green hover:bg-hasace-green/90";
-      default:
-        return "bg-destructive hover:bg-destructive/90";
-    }
-  };
-
-  const getWhatsAppStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-green-600 hover:bg-green-700";
-      case "modern":
-        return "bg-green-500 hover:bg-green-600 font-bold shadow-lg";
-      case "warm":
-        return "bg-green-600 hover:bg-green-700";
-      default:
-        return "bg-green-600 hover:bg-green-700";
-    }
-  };
 
   const timeSlots = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -99,7 +32,6 @@ const AppointmentSection = () => {
   ];
 
   const handleGoogleCalendar = () => {
-    // Placeholder for Google Calendar integration
     const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/";
     window.open(calendarUrl, "_blank");
   };
@@ -120,14 +52,14 @@ const AppointmentSection = () => {
   const isFormComplete = selectedDate && selectedTime && selectedService;
 
   return (
-    <section id="appointment" className={`py-16 lg:py-24 ${getSectionStyles()}`}>
+    <section id="appointment" className="py-16 lg:py-24 bg-muted/10">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Calendar className="h-8 w-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
+            <Calendar className="h-8 w-8 text-hasace-red" />
           </div>
-          <h2 className={`text-3xl lg:text-4xl mb-4 ${getTitleStyles()}`}>
+          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground font-bold">
             Agenda tu Cita
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -139,10 +71,10 @@ const AppointmentSection = () => {
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Calendar Card */}
-            <Card className={getCardStyles()}>
+            <Card className="bg-card shadow-xl border-b-4 border-hasace-red">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
+                  <Calendar className="h-5 w-5 text-hasace-red" />
                   Selecciona una fecha
                 </CardTitle>
               </CardHeader>
@@ -153,7 +85,7 @@ const AppointmentSection = () => {
                   onSelect={setSelectedDate}
                   disabled={(date) => 
                     date < new Date() || 
-                    date.getDay() === 0 // Disable Sundays
+                    date.getDay() === 0
                   }
                   className="rounded-md border"
                 />
@@ -161,10 +93,10 @@ const AppointmentSection = () => {
             </Card>
 
             {/* Time & Service Card */}
-            <Card className={getCardStyles()}>
+            <Card className="bg-card shadow-xl border-b-4 border-hasace-red">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
+                  <Clock className="h-5 w-5 text-hasace-red" />
                   Hora y Servicio
                 </CardTitle>
               </CardHeader>
@@ -196,7 +128,7 @@ const AppointmentSection = () => {
                         variant={selectedTime === time ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedTime(time)}
-                        className="text-xs"
+                        className={`text-xs ${selectedTime === time ? "bg-hasace-red hover:bg-hasace-red/90" : ""}`}
                       >
                         {time}
                       </Button>
@@ -229,7 +161,7 @@ const AppointmentSection = () => {
                 <div className="space-y-3">
                   <Button
                     onClick={handleGoogleCalendar}
-                    className={`w-full gap-2 ${getButtonStyles()}`}
+                    className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Agendar con Google Calendar
@@ -238,7 +170,7 @@ const AppointmentSection = () => {
                   <Button
                     onClick={handleWhatsApp}
                     disabled={!isFormComplete}
-                    className={`w-full gap-2 text-white ${getWhatsAppStyles()}`}
+                    className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
                   >
                     <MessageCircle className="h-4 w-4" />
                     Agendar por WhatsApp

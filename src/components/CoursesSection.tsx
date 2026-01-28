@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, MapPin, Users, Star, Image, Check, MessageCircle, X } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { Calendar, Clock, MapPin, Users, Star, Image, Check, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -13,67 +12,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { upcomingCourses, pastCourses } from "@/data/mockData";
-import { Course, PastCourse, CourseModality } from "@/types/course";
+import { Course, CourseModality } from "@/types/course";
 import courseDefaultImage from "@/assets/course-default.jpg";
 
 const CoursesSection = () => {
-  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState("upcoming");
   const [modalityFilter, setModalityFilter] = useState<CourseModality | "todos">("todos");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const getSectionStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-background";
-      case "modern":
-        return "bg-muted/20";
-      case "warm":
-        return "bg-secondary/50";
-      default:
-        return "bg-background";
-    }
-  };
-
-  const getHeroStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-gradient-to-r from-primary to-primary/80";
-      case "modern":
-        return "bg-gradient-to-r from-slate-900 via-slate-800 to-hasace-red/80";
-      case "warm":
-        return "bg-gradient-to-r from-hasace-green/90 to-hasace-green/70";
-      default:
-        return "bg-gradient-to-r from-primary to-primary/80";
-    }
-  };
-
-  const getTitleStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary font-serif";
-      case "modern":
-        return "text-foreground font-bold";
-      case "warm":
-        return "text-hasace-green font-semibold";
-      default:
-        return "text-primary font-serif";
-    }
-  };
-
-  const getCardStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "border-border hover:shadow-lg transition-shadow";
-      case "modern":
-        return "border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all";
-      case "warm":
-        return "border-border/50 rounded-2xl hover:shadow-md transition-shadow";
-      default:
-        return "border-border hover:shadow-lg transition-shadow";
-    }
-  };
 
   const getModalityBadge = (modality: CourseModality) => {
     const colors = {
@@ -150,9 +96,14 @@ const CoursesSection = () => {
   };
 
   return (
-    <section id="courses" className={`py-16 lg:py-24 ${getSectionStyles()}`}>
-      {/* Hero Section */}
-      <div className={`${getHeroStyles()} text-white py-12 lg:py-16 mb-12`}>
+    <section id="courses" className="py-16 lg:py-24 bg-muted/20">
+      {/* Hero Section with Blue Gradient */}
+      <div 
+        className="text-white py-12 lg:py-16 mb-12"
+        style={{
+          background: "linear-gradient(90deg, hsl(221, 64%, 33%) 0%, hsl(221, 64%, 55%) 50%, hsl(221, 64%, 33%) 100%)"
+        }}
+      >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">Cursos y Capacitaciones</h2>
           <p className="text-lg lg:text-xl opacity-90 max-w-2xl mx-auto">
@@ -166,10 +117,10 @@ const CoursesSection = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <TabsList className="bg-muted">
-              <TabsTrigger value="upcoming" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger value="upcoming" className="data-[state=active]:bg-hasace-red data-[state=active]:text-white">
                 Próximos Cursos
               </TabsTrigger>
-              <TabsTrigger value="past" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger value="past" className="data-[state=active]:bg-hasace-red data-[state=active]:text-white">
                 Cursos Pasados
               </TabsTrigger>
             </TabsList>
@@ -182,7 +133,7 @@ const CoursesSection = () => {
                     variant={modalityFilter === filter ? "default" : "outline"}
                     size="sm"
                     onClick={() => setModalityFilter(filter)}
-                    className={modalityFilter === filter ? "" : ""}
+                    className={modalityFilter === filter ? "bg-hasace-red hover:bg-hasace-red/90" : ""}
                   >
                     {filter === "todos" ? "Todos" : filter.charAt(0).toUpperCase() + filter.slice(1)}
                   </Button>
@@ -195,7 +146,7 @@ const CoursesSection = () => {
           <TabsContent value="upcoming">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCourses.map((course) => (
-                <Card key={course.id} className={getCardStyles()}>
+                <Card key={course.id} className="border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
                   <CardHeader className="p-0">
                     <div className="relative">
                       <img
@@ -212,7 +163,7 @@ const CoursesSection = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <h3 className={`text-lg font-semibold mb-2 line-clamp-2 ${getTitleStyles()}`}>
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2 text-foreground">
                       {course.title}
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
@@ -234,10 +185,11 @@ const CoursesSection = () => {
                     </div>
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                    <span className="text-xl font-bold text-primary">{formatPrice(course.price)}</span>
+                    <span className="text-xl font-bold text-hasace-red">{formatPrice(course.price)}</span>
                     <Button 
                       onClick={() => openCourseModal(course)}
                       disabled={course.availability === "agotado"}
+                      className="bg-hasace-red hover:bg-hasace-red/90 font-bold"
                     >
                       Ver detalles
                     </Button>
@@ -251,7 +203,7 @@ const CoursesSection = () => {
           <TabsContent value="past">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {pastCourses.map((course) => (
-                <Card key={course.id} className={getCardStyles()}>
+                <Card key={course.id} className="border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
                   <CardHeader className="p-0">
                     <div className="relative">
                       <img
@@ -265,7 +217,7 @@ const CoursesSection = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <h3 className={`text-lg font-semibold mb-2 ${getTitleStyles()}`}>
+                    <h3 className="text-lg font-bold mb-2 text-foreground">
                       {course.title}
                     </h3>
                     <div className="flex items-center gap-2 mb-3">
@@ -273,7 +225,7 @@ const CoursesSection = () => {
                       <span className="text-sm text-muted-foreground">{course.participants} participantes</span>
                       <div className="flex ml-auto">{renderStars(course.rating)}</div>
                     </div>
-                    <blockquote className="italic text-sm text-muted-foreground border-l-2 border-primary pl-3 mb-3">
+                    <blockquote className="italic text-sm text-muted-foreground border-l-2 border-hasace-red pl-3 mb-3">
                       "{course.testimonial}"
                     </blockquote>
                     <p className="text-xs text-muted-foreground">— {course.testimonialAuthor}</p>
@@ -282,7 +234,7 @@ const CoursesSection = () => {
                     <span className="text-sm text-muted-foreground">
                       Instructor: {course.instructor}
                     </span>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white">
                       <Image className="h-4 w-4 mr-2" />
                       Ver galería
                     </Button>
@@ -317,19 +269,19 @@ const CoursesSection = () => {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary" />
+                    <Calendar className="h-4 w-4 text-hasace-red" />
                     <span>{formatDate(selectedCourse.date)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" />
+                    <Clock className="h-4 w-4 text-hasace-red" />
                     <span>{selectedCourse.duration}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-primary" />
+                    <MapPin className="h-4 w-4 text-hasace-red" />
                     <span>{selectedCourse.location}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-primary" />
+                    <Users className="h-4 w-4 text-hasace-red" />
                     <span>{selectedCourse.currentParticipants}/{selectedCourse.maxParticipants} participantes</span>
                   </div>
                 </div>
@@ -351,7 +303,7 @@ const CoursesSection = () => {
                   <ul className="space-y-1">
                     {selectedCourse.includes.map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <Check className="h-4 w-4 text-hasace-red mt-0.5 flex-shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -361,20 +313,20 @@ const CoursesSection = () => {
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div>
                     <p className="text-sm text-muted-foreground">Precio</p>
-                    <p className="text-2xl font-bold text-primary">{formatPrice(selectedCourse.price)}</p>
+                    <p className="text-2xl font-bold text-hasace-red">{formatPrice(selectedCourse.price)}</p>
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       onClick={() => handleWhatsApp(selectedCourse)}
-                      className="gap-2"
+                      className="gap-2 border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white"
                     >
                       <MessageCircle className="h-4 w-4" />
                       WhatsApp
                     </Button>
                     <Button
                       disabled={selectedCourse.availability === "agotado"}
-                      className="gap-2"
+                      className="gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
                     >
                       Inscribirme
                     </Button>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Menu, X, ShoppingCart, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme, DesignTheme } from "@/contexts/ThemeContext";
 import hasaceLogo from "@/assets/hasace-logo.jpg";
 
 const menuItems = [
@@ -17,67 +16,14 @@ const menuItems = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme } = useTheme();
-
-  const getHeaderStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-primary text-primary-foreground";
-      case "modern":
-        return "bg-background text-foreground shadow-lg border-b-2 border-hasace-red";
-      case "warm":
-        return "bg-background text-foreground shadow-md";
-      default:
-        return "bg-primary text-primary-foreground";
-    }
-  };
-
-  const getNavLinkStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "text-primary-foreground/80 hover:text-primary-foreground transition-colors";
-      case "modern":
-        return "text-foreground hover:text-hasace-red font-semibold transition-colors";
-      case "warm":
-        return "text-muted-foreground hover:text-hasace-green transition-colors";
-      default:
-        return "text-primary-foreground/80 hover:text-primary-foreground";
-    }
-  };
-
-  const getCtaButtonStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "bg-destructive hover:bg-destructive/90 text-destructive-foreground";
-      case "modern":
-        return "bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg";
-      case "warm":
-        return "bg-hasace-green hover:bg-hasace-green/90 text-white";
-      default:
-        return "bg-destructive hover:bg-destructive/90 text-destructive-foreground";
-    }
-  };
-
-  const getLogoStyles = () => {
-    switch (theme) {
-      case "corporate":
-        return "brightness-0 invert";
-      case "modern":
-      case "warm":
-        return "";
-      default:
-        return "";
-    }
-  };
 
   const handleAppointmentClick = () => {
-    // Placeholder for Google Calendar integration
     const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/";
     window.open(calendarUrl, "_blank");
   };
 
   return (
-    <header className={`sticky top-0 z-50 w-full ${getHeaderStyles()}`}>
+    <header className="sticky top-0 z-50 w-full bg-background text-foreground shadow-lg border-b-2 border-hasace-red">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between lg:h-20">
           {/* Logo */}
@@ -85,7 +31,7 @@ const Header = () => {
             <img
               src={hasaceLogo}
               alt="HASACE - Clínica de Rehabilitación"
-              className={`h-10 w-auto lg:h-14 rounded ${getLogoStyles()}`}
+              className="h-10 w-auto lg:h-14 rounded"
             />
           </a>
 
@@ -95,7 +41,7 @@ const Header = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className={`text-sm ${getNavLinkStyles()}`}
+                className="text-sm text-foreground hover:text-hasace-red font-semibold transition-colors"
               >
                 {item.label}
               </a>
@@ -106,16 +52,16 @@ const Header = () => {
           <div className="hidden lg:flex items-center gap-4">
             <Button
               onClick={handleAppointmentClick}
-              className={`gap-2 ${getCtaButtonStyles()}`}
+              className="gap-2 bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg"
             >
               <Calendar className="h-4 w-4" />
               Agendar Cita
             </Button>
-            <button className={`p-2 ${getNavLinkStyles()}`}>
+            <button className="p-2 text-foreground hover:text-hasace-red font-semibold transition-colors">
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Carrito (0)</span>
             </button>
-            <button className={`p-2 ${getNavLinkStyles()}`}>
+            <button className="p-2 text-foreground hover:text-hasace-red font-semibold transition-colors">
               <User className="h-5 w-5" />
               <span className="sr-only">Login</span>
             </button>
@@ -154,7 +100,7 @@ const Header = () => {
               <hr className="my-2" />
               <Button
                 onClick={handleAppointmentClick}
-                className={`w-full gap-2 ${getCtaButtonStyles()}`}
+                className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg"
               >
                 <Calendar className="h-4 w-4" />
                 Agendar Cita
