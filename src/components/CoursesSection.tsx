@@ -11,11 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { upcomingCourses, pastCourses } from "@/data/mockData";
+import { useCourses, usePastCourses } from "@/hooks/useCourses";
 import { Course, CourseModality } from "@/types/course";
 import courseDefaultImage from "@/assets/course-default.jpg";
 
 const CoursesSection = () => {
+  const { data: upcomingCourses = [], isLoading: isLoadingCourses } = useCourses();
+  const { data: pastCourses = [], isLoading: isLoadingPast } = usePastCourses();
   const [activeTab, setActiveTab] = useState("upcoming");
   const [modalityFilter, setModalityFilter] = useState<CourseModality | "todos">("todos");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);

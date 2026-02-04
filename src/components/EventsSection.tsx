@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import { useEvents } from "@/hooks/useEvents";
 import { Event } from "@/types/event";
 
 import event1 from "@/assets/event-1.jpg";
@@ -18,59 +19,6 @@ import event3 from "@/assets/event-3.jpg";
 import event4 from "@/assets/event-4.jpg";
 import event5 from "@/assets/event-5.jpg";
 import event6 from "@/assets/event-6.jpg";
-
-const events: Event[] = [
-  {
-    id: "evt1",
-    title: "Congreso de Medicina Deportiva 2024",
-    description: "Evento anual que reúne a especialistas en medicina deportiva para compartir avances y técnicas innovadoras en rehabilitación de atletas.",
-    date: "2024-11-15",
-    location: "Centro de Convenciones, Querétaro",
-    images: [event1, event3, event5],
-    featured: true
-  },
-  {
-    id: "evt2",
-    title: "Taller Práctico de Rehabilitación",
-    description: "Sesión intensiva de técnicas manuales y ejercicios terapéuticos para profesionales de la salud.",
-    date: "2024-10-20",
-    location: "HASACE, Querétaro",
-    images: [event2, event4, event6],
-    featured: true
-  },
-  {
-    id: "evt3",
-    title: "Ceremonia de Certificación",
-    description: "Entrega de certificados a los profesionales que completaron nuestros programas de formación especializada.",
-    date: "2024-09-10",
-    location: "Auditorio HASACE",
-    images: [event3, event1, event2]
-  },
-  {
-    id: "evt4",
-    title: "Jornada de Medicina del Deporte",
-    description: "Demostración de técnicas de rehabilitación deportiva con atletas profesionales.",
-    date: "2024-08-25",
-    location: "Instalaciones deportivas, Querétaro",
-    images: [event4, event5, event3]
-  },
-  {
-    id: "evt5",
-    title: "Feria de la Salud Comunitaria",
-    description: "Evento de alcance comunitario ofreciendo consultas gratuitas y orientación en rehabilitación.",
-    date: "2024-07-15",
-    location: "Plaza Principal, Querétaro",
-    images: [event5, event6, event1]
-  },
-  {
-    id: "evt6",
-    title: "Taller de Rehabilitación Pediátrica",
-    description: "Capacitación especializada en técnicas de rehabilitación para niños con necesidades especiales.",
-    date: "2024-06-20",
-    location: "HASACE, Querétaro",
-    images: [event6, event2, event4]
-  }
-];
 
 const allGalleryImages = [
   { src: event1, alt: "Congreso de medicina deportiva" },
@@ -82,6 +30,7 @@ const allGalleryImages = [
 ];
 
 const EventsSection = () => {
+  const { data: events = [], isLoading } = useEvents();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
