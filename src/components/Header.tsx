@@ -54,10 +54,7 @@ const Header = () => {
               <Calendar className="h-4 w-4" />
               Agendar Cita
             </Button>
-            <button className="p-2 text-foreground hover:text-hasace-red font-semibold transition-colors">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Carrito (0)</span>
-            </button>
+            
             <button className="p-2 text-foreground hover:text-hasace-red font-semibold transition-colors">
               <User className="h-5 w-5" />
               <span className="sr-only">Login</span>
