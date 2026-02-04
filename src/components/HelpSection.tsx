@@ -66,7 +66,7 @@ const HelpSection = () => {
     value: "otro",
     label: "Otro tema"
   }];
-  return <section id="help" className="py-16 lg:py-24 bg-background">
+  return <section id="contact" className="py-16 lg:py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
