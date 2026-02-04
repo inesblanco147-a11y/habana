@@ -53,7 +53,14 @@ const AppointmentSection = () => {
     const serviceLabel = services.find(s => s.value === selectedService)?.label || "";
     const message = encodeURIComponent(`Hola, me gustaría agendar una cita:\n\n` + `📅 Fecha: ${dateStr}\n` + `🕐 Hora: ${selectedTime}\n` + `📋 Servicio: ${serviceLabel}\n\n` + `¿Tienen disponibilidad?`);
     const number = whatsappNumber || "524421234567";
-    window.open(`https://wa.me/${number}?text=${message}`, "_blank");
+    // Use anchor element to avoid COOP issues in Firefox
+    const link = document.createElement('a');
+    link.href = `https://wa.me/${number}?text=${message}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   const isFormComplete = selectedDate && selectedTime && selectedService;
   return <section id="cita" className="py-16 lg:py-24 bg-muted/10">
