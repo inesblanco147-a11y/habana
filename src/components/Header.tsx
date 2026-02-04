@@ -12,20 +12,17 @@ const menuItems = [{
   label: "Cursos",
   href: "#courses"
 }, {
-  label: "Ayuda",
-  href: "#help"
+  label: "Tienda",
+  href: "#store"
+}, {
+  label: "Galeria",
+  href: "#events"
 }, {
   label: "Cita",
   href: "#appointment"
 }, {
-  label: "Tienda",
-  href: "#store"
-}, {
   label: "Contáctanos",
   href: "#contact"
-}, {
-  label: "Eventos",
-  href: "#events"
 }];
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
