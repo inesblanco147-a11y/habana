@@ -56,7 +56,7 @@ const EventsSection = () => {
       setGalleryIndex(prev => (prev - 1 + selectedEvent.images.length) % selectedEvent.images.length);
     }
   };
-  return <section id="events" className="py-20 bg-muted/30">
+  return <section id="events" className="bg-muted/30 py-[96px]">
       <div className="container mx-auto px-4">
          <div className="max-w-3xl mx-auto">
         {/* Section Header */}
@@ -76,9 +76,9 @@ const EventsSection = () => {
           </h3>
           <div className="relative max-w-5xl mx-auto">
             <Carousel opts={{
-            align: "start",
-            loop: true
-          }} className="w-full">
+              align: "start",
+              loop: true
+            }} className="w-full">
               <CarouselContent className="-ml-2 md:-ml-4">
                 {allGalleryImages.map((image, index) => <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                     <div className="overflow-hidden rounded-xl shadow-lg group">
