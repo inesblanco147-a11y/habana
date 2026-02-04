@@ -47,13 +47,7 @@ const Hero = () => {
               <Calendar className="mr-2 h-5 w-5" />
               Agendar Cita
             </Button>
-            <Button
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-slate-900 px-10 py-7 text-xl font-bold"
-            >
-              Conoce Más
-              <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+
           </div>
         </div>
       </div>
