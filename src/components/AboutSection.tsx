@@ -71,7 +71,7 @@ const AboutSection = () => {
 
         {/* Doctors Carousel Section */}
         <div className="mt-20">
-          <h3 className="text-2xl lg:text-3xl mb-8 text-center text-foreground font-bold uppercase tracking-wide">
+          <h3 className="text-2xl lg:text-3xl mb-8 text-center font-bold uppercase tracking-wide text-destructive">
             Nuestro Equipo Médico
           </h3>
 
