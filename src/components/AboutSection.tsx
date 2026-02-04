@@ -92,13 +92,13 @@ const AboutSection = () => {
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-muted border-2 border-hasace-red">
                       <img src={doctor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&background=DC2626&color=fff&size=96`} alt={doctor.name} className="w-full h-full object-cover" />
                     </div>
-                    <h4 className="font-bold text-lg text-foreground mb-1">
+                    <h4 className="font-bold text-lg mb-1 text-primary">
                       {doctor.name}
                     </h4>
                     <p className="text-sm text-hasace-red font-semibold mb-2">
                       {doctor.specialty}
                     </p>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                    <p className="text-sm mb-4 line-clamp-3 text-primary">
                       {doctor.summary}
                     </p>
                     <Button onClick={() => openDoctorModal(doctor)} className="bg-hasace-red hover:bg-hasace-red/90 font-bold">
