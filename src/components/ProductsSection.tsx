@@ -10,11 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { products } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { Product } from "@/types/product";
 import productDefaultImage from "@/assets/product-default.jpg";
 
 const ProductsSection = () => {
+  const { data: products = [], isLoading } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

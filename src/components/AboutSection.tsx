@@ -8,12 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { doctors } from "@/data/mockData";
-import { Doctor } from "@/types/doctor";
+import { useDoctors, Doctor } from "@/hooks/useDoctors";
 import aboutMission from "@/assets/about-mission.jpg";
 import aboutVision from "@/assets/about-vision.jpg";
 
 const AboutSection = () => {
+  const { data: doctors = [], isLoading } = useDoctors();
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,7 +28,7 @@ const AboutSection = () => {
   };
 
   const scrollRight = () => {
-    setCurrentIndex((prev) => Math.min(doctors.length - 3, prev + 1));
+    setCurrentIndex((prev) => Math.min(Math.max(0, doctors.length - 3), prev + 1));
   };
 
   const visibleDoctors = doctors.slice(currentIndex, currentIndex + 3);
