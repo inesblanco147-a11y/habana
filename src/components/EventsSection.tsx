@@ -58,6 +58,7 @@ const EventsSection = () => {
   };
   return <section id="events" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
+         <div className="max-w-3xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-black mb-4 text-destructive">
@@ -90,6 +91,7 @@ const EventsSection = () => {
             </Carousel>
           </div>
         </div>
+         </div>
 
         {/* Events Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
