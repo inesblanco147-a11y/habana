@@ -37,7 +37,14 @@ const AppointmentSection = () => {
   
   const handleGoogleCalendar = () => {
     if (googleCalendarUrl) {
-      window.open(googleCalendarUrl, "_blank");
+      // Use anchor element to avoid COOP issues in Firefox
+      const link = document.createElement('a');
+      link.href = googleCalendarUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
   
