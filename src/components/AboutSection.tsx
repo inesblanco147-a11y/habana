@@ -44,7 +44,7 @@ const AboutSection = () => {
             <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">
               Nuestra Misión
             </h3>
-            <p className="text-base lg:text-lg text-foreground leading-relaxed">
+            <p className="text-base lg:text-lg leading-relaxed text-primary">
               Ofrecer programas de rehabilitación personalizados y de alta calidad, 
               basados en un modelo holístico que fomente la máxima independencia y 
               bienestar físico y emocional de cada paciente.
@@ -58,7 +58,7 @@ const AboutSection = () => {
             <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">
               Nuestra Visión
             </h3>
-            <p className="text-base lg:text-lg text-foreground leading-relaxed">
+            <p className="text-base lg:text-lg leading-relaxed text-primary">
               Ser el centro líder en rehabilitación integral, reconocidos por nuestra 
               innovación, resultados efectivos y el trato humano y empático hacia 
               cada familia.
