@@ -56,7 +56,7 @@ const EventsSection = () => {
       setGalleryIndex(prev => (prev - 1 + selectedEvent.images.length) % selectedEvent.images.length);
     }
   };
-  return <section id="eventos" className="py-20 bg-muted/30">
+  return <section id="events" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
