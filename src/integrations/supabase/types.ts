@@ -14,7 +14,234 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      courses: {
+        Row: {
+          availability: string
+          created_at: string
+          current_participants: number
+          date: string
+          description: string
+          duration: string
+          id: string
+          image: string | null
+          includes: string[]
+          instructor: string
+          location: string
+          max_participants: number
+          modality: string
+          objectives: string[]
+          price: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          availability: string
+          created_at?: string
+          current_participants?: number
+          date: string
+          description: string
+          duration: string
+          id?: string
+          image?: string | null
+          includes?: string[]
+          instructor: string
+          location: string
+          max_participants: number
+          modality: string
+          objectives?: string[]
+          price: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          availability?: string
+          created_at?: string
+          current_participants?: number
+          date?: string
+          description?: string
+          duration?: string
+          id?: string
+          image?: string | null
+          includes?: string[]
+          instructor?: string
+          location?: string
+          max_participants?: number
+          modality?: string
+          objectives?: string[]
+          price?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      doctors: {
+        Row: {
+          certifications: string[]
+          created_at: string
+          education: string[]
+          experience: string
+          id: string
+          image: string | null
+          name: string
+          specialty: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          certifications?: string[]
+          created_at?: string
+          education?: string[]
+          experience: string
+          id?: string
+          image?: string | null
+          name: string
+          specialty: string
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          certifications?: string[]
+          created_at?: string
+          education?: string[]
+          experience?: string
+          id?: string
+          image?: string | null
+          name?: string
+          specialty?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          date: string
+          description: string
+          featured: boolean | null
+          id: string
+          images: string[]
+          location: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          description: string
+          featured?: boolean | null
+          id?: string
+          images?: string[]
+          location: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string
+          featured?: boolean | null
+          id?: string
+          images?: string[]
+          location?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      past_courses: {
+        Row: {
+          created_at: string
+          date: string
+          description: string
+          gallery_images: string[] | null
+          id: string
+          image: string | null
+          instructor: string
+          modality: string
+          participants: number
+          rating: number
+          testimonial: string
+          testimonial_author: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          description: string
+          gallery_images?: string[] | null
+          id?: string
+          image?: string | null
+          instructor: string
+          modality: string
+          participants: number
+          rating: number
+          testimonial: string
+          testimonial_author: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string
+          gallery_images?: string[] | null
+          id?: string
+          image?: string | null
+          instructor?: string
+          modality?: string
+          participants?: number
+          rating?: number
+          testimonial?: string
+          testimonial_author?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          featured: boolean | null
+          id: string
+          image: string | null
+          in_stock: boolean
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          in_stock?: boolean
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          in_stock?: boolean
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
