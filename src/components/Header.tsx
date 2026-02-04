@@ -33,7 +33,7 @@ const Header = () => {
     const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/";
     window.open(calendarUrl, "_blank");
   };
-  return <header className="sticky top-0 z-50 w-full bg-background text-foreground shadow-lg border-b-2 border-hasace-red">
+  return <header className="sticky top-0 z-50 w-full shadow-lg border-b-2 border-hasace-red bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 text-primary">
         <div className="flex h-16 items-center justify-between lg:h-20">
           {/* Logo */}
