@@ -39,7 +39,7 @@ const AppointmentSection = () => {
     window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
   };
   const isFormComplete = selectedDate && selectedTime && selectedService;
-  return <section id="appointment" className="py-16 lg:py-24 bg-muted/10">
+  return <section id="cita" className="py-16 lg:py-24 bg-muted/10">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
