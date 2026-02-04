@@ -19,7 +19,7 @@ const menuItems = [{
   href: "#events"
 }, {
   label: "Cita",
-  href: "#appointment"
+  href: "#cita"
 }, {
   label: "Contáctanos",
   href: "#contact"
