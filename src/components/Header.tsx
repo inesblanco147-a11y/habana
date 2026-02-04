@@ -52,10 +52,7 @@ const Header = () => {
               Agendar Cita
             </Button>
             
-            <button className="p-2 text-foreground hover:text-hasace-red font-semibold transition-colors">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Login</span>
-            </button>
+            
           </div>
 
           {/* Mobile Menu Button */}
