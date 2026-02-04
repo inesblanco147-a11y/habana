@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,36 +6,28 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { useEvents } from "@/hooks/useEvents";
 import { Event } from "@/types/event";
-import event1 from "@/assets/event-1.jpg";
-import event2 from "@/assets/event-2.jpg";
-import event3 from "@/assets/event-3.jpg";
-import event4 from "@/assets/event-4.jpg";
-import event5 from "@/assets/event-5.jpg";
-import event6 from "@/assets/event-6.jpg";
-const allGalleryImages = [{
-  src: event1,
-  alt: "Congreso de medicina deportiva"
-}, {
-  src: event2,
-  alt: "Taller de rehabilitación"
-}, {
-  src: event3,
-  alt: "Ceremonia de certificación"
-}, {
-  src: event4,
-  alt: "Jornada deportiva"
-}, {
-  src: event5,
-  alt: "Feria de la salud"
-}, {
-  src: event6,
-  alt: "Rehabilitación pediátrica"
-}];
+
 const EventsSection = () => {
   const {
     data: events = [],
     isLoading
   } = useEvents();
+
+  // Generate gallery images from all events in the database
+  const allGalleryImages = useMemo(() => {
+    const images: { src: string; alt: string }[] = [];
+    events.forEach(event => {
+      event.images.forEach((img, idx) => {
+        if (img && img !== "/placeholder.svg") {
+          images.push({
+            src: img,
+            alt: `${event.title} - Imagen ${idx + 1}`
+          });
+        }
+      });
+    });
+    return images;
+  }, [events]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const formatDate = (dateString: string) => {
@@ -69,28 +61,30 @@ const EventsSection = () => {
           </p>
         </div>
 
-        {/* Main Gallery Carousel */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold mb-6 text-center text-primary">
-            Galería de Momentos
-          </h3>
-          <div className="relative max-w-5xl mx-auto">
-            <Carousel opts={{
-              align: "start",
-              loop: true
-            }} className="w-full">
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {allGalleryImages.map((image, index) => <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                    <div className="overflow-hidden rounded-xl shadow-lg group">
-                      <img src={image.src} alt={image.alt} className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" />
-                    </div>
-                  </CarouselItem>)}
-              </CarouselContent>
-              <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-              <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-            </Carousel>
+        {/* Main Gallery Carousel - Only show if there are images */}
+        {allGalleryImages.length > 0 && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-6 text-center text-primary">
+              Galería de Momentos
+            </h3>
+            <div className="relative max-w-5xl mx-auto">
+              <Carousel opts={{
+                align: "start",
+                loop: true
+              }} className="w-full">
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {allGalleryImages.map((image, index) => <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+                      <div className="overflow-hidden rounded-xl shadow-lg group">
+                        <img src={image.src} alt={image.alt} className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" />
+                      </div>
+                    </CarouselItem>)}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+                <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+              </Carousel>
+            </div>
           </div>
-        </div>
+        )}
          </div>
 
         {/* Events Cards */}

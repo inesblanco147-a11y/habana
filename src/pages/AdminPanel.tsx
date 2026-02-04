@@ -9,13 +9,15 @@ import {
   ArrowLeft,
   Calendar,
   Users,
-  Loader2
+  Loader2,
+  LogOut,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -64,17 +66,25 @@ import { useCreateCourse, useUpdateCourse, useDeleteCourse } from "@/hooks/useCo
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProductMutations";
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
 import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
+import { useSiteSettings, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ImageUpload from "@/components/ImageUpload";
+import MultiImageUpload from "@/components/MultiImageUpload";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
   
   // Fetch data
   const { data: coursesData = [], isLoading: loadingCourses } = useCourses();
   const { data: productsData = [], isLoading: loadingProducts } = useProducts();
   const { data: eventsData = [], isLoading: loadingEvents } = useEvents();
   const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
+  const { data: settingsData = [], isLoading: loadingSettings } = useSiteSettings();
 
   // Mutations
   const createCourse = useCreateCourse();
@@ -89,6 +99,7 @@ const AdminPanel = () => {
   const createDoctor = useCreateDoctor();
   const updateDoctor = useUpdateDoctor();
   const deleteDoctor = useDeleteDoctor();
+  const updateSetting = useUpdateSiteSetting();
   
   // Modal states
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -103,11 +114,46 @@ const AdminPanel = () => {
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
 
+  // Settings state
+  const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
+
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo cerrar sesión",
+      });
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-MX", {
       style: "currency",
       currency: "MXN"
     }).format(price);
+  };
+
+  // Initialize settings when loaded
+  const getSettingValue = (key: string) => {
+    if (editingSettings[key] !== undefined) return editingSettings[key];
+    return settingsData.find(s => s.key === key)?.value || "";
+  };
+
+  const handleSettingChange = (key: string, value: string) => {
+    setEditingSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSaveSettings = async () => {
+    for (const [key, value] of Object.entries(editingSettings)) {
+      await updateSetting.mutateAsync({ key, value });
+    }
+    setEditingSettings({});
+    toast({
+      title: "Configuración guardada",
+      description: "Los cambios se han guardado correctamente.",
+    });
   };
 
   // Course handlers
@@ -348,14 +394,29 @@ const AdminPanel = () => {
       <Header />
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          className="mb-6"
-          onClick={() => window.history.back()}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Volver al sitio
-        </Button>
+        <div className="flex justify-between items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => window.history.back()}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al sitio
+          </Button>
+          
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground hidden sm:inline">
+              {user?.email}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar sesión
+            </Button>
+          </div>
+        </div>
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">Panel de Administración</h1>
@@ -423,29 +484,35 @@ const AdminPanel = () => {
           <CardHeader>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <TabsList>
+                <TabsList className="flex-wrap h-auto">
                   <TabsTrigger value="courses" className="gap-2">
                     <GraduationCap className="h-4 w-4" />
-                    Cursos
+                    <span className="hidden sm:inline">Cursos</span>
                   </TabsTrigger>
                   <TabsTrigger value="products" className="gap-2">
                     <ShoppingBag className="h-4 w-4" />
-                    Productos
+                    <span className="hidden sm:inline">Productos</span>
                   </TabsTrigger>
                   <TabsTrigger value="events" className="gap-2">
                     <Calendar className="h-4 w-4" />
-                    Eventos
+                    <span className="hidden sm:inline">Eventos</span>
                   </TabsTrigger>
                   <TabsTrigger value="doctors" className="gap-2">
                     <Users className="h-4 w-4" />
-                    Doctores
+                    <span className="hidden sm:inline">Doctores</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="hidden sm:inline">Configuración</span>
                   </TabsTrigger>
                 </TabsList>
                 
-                <Button onClick={getAddHandler()}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar {getTabLabel()}
-                </Button>
+                {activeTab !== "settings" && (
+                  <Button onClick={getAddHandler()}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar {getTabLabel()}
+                  </Button>
+                )}
               </div>
             </Tabs>
           </CardHeader>
@@ -593,6 +660,7 @@ const AdminPanel = () => {
                           <TableHead>Título</TableHead>
                           <TableHead>Fecha</TableHead>
                           <TableHead>Ubicación</TableHead>
+                          <TableHead>Imágenes</TableHead>
                           <TableHead>Destacado</TableHead>
                           <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
@@ -605,6 +673,9 @@ const AdminPanel = () => {
                             </TableCell>
                             <TableCell>{event.date}</TableCell>
                             <TableCell>{event.location}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{event.images.length} imgs</Badge>
+                            </TableCell>
                             <TableCell>
                               {event.featured && <Badge variant="secondary" className="bg-accent text-accent-foreground">Sí</Badge>}
                             </TableCell>
@@ -687,6 +758,96 @@ const AdminPanel = () => {
                         ))}
                       </TableBody>
                     </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Settings Tab */}
+              <TabsContent value="settings">
+                {loadingSettings ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Información de Contacto</CardTitle>
+                        <CardDescription>
+                          Configura los datos de contacto que aparecen en el sitio
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="contact_phone">Teléfono de contacto</Label>
+                            <Input
+                              id="contact_phone"
+                              value={getSettingValue("contact_phone")}
+                              placeholder="+52 442 123 4567"
+                              onChange={e => handleSettingChange("contact_phone", e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="contact_email">Email de contacto</Label>
+                            <Input
+                              id="contact_email"
+                              type="email"
+                              value={getSettingValue("contact_email")}
+                              placeholder="contacto@hasace.mx"
+                              onChange={e => handleSettingChange("contact_email", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Integraciones</CardTitle>
+                        <CardDescription>
+                          Configura WhatsApp y Google Calendar para los botones del sitio
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="whatsapp_number">Número de WhatsApp</Label>
+                          <Input
+                            id="whatsapp_number"
+                            value={getSettingValue("whatsapp_number")}
+                            placeholder="521234567890 (código de país + número sin espacios)"
+                            onChange={e => handleSettingChange("whatsapp_number", e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Ingresa el número con código de país, sin espacios ni caracteres especiales. Ejemplo: 521234567890
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="google_calendar_url">URL de Google Calendar</Label>
+                          <Input
+                            id="google_calendar_url"
+                            value={getSettingValue("google_calendar_url")}
+                            placeholder="https://calendar.google.com/calendar/..."
+                            onChange={e => handleSettingChange("google_calendar_url", e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Pega aquí el enlace público de tu calendario de Google para que los usuarios puedan agendar citas
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end">
+                      <Button 
+                        onClick={handleSaveSettings}
+                        disabled={Object.keys(editingSettings).length === 0 || updateSetting.isPending}
+                      >
+                        {updateSetting.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        <Save className="h-4 w-4 mr-2" />
+                        Guardar Configuración
+                      </Button>
+                    </div>
                   </div>
                 )}
               </TabsContent>
@@ -827,12 +988,11 @@ const AdminPanel = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="image">URL de Imagen</Label>
-                <Input
-                  id="image"
+                <Label>Imagen del Curso</Label>
+                <ImageUpload
                   value={editingCourse.image}
-                  placeholder="https://..."
-                  onChange={e => setEditingCourse({...editingCourse, image: e.target.value})}
+                  onChange={url => setEditingCourse({...editingCourse, image: url})}
+                  folder="courses"
                 />
               </div>
             </div>
@@ -853,7 +1013,7 @@ const AdminPanel = () => {
 
       {/* Product Modal */}
       <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingProduct?.id ? "Editar Producto" : "Nuevo Producto"}
@@ -905,12 +1065,11 @@ const AdminPanel = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="prodImage">URL de Imagen</Label>
-                <Input
-                  id="prodImage"
+                <Label>Imagen del Producto</Label>
+                <ImageUpload
                   value={editingProduct.image}
-                  placeholder="https://..."
-                  onChange={e => setEditingProduct({...editingProduct, image: e.target.value})}
+                  onChange={url => setEditingProduct({...editingProduct, image: url})}
+                  folder="products"
                 />
               </div>
 
@@ -949,7 +1108,7 @@ const AdminPanel = () => {
 
       {/* Event Modal */}
       <Dialog open={isEventModalOpen} onOpenChange={setIsEventModalOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingEvent?.id ? "Editar Evento" : "Nuevo Evento"}
@@ -985,7 +1144,7 @@ const AdminPanel = () => {
                   <Input
                     id="eventDate"
                     value={editingEvent.date}
-                    placeholder="ej: 15 de Marzo, 2025"
+                    placeholder="ej: 2025-03-15"
                     onChange={e => setEditingEvent({...editingEvent, date: e.target.value})}
                   />
                 </div>
@@ -998,6 +1157,16 @@ const AdminPanel = () => {
                     onChange={e => setEditingEvent({...editingEvent, location: e.target.value})}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Imágenes del Evento</Label>
+                <MultiImageUpload
+                  value={editingEvent.images.filter(img => img !== "/placeholder.svg")}
+                  onChange={urls => setEditingEvent({...editingEvent, images: urls})}
+                  folder="events"
+                  maxImages={10}
+                />
               </div>
 
               <div className="flex items-center gap-2">
@@ -1087,12 +1256,11 @@ const AdminPanel = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="doctorImage">URL de Imagen</Label>
-                <Input
-                  id="doctorImage"
+                <Label>Imagen del Doctor</Label>
+                <ImageUpload
                   value={editingDoctor.image}
-                  placeholder="https://..."
-                  onChange={e => setEditingDoctor({...editingDoctor, image: e.target.value})}
+                  onChange={url => setEditingDoctor({...editingDoctor, image: url})}
+                  folder="doctors"
                 />
               </div>
 
