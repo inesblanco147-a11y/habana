@@ -61,28 +61,30 @@ const EventsSection = () => {
           </p>
         </div>
 
-        {/* Main Gallery Carousel */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold mb-6 text-center text-primary">
-            Galería de Momentos
-          </h3>
-          <div className="relative max-w-5xl mx-auto">
-            <Carousel opts={{
-              align: "start",
-              loop: true
-            }} className="w-full">
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {allGalleryImages.map((image, index) => <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                    <div className="overflow-hidden rounded-xl shadow-lg group">
-                      <img src={image.src} alt={image.alt} className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" />
-                    </div>
-                  </CarouselItem>)}
-              </CarouselContent>
-              <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-              <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-            </Carousel>
+        {/* Main Gallery Carousel - Only show if there are images */}
+        {allGalleryImages.length > 0 && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-6 text-center text-primary">
+              Galería de Momentos
+            </h3>
+            <div className="relative max-w-5xl mx-auto">
+              <Carousel opts={{
+                align: "start",
+                loop: true
+              }} className="w-full">
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {allGalleryImages.map((image, index) => <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+                      <div className="overflow-hidden rounded-xl shadow-lg group">
+                        <img src={image.src} alt={image.alt} className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110" />
+                      </div>
+                    </CarouselItem>)}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+                <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+              </Carousel>
+            </div>
           </div>
-        </div>
+        )}
          </div>
 
         {/* Events Cards */}
