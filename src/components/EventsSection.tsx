@@ -120,7 +120,7 @@ const EventsSection = () => {
                 <Button onClick={() => {
               setSelectedEvent(event);
               setGalleryIndex(0);
-            }} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+            }} className="w-full bg-hasace-red hover:bg-hasace-red/30 text-primary-foreground font-semibold">
                   Ver Galería
                 </Button>
               </CardContent>
