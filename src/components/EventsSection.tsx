@@ -61,7 +61,7 @@ const EventsSection = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-black mb-4 text-destructive">
-            Eventos
+            Galería
           </h2>
           <p className="text-lg max-w-2xl mx-auto text-primary">
             Conoce nuestros eventos pasados y las actividades que realizamos para la comunidad médica y nuestros pacientes.
