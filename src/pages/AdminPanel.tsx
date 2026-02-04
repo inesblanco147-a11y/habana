@@ -606,7 +606,7 @@ const AdminPanel = () => {
                             <TableCell>{event.date}</TableCell>
                             <TableCell>{event.location}</TableCell>
                             <TableCell>
-                              {event.featured && <Badge className="bg-amber-500">Sí</Badge>}
+                              {event.featured && <Badge variant="secondary" className="bg-accent text-accent-foreground">Sí</Badge>}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
