@@ -4,10 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
+
 const AppointmentSection = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  
+  const googleCalendarUrl = useSiteSetting("google_calendar_url");
+  const whatsappNumber = useSiteSetting("whatsapp_number");
+  
   const timeSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"];
   const services = [{
     value: "rehabilitacion",
@@ -28,15 +34,19 @@ const AppointmentSection = () => {
     value: "seguimiento",
     label: "Consulta de Seguimiento"
   }];
+  
   const handleGoogleCalendar = () => {
-    const calendarUrl = "https://calendar.google.com/calendar/appointments/schedules/";
-    window.open(calendarUrl, "_blank");
+    if (googleCalendarUrl) {
+      window.open(googleCalendarUrl, "_blank");
+    }
   };
+  
   const handleWhatsApp = () => {
     const dateStr = selectedDate ? selectedDate.toLocaleDateString("es-MX") : "";
     const serviceLabel = services.find(s => s.value === selectedService)?.label || "";
     const message = encodeURIComponent(`Hola, me gustaría agendar una cita:\n\n` + `📅 Fecha: ${dateStr}\n` + `🕐 Hora: ${selectedTime}\n` + `📋 Servicio: ${serviceLabel}\n\n` + `¿Tienen disponibilidad?`);
-    window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
+    const number = whatsappNumber || "524421234567";
+    window.open(`https://wa.me/${number}?text=${message}`, "_blank");
   };
   const isFormComplete = selectedDate && selectedTime && selectedService;
   return <section id="cita" className="py-16 lg:py-24 bg-muted/10">
