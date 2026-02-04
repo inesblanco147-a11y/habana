@@ -4,19 +4,18 @@ import {
   Edit, 
   Trash2, 
   Save, 
-  X, 
   GraduationCap, 
   ShoppingBag,
   ArrowLeft,
   Calendar,
-  DollarSign,
-  Users
+  Users,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -41,28 +40,68 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { upcomingCourses, products } from "@/data/mockData";
-import { Course } from "@/types/course";
+import { Course, CourseModality, CourseAvailability } from "@/types/course";
 import { Product } from "@/types/product";
-import { useToast } from "@/hooks/use-toast";
+import { Event } from "@/types/event";
+import { Doctor } from "@/types/doctor";
+import { useCourses } from "@/hooks/useCourses";
+import { useProducts } from "@/hooks/useProducts";
+import { useEvents } from "@/hooks/useEvents";
+import { useDoctors } from "@/hooks/useDoctors";
+import { useCreateCourse, useUpdateCourse, useDeleteCourse } from "@/hooks/useCourseMutations";
+import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProductMutations";
+import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
+import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const AdminPanel = () => {
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("courses");
   
-  // Courses state
-  const [coursesData, setCoursesData] = useState(upcomingCourses);
+  // Fetch data
+  const { data: coursesData = [], isLoading: loadingCourses } = useCourses();
+  const { data: productsData = [], isLoading: loadingProducts } = useProducts();
+  const { data: eventsData = [], isLoading: loadingEvents } = useEvents();
+  const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
+
+  // Mutations
+  const createCourse = useCreateCourse();
+  const updateCourse = useUpdateCourse();
+  const deleteCourse = useDeleteCourse();
+  const createProduct = useCreateProduct();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
+  const createEvent = useCreateEvent();
+  const updateEvent = useUpdateEvent();
+  const deleteEvent = useDeleteEvent();
+  const createDoctor = useCreateDoctor();
+  const updateDoctor = useUpdateDoctor();
+  const deleteDoctor = useDeleteDoctor();
+  
+  // Modal states
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
-  
-  // Products state
-  const [productsData, setProductsData] = useState(products);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
+  
+  // Delete confirmation
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-MX", {
@@ -74,7 +113,7 @@ const AdminPanel = () => {
   // Course handlers
   const handleAddCourse = () => {
     setEditingCourse({
-      id: Date.now().toString(),
+      id: "",
       title: "",
       description: "",
       image: "",
@@ -101,27 +140,32 @@ const AdminPanel = () => {
   const handleSaveCourse = () => {
     if (!editingCourse) return;
 
-    const exists = coursesData.find(c => c.id === editingCourse.id);
-    if (exists) {
-      setCoursesData(coursesData.map(c => c.id === editingCourse.id ? editingCourse : c));
-      toast({ title: "Curso actualizado", description: "Los cambios se han guardado correctamente." });
+    if (editingCourse.id) {
+      updateCourse.mutate(editingCourse, {
+        onSuccess: () => {
+          setIsCourseModalOpen(false);
+          setEditingCourse(null);
+        }
+      });
     } else {
-      setCoursesData([...coursesData, editingCourse]);
-      toast({ title: "Curso creado", description: "El nuevo curso se ha agregado correctamente." });
+      const { id, ...courseData } = editingCourse;
+      createCourse.mutate(courseData, {
+        onSuccess: () => {
+          setIsCourseModalOpen(false);
+          setEditingCourse(null);
+        }
+      });
     }
-    setIsCourseModalOpen(false);
-    setEditingCourse(null);
   };
 
-  const handleDeleteCourse = (id: string) => {
-    setCoursesData(coursesData.filter(c => c.id !== id));
-    toast({ title: "Curso eliminado", description: "El curso se ha eliminado correctamente." });
+  const handleDeleteCourse = (id: string, title: string) => {
+    setDeleteConfirm({ type: "course", id, name: title });
   };
 
   // Product handlers
   const handleAddProduct = () => {
     setEditingProduct({
-      id: Date.now().toString(),
+      id: "",
       name: "",
       description: "",
       price: 0,
@@ -141,29 +185,169 @@ const AdminPanel = () => {
   const handleSaveProduct = () => {
     if (!editingProduct) return;
 
-    const exists = productsData.find(p => p.id === editingProduct.id);
-    if (exists) {
-      setProductsData(productsData.map(p => p.id === editingProduct.id ? editingProduct : p));
-      toast({ title: "Producto actualizado", description: "Los cambios se han guardado correctamente." });
+    if (editingProduct.id) {
+      updateProduct.mutate(editingProduct, {
+        onSuccess: () => {
+          setIsProductModalOpen(false);
+          setEditingProduct(null);
+        }
+      });
     } else {
-      setProductsData([...productsData, editingProduct]);
-      toast({ title: "Producto creado", description: "El nuevo producto se ha agregado correctamente." });
+      const { id, ...productData } = editingProduct;
+      createProduct.mutate(productData, {
+        onSuccess: () => {
+          setIsProductModalOpen(false);
+          setEditingProduct(null);
+        }
+      });
     }
-    setIsProductModalOpen(false);
-    setEditingProduct(null);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    setProductsData(productsData.filter(p => p.id !== id));
-    toast({ title: "Producto eliminado", description: "El producto se ha eliminado correctamente." });
+  const handleDeleteProduct = (id: string, name: string) => {
+    setDeleteConfirm({ type: "product", id, name });
   };
+
+  // Event handlers
+  const handleAddEvent = () => {
+    setEditingEvent({
+      id: "",
+      title: "",
+      description: "",
+      date: "",
+      location: "",
+      images: [],
+      featured: false
+    });
+    setIsEventModalOpen(true);
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent({ ...event });
+    setIsEventModalOpen(true);
+  };
+
+  const handleSaveEvent = () => {
+    if (!editingEvent) return;
+
+    if (editingEvent.id) {
+      updateEvent.mutate(editingEvent, {
+        onSuccess: () => {
+          setIsEventModalOpen(false);
+          setEditingEvent(null);
+        }
+      });
+    } else {
+      const { id, ...eventData } = editingEvent;
+      createEvent.mutate(eventData, {
+        onSuccess: () => {
+          setIsEventModalOpen(false);
+          setEditingEvent(null);
+        }
+      });
+    }
+  };
+
+  const handleDeleteEvent = (id: string, title: string) => {
+    setDeleteConfirm({ type: "event", id, name: title });
+  };
+
+  // Doctor handlers
+  const handleAddDoctor = () => {
+    setEditingDoctor({
+      id: "",
+      name: "",
+      title: "",
+      specialty: "",
+      summary: "",
+      experience: "",
+      education: [],
+      certifications: [],
+      image: ""
+    });
+    setIsDoctorModalOpen(true);
+  };
+
+  const handleEditDoctor = (doctor: Doctor) => {
+    setEditingDoctor({ ...doctor });
+    setIsDoctorModalOpen(true);
+  };
+
+  const handleSaveDoctor = () => {
+    if (!editingDoctor) return;
+
+    if (editingDoctor.id) {
+      updateDoctor.mutate(editingDoctor, {
+        onSuccess: () => {
+          setIsDoctorModalOpen(false);
+          setEditingDoctor(null);
+        }
+      });
+    } else {
+      const { id, ...doctorData } = editingDoctor;
+      createDoctor.mutate(doctorData, {
+        onSuccess: () => {
+          setIsDoctorModalOpen(false);
+          setEditingDoctor(null);
+        }
+      });
+    }
+  };
+
+  const handleDeleteDoctor = (id: string, name: string) => {
+    setDeleteConfirm({ type: "doctor", id, name });
+  };
+
+  // Confirm delete
+  const confirmDelete = () => {
+    if (!deleteConfirm) return;
+
+    switch (deleteConfirm.type) {
+      case "course":
+        deleteCourse.mutate(deleteConfirm.id);
+        break;
+      case "product":
+        deleteProduct.mutate(deleteConfirm.id);
+        break;
+      case "event":
+        deleteEvent.mutate(deleteConfirm.id);
+        break;
+      case "doctor":
+        deleteDoctor.mutate(deleteConfirm.id);
+        break;
+    }
+    setDeleteConfirm(null);
+  };
+
+  const getAddHandler = () => {
+    switch (activeTab) {
+      case "courses": return handleAddCourse;
+      case "products": return handleAddProduct;
+      case "events": return handleAddEvent;
+      case "doctors": return handleAddDoctor;
+      default: return handleAddCourse;
+    }
+  };
+
+  const getTabLabel = () => {
+    switch (activeTab) {
+      case "courses": return "Curso";
+      case "products": return "Producto";
+      case "events": return "Evento";
+      case "doctors": return "Doctor";
+      default: return "Item";
+    }
+  };
+
+  const isSaving = createCourse.isPending || updateCourse.isPending || 
+                   createProduct.isPending || updateProduct.isPending ||
+                   createEvent.isPending || updateEvent.isPending ||
+                   createDoctor.isPending || updateDoctor.isPending;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/30">
       <Header />
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        {/* Back Button */}
         <Button
           variant="ghost"
           className="mb-6"
@@ -175,11 +359,11 @@ const AdminPanel = () => {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">Panel de Administración</h1>
-          <p className="text-muted-foreground">Gestiona los cursos y productos de HASACE</p>
+          <p className="text-muted-foreground">Gestiona los contenidos de HASACE</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -187,7 +371,7 @@ const AdminPanel = () => {
                   <GraduationCap className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Cursos</p>
+                  <p className="text-sm text-muted-foreground">Cursos</p>
                   <p className="text-2xl font-bold">{coursesData.length}</p>
                 </div>
               </div>
@@ -196,11 +380,11 @@ const AdminPanel = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-hasace-green/10 rounded-lg">
-                  <ShoppingBag className="h-6 w-6 text-hasace-green" />
+                <div className="p-3 bg-accent/10 rounded-lg">
+                  <ShoppingBag className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Productos</p>
+                  <p className="text-sm text-muted-foreground">Productos</p>
                   <p className="text-2xl font-bold">{productsData.length}</p>
                 </div>
               </div>
@@ -209,12 +393,25 @@ const AdminPanel = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-hasace-red/10 rounded-lg">
-                  <Users className="h-6 w-6 text-hasace-red" />
+                <div className="p-3 bg-destructive/10 rounded-lg">
+                  <Calendar className="h-6 w-6 text-destructive" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Productos en Stock</p>
-                  <p className="text-2xl font-bold">{productsData.filter(p => p.inStock).length}</p>
+                  <p className="text-sm text-muted-foreground">Eventos</p>
+                  <p className="text-2xl font-bold">{eventsData.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Doctores</p>
+                  <p className="text-2xl font-bold">{doctorsData.length}</p>
                 </div>
               </div>
             </CardContent>
@@ -235,11 +432,19 @@ const AdminPanel = () => {
                     <ShoppingBag className="h-4 w-4" />
                     Productos
                   </TabsTrigger>
+                  <TabsTrigger value="events" className="gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Eventos
+                  </TabsTrigger>
+                  <TabsTrigger value="doctors" className="gap-2">
+                    <Users className="h-4 w-4" />
+                    Doctores
+                  </TabsTrigger>
                 </TabsList>
                 
-                <Button onClick={activeTab === "courses" ? handleAddCourse : handleAddProduct}>
+                <Button onClick={getAddHandler()}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Agregar {activeTab === "courses" ? "Curso" : "Producto"}
+                  Agregar {getTabLabel()}
                 </Button>
               </div>
             </Tabs>
@@ -248,118 +453,242 @@ const AdminPanel = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               {/* Courses Tab */}
               <TabsContent value="courses">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Título</TableHead>
-                        <TableHead>Modalidad</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Precio</TableHead>
-                        <TableHead>Disponibilidad</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {coursesData.map(course => (
-                        <TableRow key={course.id}>
-                          <TableCell className="font-medium max-w-[200px] truncate">
-                            {course.title}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{course.modality}</Badge>
-                          </TableCell>
-                          <TableCell>{course.date}</TableCell>
-                          <TableCell>{formatPrice(course.price)}</TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant={course.availability === "disponible" ? "default" : "secondary"}
-                            >
-                              {course.availability}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                onClick={() => handleEditCourse(course)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => handleDeleteCourse(course.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                {loadingCourses ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Modalidad</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Precio</TableHead>
+                          <TableHead>Disponibilidad</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {coursesData.map(course => (
+                          <TableRow key={course.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {course.title}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{course.modality}</Badge>
+                            </TableCell>
+                            <TableCell>{course.date}</TableCell>
+                            <TableCell>{formatPrice(course.price)}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={course.availability === "disponible" ? "default" : "secondary"}
+                              >
+                                {course.availability}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditCourse(course)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteCourse(course.id, course.title)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </TabsContent>
 
               {/* Products Tab */}
               <TabsContent value="products">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Categoría</TableHead>
-                        <TableHead>Precio</TableHead>
-                        <TableHead>Stock</TableHead>
-                        <TableHead>Destacado</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {productsData.map(product => (
-                        <TableRow key={product.id}>
-                          <TableCell className="font-medium max-w-[200px] truncate">
-                            {product.name}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{product.category}</Badge>
-                          </TableCell>
-                          <TableCell>{formatPrice(product.price)}</TableCell>
-                          <TableCell>
-                            <Badge variant={product.inStock ? "default" : "destructive"}>
-                              {product.inStock ? "En stock" : "Agotado"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {product.featured && <Badge className="bg-amber-500">Sí</Badge>}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                onClick={() => handleEditProduct(product)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => handleDeleteProduct(product.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                {loadingProducts ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Categoría</TableHead>
+                          <TableHead>Precio</TableHead>
+                          <TableHead>Stock</TableHead>
+                          <TableHead>Destacado</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {productsData.map(product => (
+                          <TableRow key={product.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {product.name}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{product.category}</Badge>
+                            </TableCell>
+                            <TableCell>{formatPrice(product.price)}</TableCell>
+                            <TableCell>
+                              <Badge variant={product.inStock ? "default" : "destructive"}>
+                                {product.inStock ? "En stock" : "Agotado"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {product.featured && <Badge variant="secondary" className="bg-accent text-accent-foreground">Sí</Badge>}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditProduct(product)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteProduct(product.id, product.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Events Tab */}
+              <TabsContent value="events">
+                {loadingEvents ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Ubicación</TableHead>
+                          <TableHead>Destacado</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {eventsData.map(event => (
+                          <TableRow key={event.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {event.title}
+                            </TableCell>
+                            <TableCell>{event.date}</TableCell>
+                            <TableCell>{event.location}</TableCell>
+                            <TableCell>
+                              {event.featured && <Badge variant="secondary" className="bg-accent text-accent-foreground">Sí</Badge>}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditEvent(event)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteEvent(event.id, event.title)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Doctors Tab */}
+              <TabsContent value="doctors">
+                {loadingDoctors ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Especialidad</TableHead>
+                          <TableHead>Experiencia</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {doctorsData.map(doctor => (
+                          <TableRow key={doctor.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {doctor.name}
+                            </TableCell>
+                            <TableCell>{doctor.title}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{doctor.specialty}</Badge>
+                            </TableCell>
+                            <TableCell>{doctor.experience}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditDoctor(doctor)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteDoctor(doctor.id, doctor.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -371,7 +700,7 @@ const AdminPanel = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCourse?.title ? "Editar Curso" : "Nuevo Curso"}
+              {editingCourse?.id ? "Editar Curso" : "Nuevo Curso"}
             </DialogTitle>
             <DialogDescription>
               Complete la información del curso
@@ -403,7 +732,7 @@ const AdminPanel = () => {
                   <Label htmlFor="modality">Modalidad</Label>
                   <Select 
                     value={editingCourse.modality}
-                    onValueChange={value => setEditingCourse({...editingCourse, modality: value as any})}
+                    onValueChange={value => setEditingCourse({...editingCourse, modality: value as CourseModality})}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -420,7 +749,7 @@ const AdminPanel = () => {
                   <Label htmlFor="availability">Disponibilidad</Label>
                   <Select 
                     value={editingCourse.availability}
-                    onValueChange={value => setEditingCourse({...editingCourse, availability: value as any})}
+                    onValueChange={value => setEditingCourse({...editingCourse, availability: value as CourseAvailability})}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -439,8 +768,8 @@ const AdminPanel = () => {
                   <Label htmlFor="date">Fecha</Label>
                   <Input
                     id="date"
-                    type="date"
                     value={editingCourse.date}
+                    placeholder="ej: 15 de Marzo, 2025"
                     onChange={e => setEditingCourse({...editingCourse, date: e.target.value})}
                   />
                 </div>
@@ -477,12 +806,33 @@ const AdminPanel = () => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="instructor">Instructor</Label>
+                  <Input
+                    id="instructor"
+                    value={editingCourse.instructor}
+                    onChange={e => setEditingCourse({...editingCourse, instructor: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maxParticipants">Máx. Participantes</Label>
+                  <Input
+                    id="maxParticipants"
+                    type="number"
+                    value={editingCourse.maxParticipants}
+                    onChange={e => setEditingCourse({...editingCourse, maxParticipants: Number(e.target.value)})}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="instructor">Instructor</Label>
+                <Label htmlFor="image">URL de Imagen</Label>
                 <Input
-                  id="instructor"
-                  value={editingCourse.instructor}
-                  onChange={e => setEditingCourse({...editingCourse, instructor: e.target.value})}
+                  id="image"
+                  value={editingCourse.image}
+                  placeholder="https://..."
+                  onChange={e => setEditingCourse({...editingCourse, image: e.target.value})}
                 />
               </div>
             </div>
@@ -492,7 +842,8 @@ const AdminPanel = () => {
             <Button variant="outline" onClick={() => setIsCourseModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSaveCourse}>
+            <Button onClick={handleSaveCourse} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               <Save className="h-4 w-4 mr-2" />
               Guardar
             </Button>
@@ -505,7 +856,7 @@ const AdminPanel = () => {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editingProduct?.name ? "Editar Producto" : "Nuevo Producto"}
+              {editingProduct?.id ? "Editar Producto" : "Nuevo Producto"}
             </DialogTitle>
             <DialogDescription>
               Complete la información del producto
@@ -553,6 +904,16 @@ const AdminPanel = () => {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="prodImage">URL de Imagen</Label>
+                <Input
+                  id="prodImage"
+                  value={editingProduct.image}
+                  placeholder="https://..."
+                  onChange={e => setEditingProduct({...editingProduct, image: e.target.value})}
+                />
+              </div>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Switch
@@ -577,13 +938,216 @@ const AdminPanel = () => {
             <Button variant="outline" onClick={() => setIsProductModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSaveProduct}>
+            <Button onClick={handleSaveProduct} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               <Save className="h-4 w-4 mr-2" />
               Guardar
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Event Modal */}
+      <Dialog open={isEventModalOpen} onOpenChange={setIsEventModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {editingEvent?.id ? "Editar Evento" : "Nuevo Evento"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete la información del evento
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingEvent && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="eventTitle">Título</Label>
+                <Input
+                  id="eventTitle"
+                  value={editingEvent.title}
+                  onChange={e => setEditingEvent({...editingEvent, title: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="eventDescription">Descripción</Label>
+                <Textarea
+                  id="eventDescription"
+                  value={editingEvent.description}
+                  onChange={e => setEditingEvent({...editingEvent, description: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="eventDate">Fecha</Label>
+                  <Input
+                    id="eventDate"
+                    value={editingEvent.date}
+                    placeholder="ej: 15 de Marzo, 2025"
+                    onChange={e => setEditingEvent({...editingEvent, date: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="eventLocation">Ubicación</Label>
+                  <Input
+                    id="eventLocation"
+                    value={editingEvent.location}
+                    onChange={e => setEditingEvent({...editingEvent, location: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={editingEvent.featured}
+                  onCheckedChange={checked => setEditingEvent({...editingEvent, featured: checked})}
+                />
+                <Label>Evento Destacado</Label>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEventModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEvent} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Doctor Modal */}
+      <Dialog open={isDoctorModalOpen} onOpenChange={setIsDoctorModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingDoctor?.id ? "Editar Doctor" : "Nuevo Doctor"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete la información del doctor
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingDoctor && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="doctorName">Nombre</Label>
+                  <Input
+                    id="doctorName"
+                    value={editingDoctor.name}
+                    onChange={e => setEditingDoctor({...editingDoctor, name: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="doctorTitle">Título</Label>
+                  <Input
+                    id="doctorTitle"
+                    value={editingDoctor.title}
+                    placeholder="ej: Dr., Lic., Mtro."
+                    onChange={e => setEditingDoctor({...editingDoctor, title: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="specialty">Especialidad</Label>
+                  <Input
+                    id="specialty"
+                    value={editingDoctor.specialty}
+                    onChange={e => setEditingDoctor({...editingDoctor, specialty: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="experience">Experiencia</Label>
+                  <Input
+                    id="experience"
+                    value={editingDoctor.experience}
+                    placeholder="ej: 15 años"
+                    onChange={e => setEditingDoctor({...editingDoctor, experience: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="summary">Resumen</Label>
+                <Textarea
+                  id="summary"
+                  value={editingDoctor.summary}
+                  onChange={e => setEditingDoctor({...editingDoctor, summary: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="doctorImage">URL de Imagen</Label>
+                <Input
+                  id="doctorImage"
+                  value={editingDoctor.image}
+                  placeholder="https://..."
+                  onChange={e => setEditingDoctor({...editingDoctor, image: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="education">Educación (una por línea)</Label>
+                <Textarea
+                  id="education"
+                  value={editingDoctor.education.join("\n")}
+                  placeholder="Universidad Nacional Autónoma de México&#10;Especialidad en Fisioterapia"
+                  onChange={e => setEditingDoctor({...editingDoctor, education: e.target.value.split("\n").filter(s => s.trim())})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="certifications">Certificaciones (una por línea)</Label>
+                <Textarea
+                  id="certifications"
+                  value={editingDoctor.certifications.join("\n")}
+                  placeholder="Certificación en Terapia Manual&#10;Diplomado en Rehabilitación Deportiva"
+                  onChange={e => setEditingDoctor({...editingDoctor, certifications: e.target.value.split("\n").filter(s => s.trim())})}
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDoctorModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveDoctor} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente "{deleteConfirm?.name}". Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </div>
