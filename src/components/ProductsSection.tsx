@@ -3,34 +3,27 @@ import { ShoppingCart, Check, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useProducts } from "@/hooks/useProducts";
 import { Product } from "@/types/product";
 import productDefaultImage from "@/assets/product-default.jpg";
-
 const ProductsSection = () => {
-  const { data: products = [], isLoading } = useProducts();
+  const {
+    data: products = [],
+    isLoading
+  } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-MX", {
       style: "currency",
       currency: "MXN"
     }).format(price);
   };
-
   const handleWhatsApp = (productName: string) => {
     const message = encodeURIComponent(`Hola, me interesa el producto: ${productName}. ¿Está disponible?`);
     window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
   };
-
   const openProductModal = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -38,19 +31,17 @@ const ProductsSection = () => {
 
   // Get unique categories
   const categories = [...new Set(products.map(p => p.category))];
-
-  return (
-    <section id="store" className="py-16 lg:py-24 bg-muted/20">
+  return <section id="store" className="py-16 lg:py-24 bg-muted/20">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
             <ShoppingCart className="h-8 w-8 text-hasace-red" />
           </div>
-          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground font-bold">
+          <h2 className="text-3xl lg:text-4xl mb-4 font-bold text-destructive">
             Tienda
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="max-w-2xl mx-auto text-primary">
             Productos y equipamiento de rehabilitación de alta calidad para tu recuperación
           </p>
         </div>
@@ -60,46 +51,22 @@ const ProductsSection = () => {
           <Badge variant="outline" className="cursor-pointer bg-hasace-red/10 text-hasace-red border-hasace-red/20">
             Todos
           </Badge>
-          {categories.map(category => (
-            <Badge 
-              key={category} 
-              variant="outline" 
-              className="cursor-pointer hover:bg-muted bg-hasace-red/10 text-hasace-red border-hasace-red/20"
-            >
+          {categories.map(category => <Badge key={category} variant="outline" className="cursor-pointer hover:bg-muted bg-hasace-red/10 text-hasace-red border-hasace-red/20">
               {category}
-            </Badge>
-          ))}
+            </Badge>)}
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map(product => (
-            <Card key={product.id} className="bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+          {products.map(product => <Card key={product.id} className="bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
               <CardHeader className="p-0">
                 <div className="relative">
-                  <img
-                    src={product.image || productDefaultImage}
-                    alt={product.name}
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                  {product.featured && (
-                    <Badge className="absolute top-3 left-3 bg-amber-500 text-white">
+                  <img src={product.image || productDefaultImage} alt={product.name} className="w-full h-48 object-cover rounded-t-lg" />
+                  {product.featured && <Badge className="absolute top-3 left-3 bg-amber-500 text-white">
                       Destacado
-                    </Badge>
-                  )}
-                  <Badge 
-                    variant="outline" 
-                    className={`absolute top-3 right-3 ${
-                      product.inStock 
-                        ? "bg-green-100 text-green-800 border-green-200" 
-                        : "bg-red-100 text-red-800 border-red-200"
-                    }`}
-                  >
-                    {product.inStock ? (
-                      <><Check className="h-3 w-3 mr-1" /> En stock</>
-                    ) : (
-                      <><X className="h-3 w-3 mr-1" /> Agotado</>
-                    )}
+                    </Badge>}
+                  <Badge variant="outline" className={`absolute top-3 right-3 ${product.inStock ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}`}>
+                    {product.inStock ? <><Check className="h-3 w-3 mr-1" /> En stock</> : <><X className="h-3 w-3 mr-1" /> Agotado</>}
                   </Badge>
                 </div>
               </CardHeader>
@@ -118,16 +85,12 @@ const ProductsSection = () => {
                 </p>
               </CardContent>
               <CardFooter className="p-4 pt-0">
-                <Button
-                  onClick={() => openProductModal(product)}
-                  className="w-full bg-hasace-red hover:bg-hasace-red/90 font-bold"
-                >
+                <Button onClick={() => openProductModal(product)} className="w-full bg-hasace-red hover:bg-hasace-red/90 font-bold">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Consultar
                 </Button>
               </CardFooter>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* Contact CTA */}
@@ -135,14 +98,10 @@ const ProductsSection = () => {
           <p className="text-muted-foreground mb-4">
             ¿No encuentras lo que buscas? Contáctanos para pedidos especiales
           </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              const message = encodeURIComponent("Hola, estoy buscando un producto específico para rehabilitación.");
-              window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
-            }}
-            className="border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white"
-          >
+          <Button variant="outline" onClick={() => {
+          const message = encodeURIComponent("Hola, estoy buscando un producto específico para rehabilitación.");
+          window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
+        }} className="border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white">
             Consultar por WhatsApp
           </Button>
         </div>
@@ -151,21 +110,13 @@ const ProductsSection = () => {
       {/* Product Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          {selectedProduct && (
-            <>
+          {selectedProduct && <>
               <DialogHeader>
                 <div className="flex gap-2 mb-2">
                   <Badge variant="outline" className="bg-hasace-red/10 text-hasace-red border-hasace-red/20">
                     {selectedProduct.category}
                   </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className={
-                      selectedProduct.inStock 
-                        ? "bg-green-100 text-green-800 border-green-200" 
-                        : "bg-red-100 text-red-800 border-red-200"
-                    }
-                  >
+                  <Badge variant="outline" className={selectedProduct.inStock ? "bg-green-100 text-green-800 border-green-200" : "bg-red-100 text-red-800 border-red-200"}>
                     {selectedProduct.inStock ? "En stock" : "Agotado"}
                   </Badge>
                 </div>
@@ -176,11 +127,7 @@ const ProductsSection = () => {
               <div className="space-y-6">
                 {/* Product Image */}
                 <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted">
-                  <img
-                    src={selectedProduct.image || productDefaultImage}
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={selectedProduct.image || productDefaultImage} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 </div>
 
                 {/* Price */}
@@ -201,28 +148,19 @@ const ProductsSection = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4 border-t">
-                  <Button
-                    onClick={() => handleWhatsApp(selectedProduct.name)}
-                    disabled={!selectedProduct.inStock}
-                    className="flex-1 gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
-                  >
+                  <Button onClick={() => handleWhatsApp(selectedProduct.name)} disabled={!selectedProduct.inStock} className="flex-1 gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold">
                     <MessageCircle className="h-4 w-4" />
                     {selectedProduct.inStock ? "Consultar por WhatsApp" : "No disponible"}
                   </Button>
                 </div>
 
-                {!selectedProduct.inStock && (
-                  <p className="text-center text-sm text-muted-foreground">
+                {!selectedProduct.inStock && <p className="text-center text-sm text-muted-foreground">
                     Este producto no está disponible actualmente. Contáctanos para conocer la fecha de reposición.
-                  </p>
-                )}
+                  </p>}
               </div>
-            </>
-          )}
+            </>}
         </DialogContent>
       </Dialog>
-    </section>
-  );
+    </section>;
 };
-
 export default ProductsSection;
