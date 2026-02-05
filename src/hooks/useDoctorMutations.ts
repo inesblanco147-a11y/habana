@@ -66,16 +66,32 @@ export const useUpdateDoctor = () => {
       if (error) throw error;
       return data;
     },
+    onMutate: async (updatedDoctor) => {
+      await queryClient.cancelQueries({ queryKey: ["doctors"] });
+      const previousDoctors = queryClient.getQueryData<Doctor[]>(["doctors"]);
+      queryClient.setQueryData<Doctor[]>(["doctors"], (old) =>
+        old?.map(doctor =>
+          doctor.id === updatedDoctor.id ? updatedDoctor : doctor
+        ) ?? []
+      );
+      return { previousDoctors };
+    },
+    onError: (error: Error, _updatedDoctor, context) => {
+      if (context?.previousDoctors) {
+        queryClient.setQueryData(["doctors"], context.previousDoctors);
+      }
+      toast({ 
+        title: "Error al actualizar", 
+        description: error.message || "No se pudo guardar. Intenta de nuevo.", 
+        variant: "destructive" 
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["doctors"] });
       toast({ title: "Doctor actualizado", description: "Los cambios se han guardado correctamente." });
     },
-    onError: (error: Error) => {
-      toast({ 
-        title: "Error", 
-        description: error.message, 
-        variant: "destructive" 
-      });
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctors"] });
     }
   });
 };
