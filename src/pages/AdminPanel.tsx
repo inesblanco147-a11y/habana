@@ -11,7 +11,8 @@ import {
   Users,
   Loader2,
   LogOut,
-  Settings
+  Settings,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,14 +59,17 @@ import { Course, CourseModality, CourseAvailability } from "@/types/course";
 import { Product } from "@/types/product";
 import { Event } from "@/types/event";
 import { Doctor } from "@/types/doctor";
+import { Service } from "@/types/service";
 import { useCourses } from "@/hooks/useCourses";
 import { useProducts } from "@/hooks/useProducts";
 import { useEvents } from "@/hooks/useEvents";
 import { useDoctors } from "@/hooks/useDoctors";
+import { useServices } from "@/hooks/useServices";
 import { useCreateCourse, useUpdateCourse, useDeleteCourse } from "@/hooks/useCourseMutations";
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProductMutations";
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
 import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
+import { useCreateService, useUpdateService, useDeleteService } from "@/hooks/useServiceMutations";
 import { useSiteSettings, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -85,6 +89,7 @@ const AdminPanel = () => {
   const { data: eventsData = [], isLoading: loadingEvents } = useEvents();
   const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
   const { data: settingsData = [], isLoading: loadingSettings } = useSiteSettings();
+  const { data: servicesData = [], isLoading: loadingServices } = useServices();
 
   // Mutations
   const createCourse = useCreateCourse();
@@ -99,6 +104,9 @@ const AdminPanel = () => {
   const createDoctor = useCreateDoctor();
   const updateDoctor = useUpdateDoctor();
   const deleteDoctor = useDeleteDoctor();
+  const createService = useCreateService();
+  const updateService = useUpdateService();
+  const deleteService = useDeleteService();
   const updateSetting = useUpdateSiteSetting();
   
   // Modal states
@@ -110,6 +118,8 @@ const AdminPanel = () => {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
@@ -339,6 +349,52 @@ const AdminPanel = () => {
     }
   };
 
+  // Service handlers
+  const handleAddService = () => {
+    setEditingService({
+      id: "",
+      name: "",
+      description: "",
+      image: "",
+      price: 0,
+      discount: 0,
+      offerActive: false,
+      offerDescription: "",
+      category: ""
+    });
+    setIsServiceModalOpen(true);
+  };
+
+  const handleEditService = (service: Service) => {
+    setEditingService({ ...service });
+    setIsServiceModalOpen(true);
+  };
+
+  const handleSaveService = () => {
+    if (!editingService) return;
+
+    if (editingService.id) {
+      updateService.mutate(editingService, {
+        onSuccess: () => {
+          setIsServiceModalOpen(false);
+          setEditingService(null);
+        }
+      });
+    } else {
+      const { id, ...serviceData } = editingService;
+      createService.mutate(serviceData, {
+        onSuccess: () => {
+          setIsServiceModalOpen(false);
+          setEditingService(null);
+        }
+      });
+    }
+  };
+
+  const handleDeleteService = (id: string, name: string) => {
+    setDeleteConfirm({ type: "service", id, name });
+  };
+
   const handleDeleteDoctor = (id: string, name: string) => {
     setDeleteConfirm({ type: "doctor", id, name });
   };
@@ -360,6 +416,9 @@ const AdminPanel = () => {
       case "doctor":
         deleteDoctor.mutate(deleteConfirm.id);
         break;
+      case "service":
+        deleteService.mutate(deleteConfirm.id);
+        break;
     }
     setDeleteConfirm(null);
   };
@@ -370,6 +429,7 @@ const AdminPanel = () => {
       case "products": return handleAddProduct;
       case "events": return handleAddEvent;
       case "doctors": return handleAddDoctor;
+      case "services": return handleAddService;
       default: return handleAddCourse;
     }
   };
@@ -380,6 +440,7 @@ const AdminPanel = () => {
       case "products": return "Producto";
       case "events": return "Evento";
       case "doctors": return "Doctor";
+      case "services": return "Servicio";
       default: return "Item";
     }
   };
@@ -387,7 +448,8 @@ const AdminPanel = () => {
   const isSaving = createCourse.isPending || updateCourse.isPending || 
                    createProduct.isPending || updateProduct.isPending ||
                    createEvent.isPending || updateEvent.isPending ||
-                   createDoctor.isPending || updateDoctor.isPending;
+                   createDoctor.isPending || updateDoctor.isPending ||
+                   createService.isPending || updateService.isPending;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/30">
@@ -477,6 +539,19 @@ const AdminPanel = () => {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-hasace-red/10 rounded-lg">
+                  <Sparkles className="h-6 w-6 text-hasace-red" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Servicios</p>
+                  <p className="text-2xl font-bold">{servicesData.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Content */}
@@ -500,6 +575,10 @@ const AdminPanel = () => {
                   <TabsTrigger value="doctors" className="gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Doctores</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="services" className="gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    <span className="hidden sm:inline">Servicios</span>
                   </TabsTrigger>
                   <TabsTrigger value="settings" className="gap-2">
                     <Settings className="h-4 w-4" />
@@ -749,6 +828,74 @@ const AdminPanel = () => {
                                   variant="ghost"
                                   className="text-destructive hover:text-destructive"
                                   onClick={() => handleDeleteDoctor(doctor.id, doctor.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Services Tab */}
+              <TabsContent value="services">
+                {loadingServices ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Categoría</TableHead>
+                          <TableHead>Precio</TableHead>
+                          <TableHead>Descuento</TableHead>
+                          <TableHead>Oferta Activa</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {servicesData.map(service => (
+                          <TableRow key={service.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {service.name}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{service.category}</Badge>
+                            </TableCell>
+                            <TableCell>{formatPrice(service.price)}</TableCell>
+                            <TableCell>
+                              {service.discount > 0 && (
+                                <Badge variant="secondary" className="bg-green-500/20 text-green-700">
+                                  -{service.discount}%
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {service.offerActive && (
+                                <Badge className="bg-hasace-red text-white">Sí</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditService(service)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteService(service.id, service.name)}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -1316,6 +1463,118 @@ const AdminPanel = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Service Modal */}
+      <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingService?.id ? "Editar Servicio" : "Nuevo Servicio"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete la información del servicio
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingService && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="serviceName">Nombre</Label>
+                <Input
+                  id="serviceName"
+                  value={editingService.name}
+                  onChange={e => setEditingService({...editingService, name: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="serviceDescription">Descripción</Label>
+                <Textarea
+                  id="serviceDescription"
+                  value={editingService.description}
+                  onChange={e => setEditingService({...editingService, description: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="serviceCategory">Categoría</Label>
+                  <Input
+                    id="serviceCategory"
+                    value={editingService.category}
+                    placeholder="ej: Rehabilitación"
+                    onChange={e => setEditingService({...editingService, category: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="servicePrice">Precio (MXN)</Label>
+                  <Input
+                    id="servicePrice"
+                    type="number"
+                    value={editingService.price}
+                    onChange={e => setEditingService({...editingService, price: Number(e.target.value)})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Imagen del Servicio</Label>
+                <ImageUpload
+                  value={editingService.image}
+                  onChange={url => setEditingService({...editingService, image: url})}
+                  folder="services"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={editingService.offerActive}
+                  onCheckedChange={checked => setEditingService({...editingService, offerActive: checked})}
+                />
+                <Label>Oferta del Mes Activa</Label>
+              </div>
+
+              {editingService.offerActive && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceDiscount">Descuento (%)</Label>
+                    <Input
+                      id="serviceDiscount"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingService.discount}
+                      onChange={e => setEditingService({...editingService, discount: Number(e.target.value)})}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="offerDescription">Descripción de la Oferta</Label>
+                    <Textarea
+                      id="offerDescription"
+                      value={editingService.offerDescription}
+                      placeholder="ej: ¡Promoción válida hasta fin de mes!"
+                      onChange={e => setEditingService({...editingService, offerDescription: e.target.value})}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsServiceModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveService} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

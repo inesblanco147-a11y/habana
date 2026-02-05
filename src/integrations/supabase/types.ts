@@ -242,6 +242,48 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          discount: number | null
+          id: string
+          image: string | null
+          name: string
+          offer_active: boolean | null
+          offer_description: string | null
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          discount?: number | null
+          id?: string
+          image?: string | null
+          name: string
+          offer_active?: boolean | null
+          offer_description?: string | null
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          discount?: number | null
+          id?: string
+          image?: string | null
+          name?: string
+          offer_active?: boolean | null
+          offer_description?: string | null
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           category: string
