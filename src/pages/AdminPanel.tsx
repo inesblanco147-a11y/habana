@@ -493,9 +493,19 @@ const AdminPanel = () => {
               variant="outline"
               size="sm"
               onClick={handleLogout}
+              disabled={isLoggingOut}
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar sesión
+              {isLoggingOut ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Cerrando...
+                </>
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Cerrar sesión
+                </>
+              )}
             </Button>
           </div>
         </div>
