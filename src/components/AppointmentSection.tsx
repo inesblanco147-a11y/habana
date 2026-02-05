@@ -1,20 +1,23 @@
-import { useState } from "react";
-import { Calendar, Clock, MessageCircle, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, Clock, MessageCircle, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 
 const AppointmentSection = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [slotsError, setSlotsError] = useState<string | null>(null);
   
   const googleCalendarUrl = useSiteSetting("google_calendar_url");
   const whatsappNumber = useSiteSetting("whatsapp_number");
   
-  const timeSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"];
   const services = [{
     value: "rehabilitacion",
     label: "Rehabilitación Física"
@@ -34,10 +37,65 @@ const AppointmentSection = () => {
     value: "seguimiento",
     label: "Consulta de Seguimiento"
   }];
+
+  // Fetch available slots when date changes
+  useEffect(() => {
+    if (!selectedDate) {
+      setAvailableSlots([]);
+      setSelectedTime("");
+      return;
+    }
+
+    const fetchSlots = async () => {
+      setIsLoadingSlots(true);
+      setSlotsError(null);
+      setSelectedTime("");
+
+      try {
+        const dateStr = selectedDate.toISOString().split('T')[0];
+        const { data, error } = await supabase.functions.invoke('get-available-slots', {
+          body: null,
+          method: 'GET',
+          headers: {},
+        });
+        
+        // Use fetch directly since we need query params
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/get-available-slots?date=${dateStr}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Error al obtener horarios');
+        }
+
+        const result = await response.json();
+        setAvailableSlots(result.slots || []);
+      } catch (error) {
+        console.error('Error fetching slots:', error);
+        setSlotsError('No se pudieron cargar los horarios');
+        // Fallback to default slots
+        setAvailableSlots([
+          "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+          "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
+          "16:00", "16:30", "17:00", "17:30", "18:00"
+        ]);
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    };
+
+    fetchSlots();
+  }, [selectedDate]);
   
   const handleGoogleCalendar = () => {
     if (googleCalendarUrl) {
-      // Use anchor element to avoid COOP issues in Firefox
       const link = document.createElement('a');
       link.href = googleCalendarUrl;
       link.target = '_blank';
@@ -53,7 +111,6 @@ const AppointmentSection = () => {
     const serviceLabel = services.find(s => s.value === selectedService)?.label || "";
     const message = encodeURIComponent(`Hola, me gustaría agendar una cita:\n\n` + `📅 Fecha: ${dateStr}\n` + `🕐 Hora: ${selectedTime}\n` + `📋 Servicio: ${serviceLabel}\n\n` + `¿Tienen disponibilidad?`);
     const number = whatsappNumber || "524421234567";
-    // Use anchor element to avoid COOP issues in Firefox
     const link = document.createElement('a');
     link.href = `https://wa.me/${number}?text=${message}`;
     link.target = '_blank';
@@ -62,8 +119,11 @@ const AppointmentSection = () => {
     link.click();
     document.body.removeChild(link);
   };
+
   const isFormComplete = selectedDate && selectedTime && selectedService;
-  return <section id="cita" className="py-16 lg:py-24 bg-muted/10">
+
+  return (
+    <section id="cita" className="py-16 lg:py-24 bg-muted/10">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
@@ -90,7 +150,13 @@ const AppointmentSection = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
-                <CalendarComponent mode="single" selected={selectedDate} onSelect={setSelectedDate} disabled={date => date < new Date() || date.getDay() === 0} className="rounded-md border" />
+                <CalendarComponent 
+                  mode="single" 
+                  selected={selectedDate} 
+                  onSelect={setSelectedDate} 
+                  disabled={date => date < new Date() || date.getDay() === 0} 
+                  className="rounded-md border" 
+                />
               </CardContent>
             </Card>
 
@@ -111,9 +177,11 @@ const AppointmentSection = () => {
                       <SelectValue placeholder="Selecciona un servicio" />
                     </SelectTrigger>
                     <SelectContent className="bg-card border shadow-lg z-50">
-                      {services.map(service => <SelectItem key={service.value} value={service.value}>
+                      {services.map(service => (
+                        <SelectItem key={service.value} value={service.value}>
                           {service.label}
-                        </SelectItem>)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -121,23 +189,54 @@ const AppointmentSection = () => {
                 {/* Time Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Horario disponible</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {timeSlots.map(time => <Button key={time} variant={selectedTime === time ? "default" : "outline"} size="sm" onClick={() => setSelectedTime(time)} className={`text-xs ${selectedTime === time ? "bg-hasace-red hover:bg-hasace-red/90" : ""}`}>
-                        {time}
-                      </Button>)}
-                  </div>
+                  
+                  {!selectedDate ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">
+                      Selecciona una fecha para ver los horarios disponibles
+                    </p>
+                  ) : isLoadingSlots ? (
+                    <div className="flex items-center justify-center py-8 gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin text-hasace-red" />
+                      <span className="text-sm text-muted-foreground">Cargando horarios...</span>
+                    </div>
+                  ) : availableSlots.length === 0 ? (
+                    <p className="text-sm text-destructive py-4 text-center">
+                      No hay horarios disponibles para esta fecha
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-4 gap-2">
+                      {availableSlots.map(time => (
+                        <Button 
+                          key={time} 
+                          variant={selectedTime === time ? "default" : "outline"} 
+                          size="sm" 
+                          onClick={() => setSelectedTime(time)} 
+                          className={`text-xs ${selectedTime === time ? "bg-hasace-red hover:bg-hasace-red/90" : ""}`}
+                        >
+                          {time}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+
+                  {slotsError && (
+                    <p className="text-xs text-amber-600 text-center mt-2">
+                      {slotsError} - Mostrando horarios predeterminados
+                    </p>
+                  )}
                 </div>
 
                 {/* Summary */}
-                {isFormComplete && <div className="p-4 bg-muted rounded-lg space-y-2">
+                {isFormComplete && (
+                  <div className="p-4 bg-muted rounded-lg space-y-2">
                     <h4 className="font-medium">Resumen de tu cita:</h4>
                     <p className="text-sm text-muted-foreground">
                       📅 {selectedDate?.toLocaleDateString("es-MX", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })}
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                      })}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       🕐 {selectedTime} hrs
@@ -145,16 +244,24 @@ const AppointmentSection = () => {
                     <p className="text-sm text-muted-foreground">
                       📋 {services.find(s => s.value === selectedService)?.label}
                     </p>
-                  </div>}
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
-                  <Button onClick={handleGoogleCalendar} className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold">
+                  <Button 
+                    onClick={handleGoogleCalendar} 
+                    className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
+                  >
                     <ExternalLink className="h-4 w-4" />
                     Agendar con Google Calendar
                   </Button>
 
-                  <Button onClick={handleWhatsApp} disabled={!isFormComplete} className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg">
+                  <Button 
+                    onClick={handleWhatsApp} 
+                    disabled={!isFormComplete} 
+                    className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
+                  >
                     <MessageCircle className="h-4 w-4" />
                     Agendar por WhatsApp
                   </Button>
@@ -168,6 +275,8 @@ const AppointmentSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default AppointmentSection;

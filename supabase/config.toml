@@ -1,1 +1,4 @@
 project_id = "snmstzifttscapnizykt"
+
+[functions.get-available-slots]
+verify_jwt = false

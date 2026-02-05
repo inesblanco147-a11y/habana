@@ -15,6 +15,9 @@ const menuItems = [{
   label: "Tienda",
   href: "#store"
 }, {
+  label: "Servicios",
+  href: "#services"
+}, {
   label: "Galeria",
   href: "#events"
 }, {
