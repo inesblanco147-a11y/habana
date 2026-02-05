@@ -841,6 +841,74 @@ const AdminPanel = () => {
                 )}
               </TabsContent>
 
+              {/* Services Tab */}
+              <TabsContent value="services">
+                {loadingServices ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Categoría</TableHead>
+                          <TableHead>Precio</TableHead>
+                          <TableHead>Descuento</TableHead>
+                          <TableHead>Oferta Activa</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {servicesData.map(service => (
+                          <TableRow key={service.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {service.name}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{service.category}</Badge>
+                            </TableCell>
+                            <TableCell>{formatPrice(service.price)}</TableCell>
+                            <TableCell>
+                              {service.discount > 0 && (
+                                <Badge variant="secondary" className="bg-green-500/20 text-green-700">
+                                  -{service.discount}%
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {service.offerActive && (
+                                <Badge className="bg-hasace-red text-white">Sí</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => handleEditService(service)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => handleDeleteService(service.id, service.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
               {/* Settings Tab */}
               <TabsContent value="settings">
                 {loadingSettings ? (
