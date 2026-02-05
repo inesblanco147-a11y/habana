@@ -80,6 +80,7 @@ import MultiImageUpload from "@/components/MultiImageUpload";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   
@@ -128,13 +129,27 @@ const AdminPanel = () => {
   const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
 
   const handleLogout = async () => {
-    const { error } = await signOut();
-    if (error) {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      const { error } = await signOut();
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo cerrar sesión. Intenta de nuevo.",
+        });
+        setIsLoggingOut(false);
+      }
+      // If successful, the auth state change will redirect the user
+    } catch (err) {
+      console.error("Logout error:", err);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo cerrar sesión",
+        description: "Ocurrió un error al cerrar sesión.",
       });
+      setIsLoggingOut(false);
     }
   };
 
@@ -331,19 +346,24 @@ const AdminPanel = () => {
   const handleSaveDoctor = () => {
     if (!editingDoctor) return;
 
+    const closeModal = () => {
+      setIsDoctorModalOpen(false);
+      setEditingDoctor(null);
+    };
+
     if (editingDoctor.id) {
       updateDoctor.mutate(editingDoctor, {
-        onSuccess: () => {
-          setIsDoctorModalOpen(false);
-          setEditingDoctor(null);
+        onSuccess: closeModal,
+        onError: () => {
+          // Error is handled in the hook, just ensure modal can be closed
         }
       });
     } else {
       const { id, ...doctorData } = editingDoctor;
       createDoctor.mutate(doctorData, {
-        onSuccess: () => {
-          setIsDoctorModalOpen(false);
-          setEditingDoctor(null);
+        onSuccess: closeModal,
+        onError: () => {
+          // Error is handled in the hook, just ensure modal can be closed
         }
       });
     }
@@ -473,9 +493,19 @@ const AdminPanel = () => {
               variant="outline"
               size="sm"
               onClick={handleLogout}
+              disabled={isLoggingOut}
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar sesión
+              {isLoggingOut ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Cerrando...
+                </>
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Cerrar sesión
+                </>
+              )}
             </Button>
           </div>
         </div>
