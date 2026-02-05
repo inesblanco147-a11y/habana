@@ -1464,6 +1464,118 @@ const AdminPanel = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Service Modal */}
+      <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingService?.id ? "Editar Servicio" : "Nuevo Servicio"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete la información del servicio
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingService && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="serviceName">Nombre</Label>
+                <Input
+                  id="serviceName"
+                  value={editingService.name}
+                  onChange={e => setEditingService({...editingService, name: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="serviceDescription">Descripción</Label>
+                <Textarea
+                  id="serviceDescription"
+                  value={editingService.description}
+                  onChange={e => setEditingService({...editingService, description: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="serviceCategory">Categoría</Label>
+                  <Input
+                    id="serviceCategory"
+                    value={editingService.category}
+                    placeholder="ej: Rehabilitación"
+                    onChange={e => setEditingService({...editingService, category: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="servicePrice">Precio (MXN)</Label>
+                  <Input
+                    id="servicePrice"
+                    type="number"
+                    value={editingService.price}
+                    onChange={e => setEditingService({...editingService, price: Number(e.target.value)})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Imagen del Servicio</Label>
+                <ImageUpload
+                  value={editingService.image}
+                  onChange={url => setEditingService({...editingService, image: url})}
+                  folder="services"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={editingService.offerActive}
+                  onCheckedChange={checked => setEditingService({...editingService, offerActive: checked})}
+                />
+                <Label>Oferta del Mes Activa</Label>
+              </div>
+
+              {editingService.offerActive && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceDiscount">Descuento (%)</Label>
+                    <Input
+                      id="serviceDiscount"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingService.discount}
+                      onChange={e => setEditingService({...editingService, discount: Number(e.target.value)})}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="offerDescription">Descripción de la Oferta</Label>
+                    <Textarea
+                      id="offerDescription"
+                      value={editingService.offerDescription}
+                      placeholder="ej: ¡Promoción válida hasta fin de mes!"
+                      onChange={e => setEditingService({...editingService, offerDescription: e.target.value})}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsServiceModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveService} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
