@@ -80,6 +80,7 @@ import MultiImageUpload from "@/components/MultiImageUpload";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   
