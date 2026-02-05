@@ -346,19 +346,24 @@ const AdminPanel = () => {
   const handleSaveDoctor = () => {
     if (!editingDoctor) return;
 
+    const closeModal = () => {
+      setIsDoctorModalOpen(false);
+      setEditingDoctor(null);
+    };
+
     if (editingDoctor.id) {
       updateDoctor.mutate(editingDoctor, {
-        onSuccess: () => {
-          setIsDoctorModalOpen(false);
-          setEditingDoctor(null);
+        onSuccess: closeModal,
+        onError: () => {
+          // Error is handled in the hook, just ensure modal can be closed
         }
       });
     } else {
       const { id, ...doctorData } = editingDoctor;
       createDoctor.mutate(doctorData, {
-        onSuccess: () => {
-          setIsDoctorModalOpen(false);
-          setEditingDoctor(null);
+        onSuccess: closeModal,
+        onError: () => {
+          // Error is handled in the hook, just ensure modal can be closed
         }
       });
     }
