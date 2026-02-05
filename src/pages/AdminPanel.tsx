@@ -129,13 +129,27 @@ const AdminPanel = () => {
   const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
 
   const handleLogout = async () => {
-    const { error } = await signOut();
-    if (error) {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      const { error } = await signOut();
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo cerrar sesión. Intenta de nuevo.",
+        });
+        setIsLoggingOut(false);
+      }
+      // If successful, the auth state change will redirect the user
+    } catch (err) {
+      console.error("Logout error:", err);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo cerrar sesión",
+        description: "Ocurrió un error al cerrar sesión.",
       });
+      setIsLoggingOut(false);
     }
   };
 
