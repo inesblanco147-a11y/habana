@@ -1,314 +1,207 @@
 
-# Plan de Implementacion: Autenticacion, Almacenamiento de Imagenes y Configuraciones
+# Plan de Implementacion: Mejoras Integrales para HASACE
 
 ## Resumen
 
-Este plan aborda cuatro objetivos principales:
-1. Agregar autenticacion para proteger el panel de administracion
-2. Verificar y corregir que todos los componentes usen datos de la base de datos
-3. Configurar el bucket de almacenamiento para subir imagenes
-4. Preparar la infraestructura para integracion de Google Calendar y WhatsApp
+Este plan aborda cinco mejoras principales: sincronizacion de horarios con Google Calendar, optimizacion SEO, refuerzo de seguridad, nueva seccion de Servicios con gestion administrativa, y rediseno del Hero Section.
 
 ---
 
-## Fase 1: Sistema de Autenticacion con Roles de Administrador
+## 1. Sincronizacion de Horarios con Google Calendar
 
-### 1.1 Crear estructura de base de datos para roles
+### Descripcion
+Integrar la API de Google Calendar para obtener los horarios ocupados y mostrar solo los disponibles en la seccion de citas.
 
-Se creara una tabla segura de roles de usuario siguiendo las mejores practicas:
+### Pasos Tecnicos
+
+1. **Conectar Google Calendar**
+   - Usar el conector de Google Calendar disponible en Lovable
+   - Configurar las credenciales OAuth
+
+2. **Crear Edge Function**
+   - Nueva funcion `get-available-slots` que:
+     - Consulte los eventos del calendario para la fecha seleccionada
+     - Calcule los horarios libres (09:00-18:00)
+     - Retorne solo los slots disponibles
+
+3. **Actualizar AppointmentSection**
+   - Llamar a la edge function cuando el usuario seleccione una fecha
+   - Mostrar solo los horarios disponibles
+   - Mostrar indicador de carga mientras consulta
+
+---
+
+## 2. Mejoras de SEO
+
+### Descripcion
+Implementar mejoras de posicionamiento en buscadores.
+
+### Pasos
+
+1. **Crear Sitemap.xml**
+   - Archivo estatico en `/public/sitemap.xml`
+   - Incluir todas las rutas principales
+
+2. **Agregar Datos Estructurados (JSON-LD)**
+   - Schema de `MedicalBusiness` para la clinica
+   - Schema de `LocalBusiness` con direccion y horarios
+   - Schema de `Service` para servicios
+
+3. **Mejorar Meta Tags**
+   - Agregar mas Open Graph tags
+   - Incluir imagen OG personalizada de HASACE (no Lovable)
+   - Agregar `theme-color` meta tag
+
+4. **Actualizar robots.txt**
+   - Agregar referencia al sitemap
+   - Configurar directivas especificas
+
+---
+
+## 3. Mejoras de Seguridad
+
+### Descripcion
+Reforzar la seguridad del sitio basado en el escaneo realizado.
+
+### Pasos
+
+1. **Validacion de Inputs**
+   - Agregar validacion con Zod en formularios del admin
+   - Sanitizar datos antes de enviar a la base de datos
+
+2. **Proteccion XSS**
+   - Revisar uso de `dangerouslySetInnerHTML` (no existe actualmente)
+   - Asegurar escapado de contenido dinamico
+
+3. **Headers de Seguridad**
+   - Agregar Content Security Policy via meta tags
+   - Implementar X-Frame-Options
+
+4. **Autenticacion Robusta**
+   - Ya implementada con roles de admin
+   - Verificar que ProtectedRoute funcione correctamente
+
+---
+
+## 4. Nueva Seccion de Servicios
+
+### Descripcion
+Crear una seccion de servicios entre Tienda y Galeria con gestion desde el panel de administrador.
+
+### Estructura de Datos
 
 ```text
-+------------------+     +-------------------+
-|    auth.users    |     |   user_roles      |
-+------------------+     +-------------------+
-| id (uuid) PK     |<----| user_id (uuid) FK |
-| email            |     | role (app_role)   |
-| ...              |     | id (uuid) PK      |
-+------------------+     +-------------------+
++-------------------+
+|     services      |
++-------------------+
+| id (uuid)         |
+| name (text)       |
+| description (text)|
+| image (text)      |
+| price (numeric)   |
+| discount (numeric)|
+| offer_active (bool)|
+| offer_description |
+| category (text)   |
+| created_at        |
+| updated_at        |
++-------------------+
 ```
 
-- Crear enum `app_role` con valores: `admin`, `user`
-- Crear tabla `user_roles` con politicas RLS
-- Crear funcion `has_role()` con SECURITY DEFINER para verificar roles sin recursividad
+### Pasos
 
-### 1.2 Crear pagina de inicio de sesion
+1. **Crear tabla `services` en la base de datos**
+   - Campos: id, name, description, image, price, discount, offer_active, offer_description, category
+   - RLS: Lectura publica, escritura solo admins
 
-- Crear `/auth` con formulario de login (email/password)
-- Usar `supabase.auth.signInWithPassword()`
-- Redirigir al admin panel si es exitoso y el usuario es admin
+2. **Crear componentes**
+   - `ServicesSection.tsx` - Seccion publica con tarjetas de servicios
+   - Mostrar badge "Oferta del Mes" cuando `offer_active = true`
+   - Mostrar precio original tachado y precio con descuento
 
-### 1.3 Proteger ruta del admin panel
+3. **Actualizar Panel de Administrador**
+   - Nueva pestana "Servicios"
+   - Formulario con: nombre, descripcion, imagen, precio, descuento, toggle de oferta, descripcion de oferta
 
-- Crear hook `useAuth` para manejar estado de autenticacion
-- Crear componente `ProtectedRoute` que verifique:
-  1. Usuario autenticado
-  2. Usuario tiene rol `admin`
-- Envolver `/admin` con `ProtectedRoute`
-- Redirigir a `/auth` si no esta autenticado
+4. **Crear hooks**
+   - `useServices.ts` - Obtener servicios
+   - `useServiceMutations.ts` - CRUD de servicios
 
-### 1.4 Agregar boton de cerrar sesion
-
-- Agregar boton "Cerrar Sesion" en el header del admin panel
-- Implementar `supabase.auth.signOut()`
+5. **Actualizar Index.tsx**
+   - Insertar ServicesSection entre ProductsSection y EventsSection
 
 ---
 
-## Fase 2: Verificacion de Uso de Base de Datos
+## 5. Rediseno del Hero Section
 
-### Hallazgos del analisis:
+### Descripcion
+Hacer el Hero mas claro con mejor contraste y colores azul/rojo de la marca.
 
-| Componente | Estado | Accion requerida |
-|------------|--------|------------------|
-| AboutSection (Doctores) | OK - Usa `useDoctors()` | Ninguna |
-| CoursesSection | OK - Usa `useCourses()` y `usePastCourses()` | Ninguna |
-| ProductsSection | OK - Usa `useProducts()` | Ninguna |
-| EventsSection | Parcial - Galeria superior usa datos estaticos | Actualizar |
-| useEvents hook | Tiene fallback a imagenes locales | Remover fallback |
+### Cambios
 
-### 2.1 Corregir EventsSection
+1. **Reducir opacidad del overlay**
+   - Hacer la imagen de fondo mas visible
+   - Usar gradiente mas suave
 
-- Eliminar el array estatico `allGalleryImages`
-- La galeria superior ("Galeria de Momentos") debera mostrar imagenes de los eventos de la base de datos
-- Usar las imagenes reales almacenadas en cada evento
+2. **Tipografia**
+   - Titulo principal en azul oscuro (#1e3a5f)
+   - "Vive sin Limites" en rojo HASACE
+   - Mayor contraste con sombra de texto
 
-### 2.2 Actualizar useEvents
+3. **Estructura Visual**
+   ```text
+   +--------------------------------+
+   |   [Imagen de fondo clara]     |
+   |                                |
+   |   RECUPERA TU BIENESTAR       |
+   |   (texto azul oscuro)         |
+   |                                |
+   |   VIVE SIN LIMITES            |
+   |   (texto rojo HASACE)         |
+   |                                |
+   |   [Boton Agendar Cita]        |
+   +--------------------------------+
+   ```
 
-- Eliminar imports de imagenes fallback locales
-- Si un evento no tiene imagenes, mostrar imagen placeholder generico
-
----
-
-## Fase 3: Configuracion de Storage para Imagenes
-
-### 3.1 Configurar bucket existente
-
-El bucket `imgs` ya existe pero es **privado**. Se configurara:
-
-- Cambiar bucket a **publico** para que las imagenes sean accesibles desde el frontend
-- Crear politicas RLS para el bucket:
-  - SELECT: Todos pueden ver imagenes
-  - INSERT/UPDATE/DELETE: Solo usuarios autenticados
-
-### 3.2 Crear componente de subida de imagenes
-
-- Crear `ImageUpload.tsx` con:
-  - Input de tipo file
-  - Preview de imagen antes de subir
-  - Barra de progreso durante subida
-  - Manejo de errores
-
-### 3.3 Integrar en AdminPanel
-
-Reemplazar los campos de texto URL por el componente de subida en:
-- Formulario de Cursos (campo `image`)
-- Formulario de Productos (campo `image`)
-- Formulario de Eventos (campo `images` - multiple)
-- Formulario de Doctores (campo `image`)
-
-### 3.4 Flujo de subida
-
-```text
-1. Usuario selecciona archivo
-2. Se valida tipo (jpg, png, webp) y tamaño (< 5MB)
-3. Se sube a storage.imgs/{entity}/{uuid}.ext
-4. Se obtiene URL publica
-5. Se guarda URL en campo correspondiente de la tabla
-```
+4. **Sincronizar boton con configuracion**
+   - Usar URL de Google Calendar desde site_settings
+   - Aplicar tecnica anchor para evitar COOP
 
 ---
 
-## Fase 4: Tabla de Configuracion del Sitio
+## Orden de Implementacion
 
-### 4.1 Crear tabla site_settings
-
-Para centralizar configuraciones editables como WhatsApp y Google Calendar:
-
-| Campo | Tipo | Descripcion |
-|-------|------|-------------|
-| id | uuid | PK |
-| key | text | Identificador unico (ej: "whatsapp_number") |
-| value | text | Valor de la configuracion |
-| label | text | Nombre amigable para mostrar |
-| category | text | Categoria (contact, calendar, social) |
-
-### 4.2 Configuraciones iniciales
-
-- `whatsapp_number`: Numero de WhatsApp (inicialmente vacio)
-- `google_calendar_url`: URL de Google Calendar (inicialmente vacio)
-- `contact_phone`: Telefono de contacto
-- `contact_email`: Email de contacto
-
-### 4.3 Seccion de configuracion en Admin Panel
-
-- Agregar nueva pestana "Configuracion" en el admin panel
-- Formulario para editar cada configuracion
-- Los campos de WhatsApp y Google Calendar mostraran mensaje indicando que se pueden configurar
-
-### 4.4 Actualizar componentes
-
-- `AppointmentSection`: Usar URL de calendar desde configuracion
-- `ProductsSection`, `CoursesSection`, `Footer`, `HelpSection`: Usar numero de WhatsApp desde configuracion
-- Crear hook `useSiteSettings()` para obtener configuraciones
+| Fase | Tarea | Prioridad |
+|------|-------|-----------|
+| 1 | Rediseno Hero Section | Alta |
+| 2 | Crear tabla services | Alta |
+| 3 | Implementar ServicesSection | Alta |
+| 4 | Agregar Servicios al admin | Alta |
+| 5 | Mejoras SEO (sitemap, JSON-LD) | Media |
+| 6 | Mejoras de seguridad | Media |
+| 7 | Conectar Google Calendar | Media |
+| 8 | Sincronizar horarios disponibles | Media |
 
 ---
 
-## Fase 5: Preparacion para Integraciones Futuras
+## Archivos a Crear/Modificar
 
-### 5.1 WhatsApp
+### Nuevos Archivos
+- `src/components/ServicesSection.tsx`
+- `src/types/service.ts`
+- `src/hooks/useServices.ts`
+- `src/hooks/useServiceMutations.ts`
+- `public/sitemap.xml`
+- `supabase/functions/get-available-slots/index.ts`
 
-- El numero se guardara en `site_settings` con key `whatsapp_number`
-- El admin podra actualizarlo desde la pestana de Configuracion
-- Formato esperado: `521234567890` (codigo de pais + numero)
+### Archivos a Modificar
+- `src/components/Hero.tsx` - Rediseno visual
+- `src/components/AppointmentSection.tsx` - Sincronizacion de horarios
+- `src/pages/AdminPanel.tsx` - Nueva pestana de servicios
+- `src/pages/Index.tsx` - Agregar ServicesSection
+- `index.html` - SEO y datos estructurados
+- `public/robots.txt` - Referencia al sitemap
 
-### 5.2 Google Calendar
+### Migracion de Base de Datos
+- Crear tabla `services` con RLS
 
-- El link se guardara en `site_settings` con key `google_calendar_url`
-- El admin podra pegarlo desde Google Calendar
-- Se usara directamente en el boton "Agendar con Google Calendar"
-
----
-
-## Archivos a Crear
-
-| Archivo | Proposito |
-|---------|-----------|
-| `src/pages/Auth.tsx` | Pagina de inicio de sesion |
-| `src/hooks/useAuth.ts` | Hook para manejar autenticacion |
-| `src/components/ProtectedRoute.tsx` | Componente para rutas protegidas |
-| `src/components/ImageUpload.tsx` | Componente reutilizable de subida de imagenes |
-| `src/hooks/useSiteSettings.ts` | Hook para configuraciones del sitio |
-
-## Archivos a Modificar
-
-| Archivo | Cambios |
-|---------|---------|
-| `src/App.tsx` | Agregar ruta `/auth`, proteger `/admin` |
-| `src/pages/AdminPanel.tsx` | Agregar boton logout, componentes de upload, pestana configuracion |
-| `src/components/EventsSection.tsx` | Usar imagenes de BD en galeria superior |
-| `src/hooks/useEvents.ts` | Eliminar fallbacks de imagenes locales |
-| `src/components/AppointmentSection.tsx` | Usar URL calendar desde settings |
-| `src/components/ProductsSection.tsx` | Usar WhatsApp desde settings |
-| `src/components/CoursesSection.tsx` | Usar WhatsApp desde settings |
-| `src/components/Footer.tsx` | Usar WhatsApp y telefono desde settings |
-| `src/components/HelpSection.tsx` | Usar telefono desde settings |
-
-## Migraciones de Base de Datos
-
-1. Crear tipo enum `app_role`
-2. Crear tabla `user_roles` con RLS
-3. Crear funcion `has_role()`
-4. Crear tabla `site_settings` con RLS
-5. Insertar configuraciones iniciales
-6. Actualizar bucket `imgs` a publico
-7. Crear politicas de storage para `imgs`
-
----
-
-## Secuencia de Implementacion
-
-1. Ejecutar migraciones de base de datos
-2. Crear sistema de autenticacion (Auth page, hooks, protected route)
-3. Configurar storage y crear componente de upload
-4. Integrar upload en AdminPanel
-5. Crear tabla y hook de site_settings
-6. Agregar pestana de configuracion en admin
-7. Actualizar componentes para usar settings dinamicos
-8. Corregir EventsSection para usar datos de BD
-9. Probar flujo completo
-
----
-
-## Seccion Tecnica
-
-### Migracion SQL para roles
-
-```sql
--- Enum de roles
-CREATE TYPE public.app_role AS ENUM ('admin', 'user');
-
--- Tabla de roles
-CREATE TABLE public.user_roles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  role app_role NOT NULL,
-  UNIQUE (user_id, role)
-);
-
--- RLS
-ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-
--- Funcion para verificar rol (evita recursividad)
-CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role app_role)
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.user_roles
-    WHERE user_id = _user_id AND role = _role
-  )
-$$;
-
--- Politicas
-CREATE POLICY "Users can view own roles"
-  ON public.user_roles FOR SELECT
-  USING (auth.uid() = user_id);
-```
-
-### Migracion SQL para site_settings
-
-```sql
-CREATE TABLE public.site_settings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key TEXT UNIQUE NOT NULL,
-  value TEXT DEFAULT '',
-  label TEXT NOT NULL,
-  category TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-
-ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
-
--- Todos pueden leer
-CREATE POLICY "Anyone can read settings"
-  ON public.site_settings FOR SELECT USING (true);
-
--- Solo admin puede modificar
-CREATE POLICY "Only admins can modify settings"
-  ON public.site_settings FOR ALL
-  USING (public.has_role(auth.uid(), 'admin'));
-
--- Insertar configuraciones iniciales
-INSERT INTO public.site_settings (key, value, label, category) VALUES
-  ('whatsapp_number', '', 'Numero de WhatsApp', 'contact'),
-  ('google_calendar_url', '', 'URL de Google Calendar', 'calendar'),
-  ('contact_phone', '+52 442 123 4567', 'Telefono de contacto', 'contact'),
-  ('contact_email', 'contacto@hasace.mx', 'Email de contacto', 'contact');
-```
-
-### Configuracion de Storage
-
-```sql
--- Hacer bucket publico
-UPDATE storage.buckets SET public = true WHERE id = 'imgs';
-
--- Politicas de storage
-CREATE POLICY "Public read access"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'imgs');
-
-CREATE POLICY "Authenticated users can upload"
-  ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'imgs' AND auth.uid() IS NOT NULL);
-
-CREATE POLICY "Authenticated users can update"
-  ON storage.objects FOR UPDATE
-  USING (bucket_id = 'imgs' AND auth.uid() IS NOT NULL);
-
-CREATE POLICY "Authenticated users can delete"
-  ON storage.objects FOR DELETE
-  USING (bucket_id = 'imgs' AND auth.uid() IS NOT NULL);
-```
