@@ -33,10 +33,13 @@ export const useCreateDoctor = () => {
     },
     onError: (error: Error) => {
       toast({ 
-        title: "Error", 
-        description: error.message, 
+        title: "Error al crear", 
+        description: error.message || "No se pudo crear el doctor. Intenta de nuevo.", 
         variant: "destructive" 
       });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctors"] });
     }
   });
 };
