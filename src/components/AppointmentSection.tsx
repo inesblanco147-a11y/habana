@@ -19,23 +19,38 @@ const AppointmentSection = () => {
   const whatsappNumber = useSiteSetting("whatsapp_number");
   
   const services = [{
-    value: "rehabilitacion",
-    label: "Rehabilitación Física"
+    value: "Consulta médica con Especialista ",
+    label: "Consulta médica con Especialista "
   }, {
-    value: "medicina-deportiva",
-    label: "Medicina Deportiva"
+    value: "Rehabilitación",
+    label: "Rehabilitación"
   }, {
-    value: "terapia-fisica",
-    label: "Terapia Física"
+    value: "Masaje",
+    label: "Masaje"
   }, {
-    value: "rehabilitacion-pediatrica",
-    label: "Rehabilitación Pediátrica"
+    value: "Visitas al hogar",
+    label: "Visitas al hogar"
   }, {
-    value: "evaluacion",
-    label: "Evaluación Inicial"
+    value: "Electroterapia",
+    label: "Electroterapia"
   }, {
-    value: "seguimiento",
-    label: "Consulta de Seguimiento"
+    value: "Ultrasonido diagnóstico musculoesqueletico",
+    label: "Ultrasonido diagnóstico musculoesqueletico"
+  }  {
+    value: "Electrocardiograma",
+      label: "Electrocardiograma"
+  }{
+    value: "Laboratorio Clínico",
+      label: "Laboratorio Clínico"
+  }{
+    value: "Psicología",
+      label: "Psicología"
+  }{
+    value: "Consulta de seguimiento ",
+      label: "Consulta de seguimiento "
+  }{
+    value: "Asistencia de enfermería",
+      label: "Asistencia de enfermería"
   }];
 
   // Fetch available slots when date changes
@@ -82,9 +97,9 @@ const AppointmentSection = () => {
         setSlotsError('No se pudieron cargar los horarios');
         // Fallback to default slots
         setAvailableSlots([
-          "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-          "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
-          "16:00", "16:30", "17:00", "17:30", "18:00"
+          "09:00", "10:00", "11:00", "12:00",
+          "13:00", "14:00", "15:00", "16:00", 
+          "17:00", "18:00", "19:00"
         ]);
       } finally {
         setIsLoadingSlots(false);
@@ -249,13 +264,13 @@ const AppointmentSection = () => {
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
-                  <Button 
+                  {/* <Button 
                     onClick={handleGoogleCalendar} 
                     className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Agendar con Google Calendar
-                  </Button>
+                  </Button> */}
 
                   <Button 
                     onClick={handleWhatsApp} 
