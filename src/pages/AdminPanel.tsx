@@ -70,6 +70,10 @@ import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/us
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
 import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
 import { useCreateService, useUpdateService, useDeleteService } from "@/hooks/useServiceMutations";
+import { useExternalDoctors } from "@/hooks/useExternalDoctors";
+import { useCreateExternalDoctor, useUpdateExternalDoctor, useDeleteExternalDoctor } from "@/hooks/useExternalDoctorMutations";
+import { ExternalDoctor } from "@/types/externalDoctor";
+import { Globe } from "lucide-react";
 import { useSiteSettings, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -91,6 +95,8 @@ const AdminPanel = () => {
   const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
   const { data: settingsData = [], isLoading: loadingSettings } = useSiteSettings();
   const { data: servicesData = [], isLoading: loadingServices } = useServices();
+  const { data: externalDoctorsData, isLoading: loadingExternalDoctors } = useExternalDoctors();
+  const externalDoctorsList = externalDoctorsData?.pages.flatMap(page => page.results) ?? [];
 
   // Mutations
   const createCourse = useCreateCourse();
@@ -108,6 +114,9 @@ const AdminPanel = () => {
   const createService = useCreateService();
   const updateService = useUpdateService();
   const deleteService = useDeleteService();
+  const createExtDoctor = useCreateExternalDoctor();
+  const updateExtDoctor = useUpdateExternalDoctor();
+  const deleteExtDoctor = useDeleteExternalDoctor();
   const updateSetting = useUpdateSiteSetting();
   
   // Modal states
@@ -121,6 +130,8 @@ const AdminPanel = () => {
   const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [editingExtDoctor, setEditingExtDoctor] = useState<ExternalDoctor | null>(null);
+  const [isExtDoctorModalOpen, setIsExtDoctorModalOpen] = useState(false);
   
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
@@ -419,6 +430,45 @@ const AdminPanel = () => {
     setDeleteConfirm({ type: "doctor", id, name });
   };
 
+  // External Doctor handlers
+  const handleAddExtDoctor = () => {
+    setEditingExtDoctor({
+      id: 0,
+      name: "",
+      title: "",
+      specialty: "",
+      summary: "",
+      experience: "",
+      education: [],
+      certifications: [],
+      image: null
+    });
+    setIsExtDoctorModalOpen(true);
+  };
+
+  const handleEditExtDoctor = (doctor: ExternalDoctor) => {
+    setEditingExtDoctor({ ...doctor });
+    setIsExtDoctorModalOpen(true);
+  };
+
+  const handleSaveExtDoctor = () => {
+    if (!editingExtDoctor) return;
+    const closeModal = () => {
+      setIsExtDoctorModalOpen(false);
+      setEditingExtDoctor(null);
+    };
+    if (editingExtDoctor.id) {
+      updateExtDoctor.mutate(editingExtDoctor, { onSuccess: closeModal });
+    } else {
+      const { id, ...data } = editingExtDoctor;
+      createExtDoctor.mutate(data, { onSuccess: closeModal });
+    }
+  };
+
+  const handleDeleteExtDoctor = (id: number, name: string) => {
+    setDeleteConfirm({ type: "ext_doctor", id: String(id), name });
+  };
+
   // Confirm delete
   const confirmDelete = () => {
     if (!deleteConfirm) return;
@@ -436,6 +486,9 @@ const AdminPanel = () => {
       case "doctor":
         deleteDoctor.mutate(deleteConfirm.id);
         break;
+      case "ext_doctor":
+        deleteExtDoctor.mutate(Number(deleteConfirm.id));
+        break;
       case "service":
         deleteService.mutate(deleteConfirm.id);
         break;
@@ -449,6 +502,7 @@ const AdminPanel = () => {
       case "products": return handleAddProduct;
       case "events": return handleAddEvent;
       case "doctors": return handleAddDoctor;
+      case "ext_doctors": return handleAddExtDoctor;
       case "services": return handleAddService;
       default: return handleAddCourse;
     }
@@ -460,6 +514,7 @@ const AdminPanel = () => {
       case "products": return "Producto";
       case "events": return "Evento";
       case "doctors": return "Doctor";
+      case "ext_doctors": return "Doctor Ext.";
       case "services": return "Servicio";
       default: return "Item";
     }
@@ -605,6 +660,10 @@ const AdminPanel = () => {
                   <TabsTrigger value="doctors" className="gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Doctores</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="ext_doctors" className="gap-2">
+                    <Globe className="h-4 w-4" />
+                    <span className="hidden sm:inline">Doctores Ext.</span>
                   </TabsTrigger>
                   <TabsTrigger value="services" className="gap-2">
                     <Sparkles className="h-4 w-4" />
@@ -859,6 +918,53 @@ const AdminPanel = () => {
                                   className="text-destructive hover:text-destructive"
                                   onClick={() => handleDeleteDoctor(doctor.id, doctor.name)}
                                 >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* External Doctors Tab */}
+              <TabsContent value="ext_doctors">
+                {loadingExternalDoctors ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Especialidad</TableHead>
+                          <TableHead>Experiencia</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {externalDoctorsList.map(doctor => (
+                          <TableRow key={doctor.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {doctor.name}
+                            </TableCell>
+                            <TableCell>{doctor.title}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{doctor.specialty}</Badge>
+                            </TableCell>
+                            <TableCell>{doctor.experience}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button size="sm" variant="ghost" onClick={() => handleEditExtDoctor(doctor)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => handleDeleteExtDoctor(doctor.id, doctor.name)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -1469,6 +1575,72 @@ const AdminPanel = () => {
             </Button>
             <Button onClick={handleSaveDoctor} disabled={isSaving}>
               {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* External Doctor Modal */}
+      <Dialog open={isExtDoctorModalOpen} onOpenChange={setIsExtDoctorModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingExtDoctor?.id ? "Editar Doctor Externo" : "Nuevo Doctor Externo"}
+            </DialogTitle>
+            <DialogDescription>
+              Complete la información del doctor (backend externo)
+            </DialogDescription>
+          </DialogHeader>
+          {editingExtDoctor && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Nombre</Label>
+                  <Input value={editingExtDoctor.name} onChange={e => setEditingExtDoctor({...editingExtDoctor, name: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Título</Label>
+                  <Input value={editingExtDoctor.title} placeholder="ej: Dr., Lic." onChange={e => setEditingExtDoctor({...editingExtDoctor, title: e.target.value})} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Especialidad</Label>
+                  <Input value={editingExtDoctor.specialty} onChange={e => setEditingExtDoctor({...editingExtDoctor, specialty: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Experiencia</Label>
+                  <Input value={editingExtDoctor.experience} placeholder="ej: 15 años" onChange={e => setEditingExtDoctor({...editingExtDoctor, experience: e.target.value})} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Resumen</Label>
+                <Textarea value={editingExtDoctor.summary} onChange={e => setEditingExtDoctor({...editingExtDoctor, summary: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Educación (una por línea)</Label>
+                <Textarea
+                  value={Array.isArray(editingExtDoctor.education) ? editingExtDoctor.education.join("\n") : ""}
+                  placeholder="Universidad...&#10;Especialidad..."
+                  onChange={e => setEditingExtDoctor({...editingExtDoctor, education: e.target.value.split("\n").filter(s => s.trim())})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Certificaciones (una por línea)</Label>
+                <Textarea
+                  value={Array.isArray(editingExtDoctor.certifications) ? editingExtDoctor.certifications.join("\n") : ""}
+                  placeholder="Certificación...&#10;Diplomado..."
+                  onChange={e => setEditingExtDoctor({...editingExtDoctor, certifications: e.target.value.split("\n").filter(s => s.trim())})}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsExtDoctorModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveExtDoctor} disabled={createExtDoctor.isPending || updateExtDoctor.isPending}>
+              {(createExtDoctor.isPending || updateExtDoctor.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               <Save className="h-4 w-4 mr-2" />
               Guardar
             </Button>
