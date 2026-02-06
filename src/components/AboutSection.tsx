@@ -13,7 +13,7 @@ type AnyDoctor = Doctor | ExternalDoctor;
 
 const AboutSection = () => {
   const { data: doctors = [], isLoading } = useDoctors();
-  const { data: externalData, isLoading: loadingExternal, fetchNextPage, hasNextPage } = useExternalDoctors();
+  const { data: externalData, isLoading: loadingExternal, fetchNextPage, hasNextPage } = useDoctors();
 
   const externalDoctors = useMemo(() => {
     return externalData?.pages.flatMap((page) => page.results) ?? [];
