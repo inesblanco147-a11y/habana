@@ -36,21 +36,21 @@ const AppointmentSection = () => {
   }, {
     value: "Ultrasonido diagnóstico musculoesqueletico",
     label: "Ultrasonido diagnóstico musculoesqueletico"
-  }  {
+  }, {
     value: "Electrocardiograma",
-      label: "Electrocardiograma"
-  }{
+    label: "Electrocardiograma"
+  }, {
     value: "Laboratorio Clínico",
-      label: "Laboratorio Clínico"
-  }{
+    label: "Laboratorio Clínico"
+  }, {
     value: "Psicología",
-      label: "Psicología"
-  }{
+    label: "Psicología"
+  }, {
     value: "Consulta de seguimiento ",
-      label: "Consulta de seguimiento "
-  }{
+    label: "Consulta de seguimiento "
+  }, {
     value: "Asistencia de enfermería",
-      label: "Asistencia de enfermería"
+    label: "Asistencia de enfermería"
   }];
 
   // Fetch available slots when date changes
