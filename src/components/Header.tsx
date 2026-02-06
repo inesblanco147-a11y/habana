@@ -62,13 +62,13 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-4">
-            <Button
+            {/* <Button
               onClick={handleAppointmentClick}
               className="gap-2 bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg"
             >
               <Calendar className="h-4 w-4" />
               Agendar Cita
-            </Button>
+            </Button> */}
           </div>
 
           {/* Mobile Menu Button */}
