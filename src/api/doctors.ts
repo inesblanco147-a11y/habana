@@ -18,7 +18,7 @@ export const post_doctor = async (data: Omit<ExternalDoctor, "id">) => {
   if (data.image) {
     formData.append("image", data.image);
   }
-  const response = await authAxios.post("/equipo/doctors/", formData);
+  const response = await authAxios.post("/equip/doctors/", formData);
   return response.data;
 };
 
