@@ -435,13 +435,19 @@ const AdminPanel = () => {
     setEditingExtDoctor({
       id: 0,
       name: "",
+      nombre: "",
       title: "",
       specialty: "",
+      especialidad: "",
+      especialidad2: "",
       summary: "",
       experience: "",
       education: [],
       certifications: [],
-      image: null
+      formacionAcademica: "",
+      description: "",
+      image: null,
+      imagen: null
     });
     setIsExtDoctorModalOpen(true);
   };
