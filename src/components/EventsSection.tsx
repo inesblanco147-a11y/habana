@@ -53,10 +53,11 @@ const EventsSection = () => {
          <div className="max-w-3xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black mb-4 text-destructive">
+           <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
             Galería
           </h2>
-          <p className="text-lg max-w-2xl mx-auto text-primary">
+          <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
+          <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
             Conoce nuestros eventos pasados y las actividades que realizamos para la comunidad médica y nuestros pacientes.
           </p>
         </div>

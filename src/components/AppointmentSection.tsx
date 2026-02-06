@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+import { useServices } from "@/hooks/useServices";
 import { supabase } from "@/integrations/supabase/client";
 
 const AppointmentSection = () => {
@@ -18,40 +19,8 @@ const AppointmentSection = () => {
   const googleCalendarUrl = useSiteSetting("google_calendar_url");
   const whatsappNumber = useSiteSetting("whatsapp_number");
   
-  const services = [{
-    value: "Consulta médica con Especialista ",
-    label: "Consulta médica con Especialista "
-  }, {
-    value: "Rehabilitación",
-    label: "Rehabilitación"
-  }, {
-    value: "Masaje",
-    label: "Masaje"
-  }, {
-    value: "Visitas al hogar",
-    label: "Visitas al hogar"
-  }, {
-    value: "Electroterapia",
-    label: "Electroterapia"
-  }, {
-    value: "Ultrasonido diagnóstico musculoesqueletico",
-    label: "Ultrasonido diagnóstico musculoesqueletico"
-  }, {
-    value: "Electrocardiograma",
-    label: "Electrocardiograma"
-  }, {
-    value: "Laboratorio Clínico",
-    label: "Laboratorio Clínico"
-  }, {
-    value: "Psicología",
-    label: "Psicología"
-  }, {
-    value: "Consulta de seguimiento ",
-    label: "Consulta de seguimiento "
-  }, {
-    value: "Asistencia de enfermería",
-    label: "Asistencia de enfermería"
-  }];
+  const { data: servicesFromDB = [] } = useServices();
+  const services = servicesFromDB.map(s => ({ value: s.name, label: s.name }));
 
   // Fetch available slots when date changes
   useEffect(() => {
@@ -142,13 +111,11 @@ const AppointmentSection = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
-            <Calendar className="h-8 w-8 text-hasace-red" />
-          </div>
-          <h2 className="text-3xl lg:text-4xl mb-4 font-bold text-destructive">
+          <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
             Agenda tu Cita
           </h2>
-          <p className="max-w-2xl mx-auto text-primary">
+          <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
+          <p className="max-w-2xl mx-auto text-muted-foreground">
             Selecciona la fecha, hora y servicio que necesitas. Puedes agendar directamente 
             a través de Google Calendar o contactarnos por WhatsApp.
           </p>

@@ -27,21 +27,16 @@
        if (error) throw error;
        return data;
      },
-     onSuccess: () => {
-       queryClient.invalidateQueries({ queryKey: ["services"] });
-       toast({
-         title: "Servicio creado",
-         description: "El servicio se ha creado correctamente.",
-       });
-     },
-     onError: (error: Error) => {
-       toast({
-         variant: "destructive",
-         title: "Error",
-         description: error.message,
-       });
-     },
-   });
+      onSuccess: () => {
+        toast({ title: "Servicio creado", description: "El servicio se ha creado correctamente." });
+      },
+      onError: (error: Error) => {
+        toast({ variant: "destructive", title: "Error", description: error.message });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["services"] });
+      },
+    });
  };
  
  export const useUpdateService = () => {
@@ -69,21 +64,16 @@
        if (error) throw error;
        return data;
      },
-     onSuccess: () => {
-       queryClient.invalidateQueries({ queryKey: ["services"] });
-       toast({
-         title: "Servicio actualizado",
-         description: "Los cambios se han guardado correctamente.",
-       });
-     },
-     onError: (error: Error) => {
-       toast({
-         variant: "destructive",
-         title: "Error",
-         description: error.message,
-       });
-     },
-   });
+      onSuccess: () => {
+        toast({ title: "Servicio actualizado", description: "Los cambios se han guardado correctamente." });
+      },
+      onError: (error: Error) => {
+        toast({ variant: "destructive", title: "Error", description: error.message });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["services"] });
+      },
+    });
  };
  
  export const useDeleteService = () => {
@@ -99,19 +89,14 @@
  
        if (error) throw error;
      },
-     onSuccess: () => {
-       queryClient.invalidateQueries({ queryKey: ["services"] });
-       toast({
-         title: "Servicio eliminado",
-         description: "El servicio se ha eliminado correctamente.",
-       });
-     },
-     onError: (error: Error) => {
-       toast({
-         variant: "destructive",
-         title: "Error",
-         description: error.message,
-       });
-     },
-   });
+      onSuccess: () => {
+        toast({ title: "Servicio eliminado", description: "El servicio se ha eliminado correctamente." });
+      },
+      onError: (error: Error) => {
+        toast({ variant: "destructive", title: "Error", description: error.message });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["services"] });
+      },
+    });
  };

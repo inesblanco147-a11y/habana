@@ -12,7 +12,8 @@ import {
   Loader2,
   LogOut,
   Settings,
-  Sparkles
+  Sparkles,
+  History
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,17 +56,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Course, CourseModality, CourseAvailability } from "@/types/course";
+import { Course, PastCourse, CourseModality, CourseAvailability } from "@/types/course";
 import { Product } from "@/types/product";
 import { Event } from "@/types/event";
 import { Doctor } from "@/types/doctor";
 import { Service } from "@/types/service";
-import { useCourses } from "@/hooks/useCourses";
+import { useCourses, usePastCourses } from "@/hooks/useCourses";
 import { useProducts } from "@/hooks/useProducts";
 import { useEvents } from "@/hooks/useEvents";
 import { useDoctors } from "@/hooks/useDoctors";
 import { useServices } from "@/hooks/useServices";
 import { useCreateCourse, useUpdateCourse, useDeleteCourse } from "@/hooks/useCourseMutations";
+import { useCreatePastCourse, useUpdatePastCourse, useDeletePastCourse } from "@/hooks/usePastCourseMutations";
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProductMutations";
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
 import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
@@ -90,6 +92,7 @@ const AdminPanel = () => {
   
   // Fetch data
   const { data: coursesData = [], isLoading: loadingCourses } = useCourses();
+  const { data: pastCoursesData = [], isLoading: loadingPastCourses } = usePastCourses();
   const { data: productsData = [], isLoading: loadingProducts } = useProducts();
   const { data: eventsData = [], isLoading: loadingEvents } = useEvents();
   const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
@@ -102,6 +105,9 @@ const AdminPanel = () => {
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
   const deleteCourse = useDeleteCourse();
+  const createPastCourse = useCreatePastCourse();
+  const updatePastCourse = useUpdatePastCourse();
+  const deletePastCourse = useDeletePastCourse();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
@@ -135,6 +141,10 @@ const AdminPanel = () => {
   
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
+
+  // Past course state
+  const [editingPastCourse, setEditingPastCourse] = useState<PastCourse | null>(null);
+  const [isPastCourseModalOpen, setIsPastCourseModalOpen] = useState(false);
 
   // Settings state
   const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
@@ -182,14 +192,22 @@ const AdminPanel = () => {
   };
 
   const handleSaveSettings = async () => {
-    for (const [key, value] of Object.entries(editingSettings)) {
-      await updateSetting.mutateAsync({ key, value });
+    try {
+      for (const [key, value] of Object.entries(editingSettings)) {
+        await updateSetting.mutateAsync({ key, value });
+      }
+      setEditingSettings({});
+      toast({
+        title: "Configuración guardada",
+        description: "Los cambios se han guardado correctamente.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo guardar la configuración. Intenta de nuevo.",
+      });
     }
-    setEditingSettings({});
-    toast({
-      title: "Configuración guardada",
-      description: "Los cambios se han guardado correctamente.",
-    });
   };
 
   // Course handlers
@@ -221,22 +239,12 @@ const AdminPanel = () => {
 
   const handleSaveCourse = () => {
     if (!editingCourse) return;
-
+    const closeModal = () => { setIsCourseModalOpen(false); setEditingCourse(null); };
     if (editingCourse.id) {
-      updateCourse.mutate(editingCourse, {
-        onSuccess: () => {
-          setIsCourseModalOpen(false);
-          setEditingCourse(null);
-        }
-      });
+      updateCourse.mutate(editingCourse, { onSuccess: closeModal, onError: () => {} });
     } else {
       const { id, ...courseData } = editingCourse;
-      createCourse.mutate(courseData, {
-        onSuccess: () => {
-          setIsCourseModalOpen(false);
-          setEditingCourse(null);
-        }
-      });
+      createCourse.mutate(courseData, { onSuccess: closeModal, onError: () => {} });
     }
   };
 
@@ -266,22 +274,12 @@ const AdminPanel = () => {
 
   const handleSaveProduct = () => {
     if (!editingProduct) return;
-
+    const closeModal = () => { setIsProductModalOpen(false); setEditingProduct(null); };
     if (editingProduct.id) {
-      updateProduct.mutate(editingProduct, {
-        onSuccess: () => {
-          setIsProductModalOpen(false);
-          setEditingProduct(null);
-        }
-      });
+      updateProduct.mutate(editingProduct, { onSuccess: closeModal, onError: () => {} });
     } else {
       const { id, ...productData } = editingProduct;
-      createProduct.mutate(productData, {
-        onSuccess: () => {
-          setIsProductModalOpen(false);
-          setEditingProduct(null);
-        }
-      });
+      createProduct.mutate(productData, { onSuccess: closeModal, onError: () => {} });
     }
   };
 
@@ -310,22 +308,12 @@ const AdminPanel = () => {
 
   const handleSaveEvent = () => {
     if (!editingEvent) return;
-
+    const closeModal = () => { setIsEventModalOpen(false); setEditingEvent(null); };
     if (editingEvent.id) {
-      updateEvent.mutate(editingEvent, {
-        onSuccess: () => {
-          setIsEventModalOpen(false);
-          setEditingEvent(null);
-        }
-      });
+      updateEvent.mutate(editingEvent, { onSuccess: closeModal, onError: () => {} });
     } else {
       const { id, ...eventData } = editingEvent;
-      createEvent.mutate(eventData, {
-        onSuccess: () => {
-          setIsEventModalOpen(false);
-          setEditingEvent(null);
-        }
-      });
+      createEvent.mutate(eventData, { onSuccess: closeModal, onError: () => {} });
     }
   };
 
@@ -403,22 +391,12 @@ const AdminPanel = () => {
 
   const handleSaveService = () => {
     if (!editingService) return;
-
+    const closeModal = () => { setIsServiceModalOpen(false); setEditingService(null); };
     if (editingService.id) {
-      updateService.mutate(editingService, {
-        onSuccess: () => {
-          setIsServiceModalOpen(false);
-          setEditingService(null);
-        }
-      });
+      updateService.mutate(editingService, { onSuccess: closeModal, onError: () => {} });
     } else {
       const { id, ...serviceData } = editingService;
-      createService.mutate(serviceData, {
-        onSuccess: () => {
-          setIsServiceModalOpen(false);
-          setEditingService(null);
-        }
-      });
+      createService.mutate(serviceData, { onSuccess: closeModal, onError: () => {} });
     }
   };
 
@@ -475,7 +453,46 @@ const AdminPanel = () => {
     setDeleteConfirm({ type: "ext_doctor", id: String(id), name });
   };
 
-  // Confirm delete
+  // Past Course handlers
+  const handleAddPastCourse = () => {
+    setEditingPastCourse({
+      id: "",
+      title: "",
+      description: "",
+      image: "",
+      modality: "presencial",
+      date: "",
+      participants: 0,
+      rating: 5,
+      testimonial: "",
+      testimonialAuthor: "",
+      instructor: "",
+      galleryImages: [],
+    });
+    setIsPastCourseModalOpen(true);
+  };
+
+  const handleEditPastCourse = (course: PastCourse) => {
+    setEditingPastCourse({ ...course });
+    setIsPastCourseModalOpen(true);
+  };
+
+  const handleSavePastCourse = () => {
+    if (!editingPastCourse) return;
+    const closeModal = () => { setIsPastCourseModalOpen(false); setEditingPastCourse(null); };
+    if (editingPastCourse.id) {
+      updatePastCourse.mutate(editingPastCourse, { onSuccess: closeModal, onError: () => {} });
+    } else {
+      const { id, ...data } = editingPastCourse;
+      createPastCourse.mutate(data, { onSuccess: closeModal, onError: () => {} });
+    }
+  };
+
+  const handleDeletePastCourse = (id: string, title: string) => {
+    setDeleteConfirm({ type: "past_course", id, name: title });
+  };
+
+
   const confirmDelete = () => {
     if (!deleteConfirm) return;
 
@@ -498,6 +515,9 @@ const AdminPanel = () => {
       case "service":
         deleteService.mutate(deleteConfirm.id);
         break;
+      case "past_course":
+        deletePastCourse.mutate(deleteConfirm.id);
+        break;
     }
     setDeleteConfirm(null);
   };
@@ -505,6 +525,7 @@ const AdminPanel = () => {
   const getAddHandler = () => {
     switch (activeTab) {
       case "courses": return handleAddCourse;
+      case "past_courses": return handleAddPastCourse;
       case "products": return handleAddProduct;
       case "events": return handleAddEvent;
       case "doctors": return handleAddDoctor;
@@ -517,6 +538,7 @@ const AdminPanel = () => {
   const getTabLabel = () => {
     switch (activeTab) {
       case "courses": return "Curso";
+      case "past_courses": return "Curso Pasado";
       case "products": return "Producto";
       case "events": return "Evento";
       case "doctors": return "Doctor";
@@ -530,7 +552,8 @@ const AdminPanel = () => {
                    createProduct.isPending || updateProduct.isPending ||
                    createEvent.isPending || updateEvent.isPending ||
                    createDoctor.isPending || updateDoctor.isPending ||
-                   createService.isPending || updateService.isPending;
+                   createService.isPending || updateService.isPending ||
+                   createPastCourse.isPending || updatePastCourse.isPending;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/30">
@@ -655,6 +678,10 @@ const AdminPanel = () => {
                     <GraduationCap className="h-4 w-4" />
                     <span className="hidden sm:inline">Cursos</span>
                   </TabsTrigger>
+                  <TabsTrigger value="past_courses" className="gap-2">
+                    <History className="h-4 w-4" />
+                    <span className="hidden sm:inline">Cursos Pasados</span>
+                  </TabsTrigger>
                   <TabsTrigger value="products" className="gap-2">
                     <ShoppingBag className="h-4 w-4" />
                     <span className="hidden sm:inline">Productos</span>
@@ -744,6 +771,55 @@ const AdminPanel = () => {
                                   className="text-destructive hover:text-destructive"
                                   onClick={() => handleDeleteCourse(course.id, course.title)}
                                 >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Past Courses Tab */}
+              <TabsContent value="past_courses">
+                {loadingPastCourses ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Modalidad</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Participantes</TableHead>
+                          <TableHead>Rating</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pastCoursesData.map(course => (
+                          <TableRow key={course.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">
+                              {course.title}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{course.modality}</Badge>
+                            </TableCell>
+                            <TableCell>{course.date}</TableCell>
+                            <TableCell>{course.participants}</TableCell>
+                            <TableCell>{course.rating}/5</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button size="sm" variant="ghost" onClick={() => handleEditPastCourse(course)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => handleDeletePastCourse(course.id, course.title)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -1776,6 +1852,94 @@ const AdminPanel = () => {
               Cancelar
             </Button>
             <Button onClick={handleSaveService} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Past Course Modal */}
+      <Dialog open={isPastCourseModalOpen} onOpenChange={setIsPastCourseModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingPastCourse?.id ? "Editar Curso Pasado" : "Nuevo Curso Pasado"}
+            </DialogTitle>
+            <DialogDescription>Complete la información del curso pasado</DialogDescription>
+          </DialogHeader>
+          
+          {editingPastCourse && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label>Título</Label>
+                <Input value={editingPastCourse.title} onChange={e => setEditingPastCourse({...editingPastCourse, title: e.target.value})} />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Descripción</Label>
+                <Textarea value={editingPastCourse.description} onChange={e => setEditingPastCourse({...editingPastCourse, description: e.target.value})} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Modalidad</Label>
+                  <Select value={editingPastCourse.modality} onValueChange={value => setEditingPastCourse({...editingPastCourse, modality: value as CourseModality})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-card">
+                      <SelectItem value="presencial">Presencial</SelectItem>
+                      <SelectItem value="online">Online</SelectItem>
+                      <SelectItem value="hibrido">Híbrido</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Fecha</Label>
+                  <Input value={editingPastCourse.date} placeholder="ej: 2025-01-15" onChange={e => setEditingPastCourse({...editingPastCourse, date: e.target.value})} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Participantes</Label>
+                  <Input type="number" value={editingPastCourse.participants} onChange={e => setEditingPastCourse({...editingPastCourse, participants: Number(e.target.value)})} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Rating (1-5)</Label>
+                  <Input type="number" min="1" max="5" step="0.1" value={editingPastCourse.rating} onChange={e => setEditingPastCourse({...editingPastCourse, rating: Number(e.target.value)})} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Instructor</Label>
+                  <Input value={editingPastCourse.instructor} onChange={e => setEditingPastCourse({...editingPastCourse, instructor: e.target.value})} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Testimonio</Label>
+                <Textarea value={editingPastCourse.testimonial} onChange={e => setEditingPastCourse({...editingPastCourse, testimonial: e.target.value})} />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Autor del Testimonio</Label>
+                <Input value={editingPastCourse.testimonialAuthor} onChange={e => setEditingPastCourse({...editingPastCourse, testimonialAuthor: e.target.value})} />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Imagen Principal</Label>
+                <ImageUpload value={editingPastCourse.image} onChange={url => setEditingPastCourse({...editingPastCourse, image: url})} folder="past-courses" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Galería de Imágenes</Label>
+                <MultiImageUpload value={editingPastCourse.galleryImages || []} onChange={urls => setEditingPastCourse({...editingPastCourse, galleryImages: urls})} folder="past-courses" maxImages={10} />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPastCourseModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSavePastCourse} disabled={isSaving}>
               {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               <Save className="h-4 w-4 mr-2" />
               Guardar

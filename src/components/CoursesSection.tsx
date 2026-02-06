@@ -84,7 +84,8 @@ const CoursesSection = () => {
       background: "linear-gradient(90deg, hsl(221, 64%, 33%) 0%, hsl(221, 64%, 55%) 50%, hsl(221, 64%, 33%) 100%)"
     }}>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">Cursos y Capacitaciones</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold uppercase tracking-wide mb-4">Cursos y Capacitaciones</h2>
+          <div className="w-24 h-1 bg-white/60 mx-auto rounded-full mb-4" />
           <p className="text-lg lg:text-xl opacity-90 max-w-2xl mx-auto">
             Actualiza tus conocimientos con nuestros cursos especializados en rehabilitación y medicina deportiva
           </p>

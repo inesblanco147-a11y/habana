@@ -45,25 +45,23 @@
        <div className="container mx-auto px-4">
          {/* Header */}
          <div className="text-center mb-12">
-           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
-             <Sparkles className="h-8 w-8 text-hasace-red" />
-           </div>
-           <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-primary">
-             Nuestros Servicios
-           </h2>
-           <p className="max-w-2xl mx-auto text-muted-foreground">
-             Descubre nuestra amplia gama de servicios especializados en
-             rehabilitación física y medicina deportiva
-           </p>
+          <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
+              Nuestros Servicios
+            </h2>
+            <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
+            <p className="max-w-2xl mx-auto text-muted-foreground">
+              Descubre nuestra amplia gama de servicios especializados en
+              rehabilitación física y medicina deportiva
+            </p>
          </div>
  
          {/* Services Grid */}
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {services.map((service) => (
-             <Card
-               key={service.id}
-               className="group overflow-hidden border-b-4 border-transparent hover:border-hasace-red transition-all duration-300 hover:shadow-xl"
-             >
+            <Card
+                key={service.id}
+                className="group overflow-hidden border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+              >
                {/* Image Container */}
                <div className="relative h-48 overflow-hidden">
                  <img
