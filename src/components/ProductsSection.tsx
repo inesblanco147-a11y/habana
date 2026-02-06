@@ -35,13 +35,11 @@ const ProductsSection = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
-            <ShoppingCart className="h-8 w-8 text-hasace-red" />
-          </div>
-          <h2 className="text-3xl lg:text-4xl mb-4 font-bold text-destructive">
+          <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
             Tienda
           </h2>
-          <p className="max-w-2xl mx-auto text-primary">
+          <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
+          <p className="max-w-2xl mx-auto text-muted-foreground">
             Productos y equipamiento de rehabilitación de alta calidad para tu recuperación
           </p>
         </div>

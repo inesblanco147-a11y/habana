@@ -71,13 +71,11 @@ const HelpSection = () => {
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-hasace-red/10 mb-4">
-              <HelpCircle className="h-8 w-8 text-hasace-red" />
-            </div>
-            <h2 className="text-3xl lg:text-4xl mb-4 font-bold text-destructive">
+            <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
               ¿Cómo podemos ayudarte?
             </h2>
-            <p className="text-primary">
+            <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
+            <p className="text-muted-foreground">
               Completa el formulario y nos pondremos en contacto contigo lo antes posible
             </p>
           </div>
