@@ -1,13 +1,13 @@
 export interface ExternalDoctor {
   id: number;
-  name: string;
+  nombre: string;
   title: string;
   specialty: string;
-  summary: string;
-  experience: string;
-  education: string[];
-  certifications: string[];
-  image: string | null;
+  especialidad: string;
+  especialidad2: string;
+  formacionAcademica: string;
+  description: string;
+  imagen: string | null;
 }
 
 export interface ExternalDoctorsResponse {
