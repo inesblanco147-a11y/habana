@@ -120,6 +120,25 @@ serve(async (req) => {
       );
     }
 
+    // Validate that it's a real date
+    const parsedDate = new Date(dateParam + 'T00:00:00Z');
+    if (isNaN(parsedDate.getTime()) || parsedDate.toISOString().split('T')[0] !== dateParam) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid date value' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Prevent queries for dates too far in past/future
+    const now = new Date();
+    const daysDiff = (parsedDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysDiff < -30 || daysDiff > 365) {
+      return new Response(
+        JSON.stringify({ error: 'Date must be within 30 days past to 1 year future' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     let events: CalendarEvent[] = [];
     let calendarConnected = false;
 
