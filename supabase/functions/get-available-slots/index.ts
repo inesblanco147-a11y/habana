@@ -1,4 +1,4 @@
-// Edge function to get available appointment slots
+// Edge function to get available appointment slots with Google Calendar OAuth
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -6,7 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-const GATEWAY_URL = 'https://gateway.lovable.dev/google_calendar/calendar/v3';
+const GOOGLE_CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
 // Base time slots from 09:00 to 18:00 (30 min intervals)
 const BASE_SLOTS = [
@@ -25,7 +26,7 @@ function timeToMinutes(time: string): number {
   return hours * 60 + minutes;
 }
 
-function isSlotOccupied(slotTime: string, events: CalendarEvent[], dateStr: string): boolean {
+function isSlotOccupied(slotTime: string, events: CalendarEvent[]): boolean {
   const slotMinutes = timeToMinutes(slotTime);
   const slotEnd = slotMinutes + 30; // 30 min duration
 
@@ -55,6 +56,44 @@ function isSlotOccupied(slotTime: string, events: CalendarEvent[], dateStr: stri
   return false;
 }
 
+async function getAccessToken(): Promise<string | null> {
+  const clientId = Deno.env.get('GOOGLE_CALENDAR_CLIENT_ID');
+  const clientSecret = Deno.env.get('GOOGLE_CALENDAR_CLIENT_SECRET');
+  const refreshToken = Deno.env.get('GOOGLE_CALENDAR_REFRESH_TOKEN');
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    console.log('Missing Google Calendar OAuth credentials');
+    return null;
+  }
+
+  try {
+    const response = await fetch(GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token',
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to refresh access token:', errorText);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -81,26 +120,24 @@ serve(async (req) => {
       );
     }
 
-    // Check if Google Calendar connector is available
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    const GOOGLE_CALENDAR_API_KEY = Deno.env.get('GOOGLE_CALENDAR_API_KEY');
-
     let events: CalendarEvent[] = [];
     let calendarConnected = false;
 
-    if (LOVABLE_API_KEY && GOOGLE_CALENDAR_API_KEY) {
+    // Try to get access token and fetch calendar events
+    const accessToken = await getAccessToken();
+
+    if (accessToken) {
       try {
         // Query Google Calendar for events on this date
         const timeMin = `${dateParam}T00:00:00Z`;
         const timeMax = `${dateParam}T23:59:59Z`;
         
         const calendarResponse = await fetch(
-          `${GATEWAY_URL}/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true`,
+          `${GOOGLE_CALENDAR_API}/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime`,
           {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-              'X-Connection-Api-Key': GOOGLE_CALENDAR_API_KEY,
+              'Authorization': `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
           }
@@ -112,7 +149,8 @@ serve(async (req) => {
           calendarConnected = true;
           console.log(`Found ${events.length} events for ${dateParam}`);
         } else {
-          console.error(`Calendar API error: ${calendarResponse.status}`);
+          const errorText = await calendarResponse.text();
+          console.error(`Calendar API error [${calendarResponse.status}]:`, errorText);
         }
       } catch (error) {
         console.error('Error fetching calendar events:', error);
@@ -123,7 +161,7 @@ serve(async (req) => {
 
     // Calculate available slots
     const availableSlots = BASE_SLOTS.filter(
-      slot => !isSlotOccupied(slot, events, dateParam)
+      slot => !isSlotOccupied(slot, events)
     );
 
     return new Response(
