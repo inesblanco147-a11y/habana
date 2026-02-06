@@ -1,140 +1,94 @@
 
-# Plan: Agregar Servicios al Header y Sincronizar Horarios
 
-## Resumen
+## Plan: Segunda fila de doctores desde backend Python externo
 
-Este plan implementa tres cambios principales:
-1. Agregar enlace "Servicios" en el menú de navegación
-2. Verificar que ServicesSection muestre correctamente los datos de la base de datos
-3. Crear Edge Function para sincronizar horarios disponibles con Google Calendar
+### Resumen
+Agregar una fila independiente de tarjetas de doctores en la seccion "Sobre Nosotros" que consuma datos de un backend Python externo, junto con una capa de API basada en axios para operaciones CRUD.
 
 ---
 
-## 1. Actualizar Header con Enlace a Servicios
+### 1. Instalar axios
+Se necesita agregar `axios` como dependencia del proyecto.
 
-### Archivo: `src/components/Header.tsx`
+### 2. Crear capa de API (`src/api/`)
 
-**Cambio:** Agregar "Servicios" entre "Tienda" y "Galería" en el array `menuItems`
+**`src/api/config.ts`**
+- Exportar una constante `API_BASE_URL` con valor `http://127.0.0.1:8000/`
+- Crear instancia `authAxios` de axios con la base URL configurada
+- Configurar interceptor para incluir el token de autenticacion de la sesion actual en el header `Authorization: Bearer <token>`
 
+**`src/api/doctors.ts`**
+- `get_doctors({ pageParam })` - GET `/equipo/doctors/?page={pageParam}&pages=9` (paginado)
+- `post_doctor(data)` - POST `/equipo/doctors/` con FormData
+- `update_doctor(id, data)` - PUT `/equipo/doctors/{id}/` con FormData
+- `delete_doctor(id)` - DELETE `/equipo/doctors/{id}/`
+
+### 3. Crear hooks para doctores externos
+
+**`src/hooks/useExternalDoctors.ts`**
+- Hook con `useInfiniteQuery` para obtener doctores paginados desde el backend Python
+- Query key: `["external_doctors"]`
+
+**`src/hooks/useExternalDoctorMutations.ts`**
+- `useCreateExternalDoctor`, `useUpdateExternalDoctor`, `useDeleteExternalDoctor`
+- Misma estructura que los mutations existentes, pero usando las funciones de `src/api/doctors.ts`
+
+### 4. Definir tipo para doctores externos
+
+**`src/types/externalDoctor.ts`**
+- Interface que refleje la estructura que devuelve el backend Python (puede diferir de la local)
+- Campos esperados: id, name, title, specialty, summary, experience, education, certifications, image
+
+### 5. Modificar `AboutSection.tsx`
+
+- Agregar una segunda seccion de carrusel debajo del existente con titulo diferenciado (ej: "Equipo Medico Externo")
+- Usar `useExternalDoctors` para obtener datos
+- Reutilizar el mismo diseno de tarjetas y modal de detalle
+- Manejar estados de carga y error independientemente del carrusel existente
+
+### 6. Agregar gestion CRUD en AdminPanel
+
+- Agregar una nueva pestana o sub-seccion dentro de la pestana "Doctores" para gestionar doctores del backend externo
+- Reutilizar el mismo formulario modal pero conectado a los mutations externos
+
+---
+
+### Detalles tecnicos
+
+**Interceptor de autenticacion (src/api/config.ts):**
+```typescript
+import axios from "axios";
+import { supabase } from "@/integrations/supabase/client";
+
+export const API_BASE_URL = "http://127.0.0.1:8000/";
+
+export const authAxios = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+authAxios.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  return config;
+});
+```
+
+**Estructura de archivos a crear:**
 ```text
-Orden actual:
-- Inicio
-- Sobre nosotros
-- Cursos
-- Tienda
-- Galeria
-- Cita
-- Contáctanos
-
-Nuevo orden:
-- Inicio
-- Sobre nosotros
-- Cursos
-- Tienda
-- Servicios  <-- NUEVO
-- Galeria
-- Cita
-- Contáctanos
+src/
+  api/
+    config.ts          -- axios instance + base URL
+    doctors.ts         -- CRUD functions para backend Python
+  hooks/
+    useExternalDoctors.ts          -- query hook
+    useExternalDoctorMutations.ts  -- mutation hooks
+  types/
+    externalDoctor.ts              -- interface
 ```
 
----
+**Archivos a modificar:**
+- `src/components/AboutSection.tsx` -- agregar segunda fila de cards
+- `src/pages/AdminPanel.tsx` -- agregar gestion CRUD externa
 
-## 2. ServicesSection (Ya Implementado)
-
-El componente `ServicesSection.tsx` ya existe y está correctamente conectado a la base de datos:
-
-- Usa el hook `useServices()` para obtener datos de la tabla `services`
-- Muestra cards con imagen, nombre, descripción, categoría, precio
-- Incluye badges de "Oferta del Mes" y descuentos
-- Está ubicado correctamente en Index.tsx entre ProductsSection y EventsSection
-
-**No requiere cambios adicionales.**
-
----
-
-## 3. Sincronización de Horarios con Google Calendar
-
-### 3.1 Crear Edge Function
-
-**Archivo:** `supabase/functions/get-available-slots/index.ts`
-
-Esta función consultará los eventos del calendario y calculará los horarios libres.
-
-**Lógica:**
-1. Recibe la fecha seleccionada como parámetro
-2. Consulta eventos de Google Calendar para esa fecha
-3. Define slots base (09:00 - 18:00, intervalos de 30 min)
-4. Filtra los slots que coinciden con eventos existentes
-5. Retorna solo los slots disponibles
-
-**Nota sobre Google Calendar:** La integración usará la API de Google Calendar a través del gateway. Si el conector no está vinculado, la función retornará todos los slots disponibles como fallback.
-
-### 3.2 Configurar Edge Function
-
-**Archivo:** `supabase/config.toml`
-
-```toml
-[functions.get-available-slots]
-verify_jwt = false
-```
-
-### 3.3 Actualizar AppointmentSection
-
-**Archivo:** `src/components/AppointmentSection.tsx`
-
-**Cambios:**
-- Agregar estado para horarios disponibles (`availableSlots`)
-- Agregar estado de carga (`isLoadingSlots`)
-- Llamar a la edge function cuando se seleccione una fecha
-- Mostrar indicador de carga mientras consulta
-- Renderizar solo los horarios disponibles
-- Mostrar mensaje cuando no hay disponibilidad
-
-**Flujo de usuario:**
-```text
-1. Usuario abre sección de citas
-   → Horarios ocultos hasta seleccionar fecha
-
-2. Usuario selecciona fecha en calendario
-   → Muestra "Cargando horarios..."
-   → Llama a edge function
-
-3. Edge function consulta Google Calendar
-   → Calcula slots libres
-   → Retorna horarios disponibles
-
-4. UI actualiza con slots disponibles
-   → Solo muestra horarios libres
-   → O mensaje "Sin disponibilidad"
-```
-
----
-
-## Archivos a Crear
-
-| Archivo | Descripción |
-|---------|-------------|
-| `supabase/functions/get-available-slots/index.ts` | Edge function para consultar disponibilidad |
-
-## Archivos a Modificar
-
-| Archivo | Cambios |
-|---------|---------|
-| `src/components/Header.tsx` | Agregar "Servicios" al menú |
-| `src/components/AppointmentSection.tsx` | Carga dinámica de horarios |
-| `supabase/config.toml` | Configuración de la nueva función |
-
----
-
-## Consideraciones Técnicas
-
-### Edge Function - Fallback sin Google Calendar
-Si el conector de Google Calendar no está configurado, la función retornará todos los slots del horario base (09:00-18:00) para que la aplicación siga funcionando.
-
-### CORS Headers
-La edge function incluirá headers CORS apropiados para permitir llamadas desde el frontend.
-
-### Manejo de Errores
-- Si falla la consulta a Google Calendar: retorna slots por defecto
-- Si la fecha es inválida: retorna error 400
-- Logs de errores para debugging
