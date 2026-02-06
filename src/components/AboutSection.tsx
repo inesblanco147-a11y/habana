@@ -16,7 +16,7 @@ const AboutSection = () => {
   const { data: externalData, isLoading: loadingExternal, fetchNextPage, hasNextPage } = useExternalDoctors();
 
   const externalDoctors = useMemo(() => {
-    return externalData?.pages.flatMap(page => page.results) ?? [];
+    return externalData?.pages.flatMap((page) => page.results) ?? [];
   }, [externalData]);
 
   const [selectedDoctor, setSelectedDoctor] = useState<AnyDoctor | null>(null);
@@ -30,31 +30,37 @@ const AboutSection = () => {
   };
 
   // Local doctors carousel
-  const scrollLeft = () => setCurrentIndex(prev => Math.max(0, prev - 1));
-  const scrollRight = () => setCurrentIndex(prev => Math.min(Math.max(0, doctors.length - 3), prev + 1));
+  const scrollLeft = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
+  const scrollRight = () => setCurrentIndex((prev) => Math.min(Math.max(0, doctors.length - 3), prev + 1));
   const visibleDoctors = doctors.slice(currentIndex, currentIndex + 3);
 
   // External doctors carousel
-  const extScrollLeft = () => setExtCurrentIndex(prev => Math.max(0, prev - 1));
+  const extScrollLeft = () => setExtCurrentIndex((prev) => Math.max(0, prev - 1));
   const extScrollRight = () => {
     const nextIndex = extCurrentIndex + 1;
     if (nextIndex + 3 >= externalDoctors.length && hasNextPage) {
       fetchNextPage();
     }
-    setExtCurrentIndex(prev => Math.min(Math.max(0, externalDoctors.length - 3), prev + 1));
+    setExtCurrentIndex((prev) => Math.min(Math.max(0, externalDoctors.length - 3), prev + 1));
   };
   const visibleExtDoctors = externalDoctors.slice(extCurrentIndex, extCurrentIndex + 3);
 
   const getDoctorImage = (doctor: AnyDoctor) =>
-    doctor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&background=DC2626&color=fff&size=96`;
+    doctor.image ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&background=DC2626&color=fff&size=96`;
 
   const getDoctorImageLarge = (doctor: AnyDoctor) =>
-    doctor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&background=DC2626&color=fff&size=400`;
+    doctor.image ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&background=DC2626&color=fff&size=400`;
 
   const getEducation = (doctor: AnyDoctor): string[] => {
     if (Array.isArray(doctor.education)) return doctor.education;
     if (typeof doctor.education === "string") {
-      try { return JSON.parse(doctor.education); } catch { return []; }
+      try {
+        return JSON.parse(doctor.education);
+      } catch {
+        return [];
+      }
     }
     return [];
   };
@@ -62,7 +68,11 @@ const AboutSection = () => {
   const getCertifications = (doctor: AnyDoctor): string[] => {
     if (Array.isArray(doctor.certifications)) return doctor.certifications;
     if (typeof doctor.certifications === "string") {
-      try { return JSON.parse(doctor.certifications); } catch { return []; }
+      try {
+        return JSON.parse(doctor.certifications);
+      } catch {
+        return [];
+      }
     }
     return [];
   };
@@ -97,14 +107,19 @@ const AboutSection = () => {
         {/* Mission Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-16 lg:mb-24">
           <div className="order-2 lg:order-1">
-            <img src={aboutMission} alt="Nuestra Misión - HASACE Rehabilitación" className="w-full h-64 lg:h-80 object-cover rounded-none shadow-xl border-l-4 border-hasace-red" />
+            <img
+              src={aboutMission}
+              alt="Nuestra Misión - HASACE Rehabilitación"
+              className="w-full h-64 lg:h-80 object-cover rounded-none shadow-xl border-l-4 border-hasace-red"
+            />
           </div>
           <div className="order-1 lg:order-2 bg-card p-8 border-b-2 border-hasace-red">
-            <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">Nuestra Misión</h3>
+            <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">
+              Nuestra Misión
+            </h3>
             <p className="text-base lg:text-lg leading-relaxed text-primary">
-              Ofrecer programas de rehabilitación personalizados y de alta calidad, 
-              basados en un modelo holístico que fomente la máxima independencia y 
-              bienestar físico y emocional de cada paciente.
+              Ofrecer programas de rehabilitación personalizados y de alta calidad, basados en un modelo holístico que
+              fomente la máxima independencia y bienestar físico, emocional y social de cada paciente.
             </p>
           </div>
         </div>
@@ -112,15 +127,20 @@ const AboutSection = () => {
         {/* Vision Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-16 lg:mb-24">
           <div className="bg-card p-8 border-b-2 border-hasace-red">
-            <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">Nuestra Visión</h3>
+            <h3 className="text-2xl lg:text-3xl mb-6 text-hasace-red font-bold uppercase tracking-wide">
+              Nuestra Visión
+            </h3>
             <p className="text-base lg:text-lg leading-relaxed text-primary">
-              Ser el centro líder en rehabilitación integral, reconocidos por nuestra 
-              innovación, resultados efectivos y el trato humano y empático hacia 
-              cada familia.
+              Ser el centro líder en rehabilitación integral, reconocidos por nuestra innovación, resultados efectivos y
+              el trato humano y empático hacia cada familia.
             </p>
           </div>
           <div>
-            <img src={aboutVision} alt="Nuestra Visión - HASACE Rehabilitación" className="w-full h-64 lg:h-80 object-cover rounded-none shadow-xl border-l-4 border-hasace-red" />
+            <img
+              src={aboutVision}
+              alt="Nuestra Visión - HASACE Rehabilitación"
+              className="w-full h-64 lg:h-80 object-cover rounded-none shadow-xl border-l-4 border-hasace-red"
+            />
           </div>
         </div>
 
@@ -130,19 +150,33 @@ const AboutSection = () => {
             Nuestro Equipo Médico
           </h3>
           <div className="relative">
-            <Button variant="outline" size="icon" onClick={scrollLeft} disabled={currentIndex === 0} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollLeft}
+              disabled={currentIndex === 0}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50"
+            >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={scrollRight} disabled={currentIndex >= doctors.length - 3} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollRight}
+              disabled={currentIndex >= doctors.length - 3}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50"
+            >
               <ChevronRight className="h-5 w-5" />
             </Button>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8">
-              {visibleDoctors.map(renderDoctorCard)}
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8">{visibleDoctors.map(renderDoctorCard)}</div>
           </div>
           <div className="flex justify-center gap-2 mt-6">
             {Array.from({ length: Math.max(1, doctors.length - 2) }).map((_, i) => (
-              <button key={i} onClick={() => setCurrentIndex(i)} className={`w-2 h-2 rounded-full transition-colors ${currentIndex === i ? "bg-hasace-red" : "bg-muted-foreground/30"}`} />
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className={`w-2 h-2 rounded-full transition-colors ${currentIndex === i ? "bg-hasace-red" : "bg-muted-foreground/30"}`}
+              />
             ))}
           </div>
         </div>
@@ -161,10 +195,22 @@ const AboutSection = () => {
           ) : (
             <>
               <div className="relative">
-                <Button variant="outline" size="icon" onClick={extScrollLeft} disabled={extCurrentIndex === 0} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={extScrollLeft}
+                  disabled={extCurrentIndex === 0}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50"
+                >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="icon" onClick={extScrollRight} disabled={extCurrentIndex >= externalDoctors.length - 3 && !hasNextPage} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={extScrollRight}
+                  disabled={extCurrentIndex >= externalDoctors.length - 3 && !hasNextPage}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-background shadow-lg border-hasace-red hover:bg-hasace-red hover:text-white disabled:opacity-50"
+                >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8">
@@ -173,7 +219,11 @@ const AboutSection = () => {
               </div>
               <div className="flex justify-center gap-2 mt-6">
                 {Array.from({ length: Math.max(1, externalDoctors.length - 2) }).map((_, i) => (
-                  <button key={i} onClick={() => setExtCurrentIndex(i)} className={`w-2 h-2 rounded-full transition-colors ${extCurrentIndex === i ? "bg-hasace-red" : "bg-muted-foreground/30"}`} />
+                  <button
+                    key={i}
+                    onClick={() => setExtCurrentIndex(i)}
+                    className={`w-2 h-2 rounded-full transition-colors ${extCurrentIndex === i ? "bg-hasace-red" : "bg-muted-foreground/30"}`}
+                  />
                 ))}
               </div>
             </>
@@ -191,7 +241,11 @@ const AboutSection = () => {
               </DialogHeader>
               <div className="space-y-6">
                 <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted">
-                  <img src={getDoctorImageLarge(selectedDoctor)} alt={selectedDoctor.name} className="w-full h-full object-cover" />
+                  <img
+                    src={getDoctorImageLarge(selectedDoctor)}
+                    alt={selectedDoctor.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="text-center">
                   <p className="text-lg font-semibold text-hasace-red">{selectedDoctor.title}</p>
@@ -212,7 +266,8 @@ const AboutSection = () => {
                   <ul className="space-y-1">
                     {getEducation(selectedDoctor).map((edu, i) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="text-hasace-red">•</span>{edu}
+                        <span className="text-hasace-red">•</span>
+                        {edu}
                       </li>
                     ))}
                   </ul>
@@ -225,7 +280,8 @@ const AboutSection = () => {
                   <ul className="space-y-1">
                     {getCertifications(selectedDoctor).map((cert, i) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="text-hasace-red">•</span>{cert}
+                        <span className="text-hasace-red">•</span>
+                        {cert}
                       </li>
                     ))}
                   </ul>
