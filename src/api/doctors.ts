@@ -2,7 +2,7 @@ import { authAxios } from "./config";
 import { ExternalDoctor, ExternalDoctorsResponse } from "@/types/externalDoctor";
 
 export const get_doctors = async ({ pageParam = 1 }): Promise<ExternalDoctorsResponse> => {
-  const response = await authAxios.get(`/equipo/doctors/?page=${pageParam}&pages=9`);
+  const response = await authAxios.get(`/equip/doctors/?page=${pageParam}&pages=9`);
   return response.data;
 };
 
