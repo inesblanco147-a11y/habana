@@ -249,7 +249,7 @@ const EventsSection = () => {
           {selectedVideo && selectedVideo.videoUrl ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <video
-                key={selectedVideo.titulo}
+                key={selectedVideo.id}
                 controls
                 autoPlay
                 playsInline
