@@ -15,7 +15,7 @@ export const useCreateVideo = () => {
           title: video.title,
           description: video.description,
           thumbnail: video.thumbnail,
-          youtube_url: video.youtubeUrl,
+          video_url: video.videoUrl,
         })
         .select()
         .single();
@@ -47,7 +47,7 @@ export const useUpdateVideo = () => {
           title: video.title,
           description: video.description,
           thumbnail: video.thumbnail,
-          youtube_url: video.youtubeUrl,
+          video_url: video.videoUrl,
         })
         .eq("id", video.id)
         .select()

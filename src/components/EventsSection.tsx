@@ -10,25 +10,6 @@ import { useVideos } from "@/hooks/useVideos";
 import { Event } from "@/types/event";
 import { Video } from "@/types/video";
 
-const getYoutubeId = (url: string): string | null => {
-  if (!url) return null;
-  try {
-    const urlObj = new URL(url);
-    if (urlObj.hostname === "youtu.be") {
-      return urlObj.pathname.slice(1).split("/")[0] || null;
-    }
-    if (urlObj.hostname.includes("youtube.com")) {
-      if (urlObj.pathname.startsWith("/embed/")) return urlObj.pathname.split("/")[2] || null;
-      if (urlObj.pathname.startsWith("/v/")) return urlObj.pathname.split("/")[2] || null;
-      return urlObj.searchParams.get("v");
-    }
-  } catch {
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?\s]+)/);
-    return match ? match[1] : null;
-  }
-  return null;
-};
-
 const EventsSection = () => {
   const { data: events = [] } = useEvents();
   const { data: galleryItems = [] } = useGallery();
@@ -120,7 +101,6 @@ const EventsSection = () => {
               </div>
               <CardContent className="p-5">
                 <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{event.title}</h3>
-                {/* <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p> */}
                 {event.showDate !== false && (
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                     <div className="flex items-center gap-1">
@@ -154,9 +134,7 @@ const EventsSection = () => {
             <h3 className="text-2xl font-bold mb-6 text-center text-primary">Videos</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => {
-                const ytId = getYoutubeId(video.youtubeUrl);
-                const thumb =
-                  video.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : "/placeholder.svg");
+                const thumb = video.thumbnail || "/placeholder.svg";
                 return (
                   <Card
                     key={video.id}
@@ -206,20 +184,10 @@ const EventsSection = () => {
                   />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-between px-4">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={prevGalleryImage}
-                    className="rounded-full bg-background/80 hover:bg-background shadow-lg"
-                  >
+                  <Button variant="secondary" size="icon" onClick={prevGalleryImage} className="rounded-full bg-background/80 hover:bg-background shadow-lg">
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={nextGalleryImage}
-                    className="rounded-full bg-background/80 hover:bg-background shadow-lg"
-                  >
+                  <Button variant="secondary" size="icon" onClick={nextGalleryImage} className="rounded-full bg-background/80 hover:bg-background shadow-lg">
                     <ChevronRight className="w-5 h-5" />
                   </Button>
                 </div>
@@ -263,39 +231,17 @@ const EventsSection = () => {
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
             <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
           </DialogHeader>
-          {selectedVideo &&
-            (() => {
-              const ytId = getYoutubeId(selectedVideo.youtubeUrl);
-              if (!ytId) {
-                return (
-                  <div className="aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                    <a
-                      href={selectedVideo.youtubeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary underline"
-                    >
-                      Ver video en YouTube
-                    </a>
-                  </div>
-                );
-              }
-              return (
-                <div className="space-y-4">
-                  <div className="aspect-video rounded-lg overflow-hidden">
-                    <iframe
-                      key={selectedVideo.id}
-                      src={`https://youtu.be/pnZqZrRf4Ys?si=8_JLw0l2srFeQvy9`}
-                      title={selectedVideo.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                      style={{ border: 0 }}
-                    />
-                  </div>
-                </div>
-              );
-            })()}
+          {selectedVideo && selectedVideo.videoUrl && (
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              <video
+                key={selectedVideo.id}
+                src={selectedVideo.videoUrl}
+                controls
+                autoPlay
+                className="w-full h-full"
+              />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </section>
