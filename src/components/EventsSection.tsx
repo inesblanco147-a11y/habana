@@ -257,7 +257,7 @@ const EventsSection = () => {
       </Dialog>
 
       {/* Video Player Modal */}
-      {/* <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
+      <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
@@ -280,23 +280,23 @@ const EventsSection = () => {
               );
             }
             return (
-              <div className="space-y-4">
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <iframe
-                    key={selectedVideo.id}
-                    src={`https://www.youtube.com/embed/${ytId}?autoplay=1`}
-                    title={selectedVideo.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                    style={{ border: 0 }}
-                  />
-                </div>
-              </div>
+              // <div className="space-y-4">
+              //   <div className="aspect-video rounded-lg overflow-hidden">
+              //     <iframe
+              //       key={selectedVideo.id}
+              //       src={`https://www.youtube.com/embed/${ytId}?autoplay=1`}
+              //       title={selectedVideo.title}
+              //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              //       allowFullScreen
+              //       className="w-full h-full"
+              //       style={{ border: 0 }}
+              //     />
+              //   </div>
+              // </div>
             );
           })()}
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
     </section>
   );
 };
