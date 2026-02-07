@@ -88,7 +88,7 @@ const EventsSection = () => {
         </div>
 
         {/* Events Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {events.map((event) => (
             <Card
               key={event.id}
