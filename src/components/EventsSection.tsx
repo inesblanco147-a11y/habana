@@ -250,7 +250,6 @@ const EventsSection = () => {
           {selectedVideo?.videoUrl ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <ReactPlayer
-                key={selectedVideo.id}
                 src="https://snmstzifttscapnizykt.supabase.co/storage/v1/object/public/imgs/videos/f2b91ed3-d7d2-4a44-b13d-ab4ec17f136d.mp4"
                 controls
                 autoPlay
