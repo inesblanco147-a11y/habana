@@ -72,12 +72,7 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2"
-            bg-white
-            aria-label="Toggle menu"
-          >
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2" aria-label="Toggle menu">
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -85,20 +80,34 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-background border-b shadow-lg animate-fade-in">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-black border-b shadow-lg animate-fade-in">
           <nav className="container mx-auto px-4 py-4">
             <div className="flex flex-col gap-2">
               {menuItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
-                  className="px-4 py-3 text-foreground hover:bg-white rounded-md transition-colors"
+                  className="px-4 py-3 text-foreground hover:bg-muted rounded-md transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
                 </a>
               ))}
               <hr className="my-2" />
+              {/* <Button onClick={handleAppointmentClick} className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg">
+                <Calendar className="h-4 w-4" />
+                Agendar Cita
+              </Button> */}
+              <div className="flex gap-4 px-4 py-2">
+                <button className="flex items-center gap-2 text-muted-foreground">
+                  <ShoppingCart className="h-5 w-5" />
+                  Carrito (0)
+                </button>
+                <button className="flex items-center gap-2 text-muted-foreground">
+                  <User className="h-5 w-5" />
+                  Login
+                </button>
+              </div>
             </div>
           </nav>
         </div>
