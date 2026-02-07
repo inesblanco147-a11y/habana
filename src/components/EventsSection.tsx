@@ -225,23 +225,31 @@ const EventsSection = () => {
       </Dialog>
 
       {/* Video Player Modal */}
-      <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
-        <DialogContent className="max-w-3xl">
+      <Dialog open={!!selectedVideo} onOpenChange={(open) => { if (!open) setSelectedVideo(null); }}>
+        <DialogContent className="max-w-3xl p-6">
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
             <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
           </DialogHeader>
-          {selectedVideo && selectedVideo.videoUrl && (
-            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+          {selectedVideo && selectedVideo.videoUrl ? (
+            <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <video
                 key={selectedVideo.id}
-                src={selectedVideo.videoUrl}
                 controls
                 autoPlay
-                className="w-full h-full"
-              />
+                playsInline
+                preload="auto"
+                className="w-full h-full object-contain"
+              >
+                <source src={selectedVideo.videoUrl} type="video/mp4" />
+                Tu navegador no soporta la reproducción de video.
+              </video>
             </div>
-          )}
+          ) : selectedVideo ? (
+            <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
+              <p className="text-muted-foreground">No se encontró el video.</p>
+            </div>
+          ) : null}
         </DialogContent>
       </Dialog>
     </section>
