@@ -255,8 +255,8 @@ const EventsSection = () => {
                 playsInline
                 preload="auto"
                 className="w-full h-full object-contain"
+                src={selectedVideo.videoUrl}
               >
-                <source src={selectedVideo.videoUrl} type="video/mp4" />
                 Tu navegador no soporta la reproducción de video.
               </video>
             </div>
