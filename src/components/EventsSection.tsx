@@ -14,13 +14,13 @@ const getYoutubeId = (url: string): string | null => {
   if (!url) return null;
   try {
     const urlObj = new URL(url);
-    if (urlObj.hostname === 'youtu.be') {
-      return urlObj.pathname.slice(1).split('/')[0] || null;
+    if (urlObj.hostname === "youtu.be") {
+      return urlObj.pathname.slice(1).split("/")[0] || null;
     }
-    if (urlObj.hostname.includes('youtube.com')) {
-      if (urlObj.pathname.startsWith('/embed/')) return urlObj.pathname.split('/')[2] || null;
-      if (urlObj.pathname.startsWith('/v/')) return urlObj.pathname.split('/')[2] || null;
-      return urlObj.searchParams.get('v');
+    if (urlObj.hostname.includes("youtube.com")) {
+      if (urlObj.pathname.startsWith("/embed/")) return urlObj.pathname.split("/")[2] || null;
+      if (urlObj.pathname.startsWith("/v/")) return urlObj.pathname.split("/")[2] || null;
+      return urlObj.searchParams.get("v");
     }
   } catch {
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?\s]+)/);
@@ -257,7 +257,7 @@ const EventsSection = () => {
       </Dialog>
 
       {/* Video Player Modal */}
-      <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
+      {/* <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
@@ -296,7 +296,7 @@ const EventsSection = () => {
             );
           })()}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </section>
   );
 };
