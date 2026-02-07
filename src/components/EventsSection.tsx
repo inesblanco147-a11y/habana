@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Calendar, MapPin, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import ReactPlayer from "react-player";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -248,17 +249,13 @@ const EventsSection = () => {
           </DialogHeader>
           {selectedVideo && selectedVideo.videoUrl ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
-              <video
-                key={selectedVideo.id}
-                controls
-                autoPlay
-                playsInline
-                preload="auto"
-                className="w-full h-full object-contain"
+              <ReactPlayer
                 src={selectedVideo.videoUrl}
-              >
-                Tu navegador no soporta la reproducción de video.
-              </video>
+                controls
+                playing
+                width="100%"
+                height="100%"
+              />
             </div>
           ) : selectedVideo ? (
             <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
