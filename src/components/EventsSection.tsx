@@ -184,10 +184,20 @@ const EventsSection = () => {
                   />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-between px-4">
-                  <Button variant="secondary" size="icon" onClick={prevGalleryImage} className="rounded-full bg-background/80 hover:bg-background shadow-lg">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={prevGalleryImage}
+                    className="rounded-full bg-background/80 hover:bg-background shadow-lg"
+                  >
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
-                  <Button variant="secondary" size="icon" onClick={nextGalleryImage} className="rounded-full bg-background/80 hover:bg-background shadow-lg">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={nextGalleryImage}
+                    className="rounded-full bg-background/80 hover:bg-background shadow-lg"
+                  >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
                 </div>
@@ -225,7 +235,12 @@ const EventsSection = () => {
       </Dialog>
 
       {/* Video Player Modal */}
-      <Dialog open={!!selectedVideo} onOpenChange={(open) => { if (!open) setSelectedVideo(null); }}>
+      <Dialog
+        open={!!selectedVideo}
+        onOpenChange={(open) => {
+          if (!open) setSelectedVideo(null);
+        }}
+      >
         <DialogContent className="max-w-3xl p-6">
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
@@ -234,7 +249,7 @@ const EventsSection = () => {
           {selectedVideo && selectedVideo.videoUrl ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <video
-                key={selectedVideo.id}
+                key={selectedVideo.titulo}
                 controls
                 autoPlay
                 playsInline
