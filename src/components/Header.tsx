@@ -80,7 +80,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-black border-b shadow-lg animate-fade-in">
+        <div className="lg:absolute top-full left-0 right-0 bg-background border-b shadow-lg animate-fade-in">
           <nav className="container mx-auto px-4 py-4">
             <div className="flex flex-col gap-2">
               {menuItems.map((item) => (
