@@ -263,38 +263,38 @@ const EventsSection = () => {
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
             <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
           </DialogHeader>
-          {selectedVideo && (() => {
-            const ytId = getYoutubeId(selectedVideo.youtubeUrl);
-            if (!ytId) {
+          {selectedVideo &&
+            (() => {
+              const ytId = getYoutubeId(selectedVideo.youtubeUrl);
+              if (!ytId) {
+                return (
+                  <div className="aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                    <a
+                      href={selectedVideo.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline"
+                    >
+                      Ver video en YouTube
+                    </a>
+                  </div>
+                );
+              }
               return (
-                <div className="aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                  <a
-                    href={selectedVideo.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline"
-                  >
-                    Ver video en YouTube
-                  </a>
+                <div className="space-y-4">
+                  <div className="aspect-video rounded-lg overflow-hidden">
+                    <iframe
+                      key={selectedVideo.id}
+                      title={selectedVideo.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                      style={{ border: 0 }}
+                    />
+                  </div>
                 </div>
               );
-            }
-            return (
-              <div className="space-y-4">
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <iframe
-                    key={selectedVideo.id}
-                    {/* src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} */}
-                    title={selectedVideo.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                    style={{ border: 0 }}
-                  />
-                </div>
-              </div>
-            );
-          })()}
+            })()}
         </DialogContent>
       </Dialog>
     </section>
