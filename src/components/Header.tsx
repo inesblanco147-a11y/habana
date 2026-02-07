@@ -72,7 +72,11 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2" arial-label="Toggle menu">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="bg-black lg:hidden p-2"
+            arial-label="Toggle menu"
+          >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
