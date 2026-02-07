@@ -5,29 +5,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { useEvents } from "@/hooks/useEvents";
+import { useGallery } from "@/hooks/useGallery";
 import { Event } from "@/types/event";
 
 const EventsSection = () => {
-  const {
-    data: events = [],
-    isLoading
-  } = useEvents();
+  const { data: events = [], isLoading } = useEvents();
+  const { data: galleryItems = [] } = useGallery();
 
-  // Generate gallery images from all events in the database
+  // Generate gallery images from the gallery table
   const allGalleryImages = useMemo(() => {
     const images: { src: string; alt: string }[] = [];
-    events.forEach(event => {
-      event.images.forEach((img, idx) => {
+    galleryItems.forEach(item => {
+      item.images.forEach((img, idx) => {
         if (img && img !== "/placeholder.svg") {
           images.push({
             src: img,
-            alt: `${event.title} - Imagen ${idx + 1}`
+            alt: `${item.title} - Imagen ${idx + 1}`
           });
         }
       });
     });
     return images;
-  }, [events]);
+  }, [galleryItems]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const formatDate = (dateString: string) => {

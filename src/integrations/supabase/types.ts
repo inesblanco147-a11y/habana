@@ -152,6 +152,33 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          images: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          images?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          images?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       past_courses: {
         Row: {
           created_at: string

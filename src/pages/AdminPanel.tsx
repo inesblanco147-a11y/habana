@@ -61,21 +61,24 @@ import { Product } from "@/types/product";
 import { Event } from "@/types/event";
 import { Doctor } from "@/types/doctor";
 import { Service } from "@/types/service";
+import { GalleryItem } from "@/types/gallery";
 import { useCourses, usePastCourses } from "@/hooks/useCourses";
 import { useProducts } from "@/hooks/useProducts";
 import { useEvents } from "@/hooks/useEvents";
 import { useDoctors } from "@/hooks/useDoctors";
 import { useServices } from "@/hooks/useServices";
+import { useGallery } from "@/hooks/useGallery";
 import { useCreateCourse, useUpdateCourse, useDeleteCourse } from "@/hooks/useCourseMutations";
 import { useCreatePastCourse, useUpdatePastCourse, useDeletePastCourse } from "@/hooks/usePastCourseMutations";
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProductMutations";
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "@/hooks/useEventMutations";
 import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDoctorMutations";
 import { useCreateService, useUpdateService, useDeleteService } from "@/hooks/useServiceMutations";
+import { useCreateGallery, useUpdateGallery, useDeleteGallery } from "@/hooks/useGalleryMutations";
 import { useExternalDoctors } from "@/hooks/useExternalDoctors";
 import { useCreateExternalDoctor, useUpdateExternalDoctor, useDeleteExternalDoctor } from "@/hooks/useExternalDoctorMutations";
 import { ExternalDoctor } from "@/types/externalDoctor";
-import { Globe } from "lucide-react";
+import { Globe, Image } from "lucide-react";
 import { useSiteSettings, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -98,6 +101,7 @@ const AdminPanel = () => {
   const { data: doctorsData = [], isLoading: loadingDoctors } = useDoctors();
   const { data: settingsData = [], isLoading: loadingSettings } = useSiteSettings();
   const { data: servicesData = [], isLoading: loadingServices } = useServices();
+  const { data: galleryData = [], isLoading: loadingGallery } = useGallery();
   const { data: externalDoctorsData, isLoading: loadingExternalDoctors } = useExternalDoctors();
   const externalDoctorsList = externalDoctorsData?.pages.flatMap(page => page.results) ?? [];
 
@@ -123,6 +127,9 @@ const AdminPanel = () => {
   const createExtDoctor = useCreateExternalDoctor();
   const updateExtDoctor = useUpdateExternalDoctor();
   const deleteExtDoctor = useDeleteExternalDoctor();
+  const createGallery = useCreateGallery();
+  const updateGallery = useUpdateGallery();
+  const deleteGallery = useDeleteGallery();
   const updateSetting = useUpdateSiteSetting();
   
   // Modal states
@@ -145,6 +152,10 @@ const AdminPanel = () => {
   // Past course state
   const [editingPastCourse, setEditingPastCourse] = useState<PastCourse | null>(null);
   const [isPastCourseModalOpen, setIsPastCourseModalOpen] = useState(false);
+
+  // Gallery state
+  const [editingGallery, setEditingGallery] = useState<GalleryItem | null>(null);
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
 
   // Settings state
   const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
@@ -492,6 +503,32 @@ const AdminPanel = () => {
     setDeleteConfirm({ type: "past_course", id, name: title });
   };
 
+  // Gallery handlers
+  const handleAddGallery = () => {
+    setEditingGallery({ id: "", title: "", description: "", images: [] });
+    setIsGalleryModalOpen(true);
+  };
+
+  const handleEditGallery = (item: GalleryItem) => {
+    setEditingGallery({ ...item });
+    setIsGalleryModalOpen(true);
+  };
+
+  const handleSaveGallery = () => {
+    if (!editingGallery) return;
+    const closeModal = () => { setIsGalleryModalOpen(false); setEditingGallery(null); };
+    if (editingGallery.id) {
+      updateGallery.mutate(editingGallery, { onSuccess: closeModal, onError: () => {} });
+    } else {
+      const { id, ...data } = editingGallery;
+      createGallery.mutate(data, { onSuccess: closeModal, onError: () => {} });
+    }
+  };
+
+  const handleDeleteGallery = (id: string, title: string) => {
+    setDeleteConfirm({ type: "gallery", id, name: title });
+  };
+
 
   const confirmDelete = () => {
     if (!deleteConfirm) return;
@@ -518,6 +555,9 @@ const AdminPanel = () => {
       case "past_course":
         deletePastCourse.mutate(deleteConfirm.id);
         break;
+      case "gallery":
+        deleteGallery.mutate(deleteConfirm.id);
+        break;
     }
     setDeleteConfirm(null);
   };
@@ -531,6 +571,7 @@ const AdminPanel = () => {
       case "doctors": return handleAddDoctor;
       case "ext_doctors": return handleAddExtDoctor;
       case "services": return handleAddService;
+      case "gallery": return handleAddGallery;
       default: return handleAddCourse;
     }
   };
@@ -544,6 +585,7 @@ const AdminPanel = () => {
       case "doctors": return "Doctor";
       case "ext_doctors": return "Doctor Ext.";
       case "services": return "Servicio";
+      case "gallery": return "Galería";
       default: return "Item";
     }
   };
@@ -701,6 +743,10 @@ const AdminPanel = () => {
                   <TabsTrigger value="services" className="gap-2">
                     <Sparkles className="h-4 w-4" />
                     <span className="hidden sm:inline">Servicios</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="gallery" className="gap-2">
+                    <Image className="h-4 w-4" />
+                    <span className="hidden sm:inline">Galería</span>
                   </TabsTrigger>
                   <TabsTrigger value="settings" className="gap-2">
                     <Settings className="h-4 w-4" />
@@ -1115,6 +1161,49 @@ const AdminPanel = () => {
                                   className="text-destructive hover:text-destructive"
                                   onClick={() => handleDeleteService(service.id, service.name)}
                                 >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Gallery Tab */}
+              <TabsContent value="gallery">
+                {loadingGallery ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Descripción</TableHead>
+                          <TableHead>Imágenes</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {galleryData.map(item => (
+                          <TableRow key={item.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">{item.title}</TableCell>
+                            <TableCell className="max-w-[300px] truncate">{item.description}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{item.images.length} fotos</Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button size="sm" variant="ghost" onClick={() => handleEditGallery(item)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => handleDeleteGallery(item.id, item.title)}>
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -1948,7 +2037,46 @@ const AdminPanel = () => {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+      {/* Gallery Modal */}
+      <Dialog open={isGalleryModalOpen} onOpenChange={setIsGalleryModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingGallery?.id ? "Editar Galería" : "Nueva Galería"}</DialogTitle>
+            <DialogDescription>
+              {editingGallery?.id ? "Modifica los datos de la galería" : "Agrega una nueva galería de imágenes"}
+            </DialogDescription>
+          </DialogHeader>
+          {editingGallery && (
+            <div className="space-y-4">
+              <div>
+                <Label>Título</Label>
+                <Input value={editingGallery.title} onChange={(e) => setEditingGallery({ ...editingGallery, title: e.target.value })} />
+              </div>
+              <div>
+                <Label>Descripción</Label>
+                <Textarea value={editingGallery.description} onChange={(e) => setEditingGallery({ ...editingGallery, description: e.target.value })} />
+              </div>
+              <div>
+                <Label>Imágenes</Label>
+                <MultiImageUpload
+                  value={editingGallery.images}
+                  onChange={(images) => setEditingGallery({ ...editingGallery, images })}
+                  folder="gallery"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsGalleryModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveGallery} disabled={isSaving}>
+              {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Save className="h-4 w-4 mr-2" />
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 };
