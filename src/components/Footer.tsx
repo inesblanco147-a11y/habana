@@ -67,7 +67,7 @@ const Footer = () => {
                   className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
                 >
                   <Phone className="h-4 w-4" />
-                  +52 442 798 1962
+                  442 106 3235
                 </a>
               </li>
               <li>
@@ -76,6 +76,7 @@ const Footer = () => {
                   className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
                 >
                   <Mail className="h-4 w-4" />
+                  habanasaludcenter@hotmail.com
                 </a>
               </li>
               <li>
