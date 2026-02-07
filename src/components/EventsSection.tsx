@@ -115,7 +115,7 @@ const EventsSection = () => {
                 </div>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
                   <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="line-clamp-1">{event.location}</span>
+                  {/* <span className="line-clamp-1">{event.location}</span> */}
                 </div>
                 <Button
                   onClick={() => {
