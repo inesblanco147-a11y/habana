@@ -247,19 +247,21 @@ const EventsSection = () => {
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
             <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
           </DialogHeader>
-          <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
+          {selectedVideo?.videoUrl ? (
+            <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <ReactPlayer
-                url="https://www.youtube.com/watch?v=0UcM6F3DnpE"
+                src={selectedVideo.videoUrl}
                 controls
                 playing
                 width="100%"
                 height="100%"
               />
             </div>
+          ) : (
             <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
               <p className="text-muted-foreground">No se encontró el video.</p>
             </div>
-          ) : null}
+          )}
         </DialogContent>
       </Dialog>
     </section>
