@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Product } from "@/types/product";
+import { Product, ProductSize } from "@/types/product";
 
 export const useProducts = () => {
   return useQuery({
@@ -21,7 +21,10 @@ export const useProducts = () => {
         image: product.image || "",
         category: product.category,
         inStock: product.in_stock,
-        featured: product.featured || false
+        featured: product.featured || false,
+        showPrice: (product as any).show_price ?? true,
+        hasSizes: (product as any).has_sizes ?? false,
+        sizes: ((product as any).sizes as ProductSize[]) || [],
       }));
     }
   });

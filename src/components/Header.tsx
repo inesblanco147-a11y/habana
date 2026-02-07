@@ -16,8 +16,8 @@ const menuItems = [
     href: "#courses",
   },
   {
-    label: "Tienda",
-    href: "#store",
+    label: "Productos",
+    href: "#products",
   },
   {
     label: "Servicios",

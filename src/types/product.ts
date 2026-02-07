@@ -1,3 +1,8 @@
+export interface ProductSize {
+  name: string;
+  inStock: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,4 +12,7 @@ export interface Product {
   category: string;
   inStock: boolean;
   featured?: boolean;
+  showPrice: boolean;
+  hasSizes: boolean;
+  sizes: ProductSize[];
 }

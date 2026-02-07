@@ -17,6 +17,12 @@ export interface Course {
   includes: string[];
   maxParticipants: number;
   currentParticipants: number;
+  showDate: boolean;
+  showDuration: boolean;
+  showParticipants: boolean;
+  showObjectives: boolean;
+  showIncludes: boolean;
+  showPrice: boolean;
 }
 
 export interface PastCourse {
@@ -27,9 +33,6 @@ export interface PastCourse {
   modality: CourseModality;
   date: string;
   participants: number;
-  rating: number;
-  testimonial: string;
-  testimonialAuthor: string;
   instructor: string;
   galleryImages?: string[];
 }

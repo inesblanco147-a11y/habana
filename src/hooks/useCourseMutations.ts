@@ -25,7 +25,13 @@ export const useCreateCourse = () => {
           objectives: course.objectives,
           includes: course.includes,
           max_participants: course.maxParticipants,
-          current_participants: course.currentParticipants
+          current_participants: course.currentParticipants,
+          show_date: course.showDate,
+          show_duration: course.showDuration,
+          show_participants: course.showParticipants,
+          show_objectives: course.showObjectives,
+          show_includes: course.showIncludes,
+          show_price: course.showPrice,
         })
         .select()
         .single();
@@ -67,7 +73,13 @@ export const useUpdateCourse = () => {
           objectives: course.objectives,
           includes: course.includes,
           max_participants: course.maxParticipants,
-          current_participants: course.currentParticipants
+          current_participants: course.currentParticipants,
+          show_date: course.showDate,
+          show_duration: course.showDuration,
+          show_participants: course.showParticipants,
+          show_objectives: course.showObjectives,
+          show_includes: course.showIncludes,
+          show_price: course.showPrice,
         })
         .eq("id", course.id)
         .select()

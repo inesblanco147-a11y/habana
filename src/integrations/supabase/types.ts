@@ -31,6 +31,12 @@ export type Database = {
           modality: string
           objectives: string[]
           price: number
+          show_date: boolean
+          show_duration: boolean
+          show_includes: boolean
+          show_objectives: boolean
+          show_participants: boolean
+          show_price: boolean
           title: string
           updated_at: string
         }
@@ -50,6 +56,12 @@ export type Database = {
           modality: string
           objectives?: string[]
           price: number
+          show_date?: boolean
+          show_duration?: boolean
+          show_includes?: boolean
+          show_objectives?: boolean
+          show_participants?: boolean
+          show_price?: boolean
           title: string
           updated_at?: string
         }
@@ -69,6 +81,12 @@ export type Database = {
           modality?: string
           objectives?: string[]
           price?: number
+          show_date?: boolean
+          show_duration?: boolean
+          show_includes?: boolean
+          show_objectives?: boolean
+          show_participants?: boolean
+          show_price?: boolean
           title?: string
           updated_at?: string
         }
@@ -190,9 +208,6 @@ export type Database = {
           instructor: string
           modality: string
           participants: number
-          rating: number
-          testimonial: string
-          testimonial_author: string
           title: string
           updated_at: string
         }
@@ -206,9 +221,6 @@ export type Database = {
           instructor: string
           modality: string
           participants: number
-          rating: number
-          testimonial: string
-          testimonial_author: string
           title: string
           updated_at?: string
         }
@@ -222,9 +234,6 @@ export type Database = {
           instructor?: string
           modality?: string
           participants?: number
-          rating?: number
-          testimonial?: string
-          testimonial_author?: string
           title?: string
           updated_at?: string
         }
@@ -236,11 +245,14 @@ export type Database = {
           created_at: string
           description: string
           featured: boolean | null
+          has_sizes: boolean
           id: string
           image: string | null
           in_stock: boolean
           name: string
           price: number
+          show_price: boolean
+          sizes: Json
           updated_at: string
         }
         Insert: {
@@ -248,11 +260,14 @@ export type Database = {
           created_at?: string
           description: string
           featured?: boolean | null
+          has_sizes?: boolean
           id?: string
           image?: string | null
           in_stock?: boolean
           name: string
           price: number
+          show_price?: boolean
+          sizes?: Json
           updated_at?: string
         }
         Update: {
@@ -260,11 +275,14 @@ export type Database = {
           created_at?: string
           description?: string
           featured?: boolean | null
+          has_sizes?: boolean
           id?: string
           image?: string | null
           in_stock?: boolean
           name?: string
           price?: number
+          show_price?: boolean
+          sizes?: Json
           updated_at?: string
         }
         Relationships: []
@@ -281,6 +299,7 @@ export type Database = {
           offer_active: boolean | null
           offer_description: string | null
           price: number
+          show_price: boolean
           updated_at: string
         }
         Insert: {
@@ -294,6 +313,7 @@ export type Database = {
           offer_active?: boolean | null
           offer_description?: string | null
           price: number
+          show_price?: boolean
           updated_at?: string
         }
         Update: {
@@ -307,6 +327,7 @@ export type Database = {
           offer_active?: boolean | null
           offer_description?: string | null
           price?: number
+          show_price?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -356,6 +377,36 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          thumbnail: string
+          title: string
+          updated_at: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          thumbnail?: string
+          title: string
+          updated_at?: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          thumbnail?: string
+          title?: string
+          updated_at?: string
+          youtube_url?: string
         }
         Relationships: []
       }

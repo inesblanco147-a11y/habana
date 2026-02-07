@@ -18,9 +18,6 @@ export const useCreatePastCourse = () => {
           modality: course.modality,
           date: course.date,
           participants: course.participants,
-          rating: course.rating,
-          testimonial: course.testimonial,
-          testimonial_author: course.testimonialAuthor,
           instructor: course.instructor,
           gallery_images: course.galleryImages || [],
         })
@@ -57,9 +54,6 @@ export const useUpdatePastCourse = () => {
           modality: course.modality,
           date: course.date,
           participants: course.participants,
-          rating: course.rating,
-          testimonial: course.testimonial,
-          testimonial_author: course.testimonialAuthor,
           instructor: course.instructor,
           gallery_images: course.galleryImages || [],
         })

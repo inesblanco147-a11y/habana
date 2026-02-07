@@ -18,7 +18,10 @@ export const useCreateProduct = () => {
           image: product.image || "",
           category: product.category,
           in_stock: product.inStock,
-          featured: product.featured || false
+          featured: product.featured || false,
+          show_price: product.showPrice,
+          has_sizes: product.hasSizes,
+          sizes: product.sizes as any,
         })
         .select()
         .single();
@@ -53,7 +56,10 @@ export const useUpdateProduct = () => {
           image: product.image || "",
           category: product.category,
           in_stock: product.inStock,
-          featured: product.featured || false
+          featured: product.featured || false,
+          show_price: product.showPrice,
+          has_sizes: product.hasSizes,
+          sizes: product.sizes as any,
         })
         .eq("id", product.id)
         .select()
