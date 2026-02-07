@@ -43,6 +43,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
+import VideoUpload from "@/components/VideoUpload";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -217,7 +218,7 @@ const AdminPanel = () => {
   };
 
   // Video handlers
-  const handleAddVideo = () => { setEditingVideo({ id: "", title: "", description: "", thumbnail: "", youtubeUrl: "" }); setIsVideoModalOpen(true); };
+  const handleAddVideo = () => { setEditingVideo({ id: "", title: "", description: "", thumbnail: "", videoUrl: "" }); setIsVideoModalOpen(true); };
   const handleEditVideo = (video: Video) => { setEditingVideo({ ...video }); setIsVideoModalOpen(true); };
   const handleSaveVideo = () => {
     if (!editingVideo) return;
@@ -499,7 +500,7 @@ const AdminPanel = () => {
                       <TableRow key={video.id}>
                         <TableCell className="font-medium max-w-[200px] truncate">{video.title}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{video.description}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{video.youtubeUrl}</TableCell>
+                        <TableCell className="max-w-[200px] truncate">{video.videoUrl ? "✅ Video subido" : "Sin video"}</TableCell>
                         <TableCell className="text-right"><div className="flex justify-end gap-2">
                           <Button size="sm" variant="ghost" onClick={() => handleEditVideo(video)}><Edit className="h-4 w-4" /></Button>
                           <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteConfirm({ type: "video", id: video.id, name: video.title })}><Trash2 className="h-4 w-4" /></Button>
@@ -775,8 +776,8 @@ const AdminPanel = () => {
             <div className="grid gap-4 py-4">
               <div className="space-y-2"><Label>Título</Label><Input value={editingVideo.title} onChange={e => setEditingVideo({...editingVideo, title: e.target.value})} /></div>
               <div className="space-y-2"><Label>Descripción</Label><Textarea value={editingVideo.description} onChange={e => setEditingVideo({...editingVideo, description: e.target.value})} /></div>
-              <div className="space-y-2"><Label>URL de YouTube</Label><Input value={editingVideo.youtubeUrl} placeholder="https://www.youtube.com/watch?v=..." onChange={e => setEditingVideo({...editingVideo, youtubeUrl: e.target.value})} /></div>
-              <div className="space-y-2"><Label>Thumbnail (opcional, se genera automáticamente de YouTube)</Label><ImageUpload value={editingVideo.thumbnail} onChange={url => setEditingVideo({...editingVideo, thumbnail: url})} folder="videos" /></div>
+              <div className="space-y-2"><Label>Archivo de Video</Label><VideoUpload value={editingVideo.videoUrl} onChange={url => setEditingVideo({...editingVideo, videoUrl: url})} folder="videos" /></div>
+              <div className="space-y-2"><Label>Thumbnail (imagen de portada)</Label><ImageUpload value={editingVideo.thumbnail} onChange={url => setEditingVideo({...editingVideo, thumbnail: url})} folder="videos" /></div>
             </div>
           )}
           <DialogFooter>

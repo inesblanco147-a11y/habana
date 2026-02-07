@@ -18,7 +18,7 @@ export const useVideos = () => {
         title: item.title,
         description: item.description,
         thumbnail: item.thumbnail,
-        youtubeUrl: item.youtube_url,
+        videoUrl: item.video_url,
       }));
     },
   });

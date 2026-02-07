@@ -397,7 +397,7 @@ export type Database = {
           thumbnail: string
           title: string
           updated_at: string
-          youtube_url: string
+          video_url: string
         }
         Insert: {
           created_at?: string
@@ -406,7 +406,7 @@ export type Database = {
           thumbnail?: string
           title: string
           updated_at?: string
-          youtube_url: string
+          video_url: string
         }
         Update: {
           created_at?: string
@@ -415,7 +415,7 @@ export type Database = {
           thumbnail?: string
           title?: string
           updated_at?: string
-          youtube_url?: string
+          video_url?: string
         }
         Relationships: []
       }
