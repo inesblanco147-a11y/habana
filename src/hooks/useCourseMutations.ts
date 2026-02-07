@@ -32,6 +32,7 @@ export const useCreateCourse = () => {
           show_objectives: course.showObjectives,
           show_includes: course.showIncludes,
           show_price: course.showPrice,
+          show_location: (course as any).showLocation ?? true,
         })
         .select()
         .single();
@@ -80,6 +81,7 @@ export const useUpdateCourse = () => {
           show_objectives: course.showObjectives,
           show_includes: course.showIncludes,
           show_price: course.showPrice,
+          show_location: (course as any).showLocation ?? true,
         })
         .eq("id", course.id)
         .select()

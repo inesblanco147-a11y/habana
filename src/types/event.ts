@@ -6,4 +6,6 @@ export interface Event {
   location: string;
   images: string[];
   featured?: boolean;
+  showDate?: boolean;
+  showLocation?: boolean;
 }

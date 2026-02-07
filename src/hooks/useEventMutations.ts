@@ -17,7 +17,9 @@ export const useCreateEvent = () => {
           date: event.date,
           location: event.location,
           images: event.images || [],
-          featured: event.featured || false
+          featured: event.featured || false,
+          show_date: (event as any).showDate ?? true,
+          show_location: (event as any).showLocation ?? true,
         })
         .select()
         .single();
@@ -51,7 +53,9 @@ export const useUpdateEvent = () => {
           date: event.date,
           location: event.location,
           images: event.images || [],
-          featured: event.featured || false
+          featured: event.featured || false,
+          show_date: (event as any).showDate ?? true,
+          show_location: (event as any).showLocation ?? true,
         })
         .eq("id", event.id)
         .select()

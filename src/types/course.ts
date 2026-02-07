@@ -23,6 +23,7 @@ export interface Course {
   showObjectives: boolean;
   showIncludes: boolean;
   showPrice: boolean;
+  showLocation: boolean;
 }
 
 export interface PastCourse {

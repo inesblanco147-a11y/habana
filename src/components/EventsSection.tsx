@@ -107,16 +107,19 @@ const EventsSection = () => {
               <CardContent className="p-5">
                 <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{event.title}</h3>
                 {/* <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p> */}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{formatDate(event.date)}</span>
+                {event.showDate !== false && (
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{formatDate(event.date)}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
-                  <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                  {/* <span className="line-clamp-1">{event.location}</span> */}
-                </div>
+                )}
+                {event.showLocation !== false && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
+                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                  </div>
+                )}
                 <Button
                   onClick={() => {
                     setSelectedEvent(event);
@@ -244,19 +247,21 @@ const EventsSection = () => {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
+            <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
           </DialogHeader>
-          {selectedVideo && (
+          {selectedVideo && getYoutubeId(selectedVideo.youtubeUrl) && (
             <div className="space-y-4">
               <div className="aspect-video rounded-lg overflow-hidden">
                 <iframe
+                  key={selectedVideo.id}
                   src={`https://www.youtube.com/embed/${getYoutubeId(selectedVideo.youtubeUrl)}?autoplay=1`}
                   title={selectedVideo.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="w-full h-full"
+                  style={{ border: 0 }}
                 />
               </div>
-              {selectedVideo.description && <p className="text-muted-foreground">{selectedVideo.description}</p>}
             </div>
           )}
         </DialogContent>
