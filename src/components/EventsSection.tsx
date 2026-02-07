@@ -59,33 +59,31 @@ const EventsSection = () => {
               pacientes.
             </p>
           </div>
-
-          {/* Gallery Carousel */}
-          {allGalleryImages.length > 0 && (
-            <div className="mb-16">
-              <h3 className="text-2xl font-bold mb-6 text-center text-primary">Galería de Momentos</h3>
-              <div className="relative max-w-5xl mx-auto">
-                <Carousel opts={{ align: "start", loop: true }} className="w-full">
-                  <CarouselContent className="-ml-2 md:-ml-4">
-                    {allGalleryImages.map((image, index) => (
-                      <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                        <div className="overflow-hidden rounded-xl shadow-lg group">
-                          <img
-                            src={image.src}
-                            alt={image.alt}
-                            className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-                  <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
-                </Carousel>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Gallery Carousel */}
+        {allGalleryImages.length > 0 && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-6 text-center text-primary">Galería de Momentos</h3>
+            <Carousel opts={{ align: "start", loop: true }} className="w-full">
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {allGalleryImages.map((image, index) => (
+                  <CarouselItem key={index} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+                    <div className="overflow-hidden rounded-xl shadow-lg group">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex -left-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+              <CarouselNext className="hidden md:flex -right-12 bg-primary text-primary-foreground hover:bg-primary/90 border-none" />
+            </Carousel>
+          </div>
+        )}
 
         {/* Events Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
@@ -132,47 +130,47 @@ const EventsSection = () => {
             </Card>
           ))}
         </div>
-      </div>
 
-      {/* Videos Section */}
-      {videos.length > 0 && (
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold mb-6 text-center text-primary">Videos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((video) => {
-              const ytId = getYoutubeId(video.youtubeUrl);
-              const thumb =
-                video.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : "/placeholder.svg");
-              return (
-                <Card
-                  key={video.id}
-                  className="group overflow-hidden bg-card border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  onClick={() => setSelectedVideo(video)}
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={thumb}
-                      alt={video.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
-                      <div className="w-14 h-14 bg-hasace-red rounded-full flex items-center justify-center shadow-lg">
-                        <Play className="h-6 w-6 text-white ml-1" />
+        {/* Videos Section */}
+        {videos.length > 0 && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-6 text-center text-primary">Videos</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((video) => {
+                const ytId = getYoutubeId(video.youtubeUrl);
+                const thumb =
+                  video.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : "/placeholder.svg");
+                return (
+                  <Card
+                    key={video.id}
+                    className="group overflow-hidden bg-card border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    onClick={() => setSelectedVideo(video)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={thumb}
+                        alt={video.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
+                        <div className="w-14 h-14 bg-hasace-red rounded-full flex items-center justify-center shadow-lg">
+                          <Play className="h-6 w-6 text-white ml-1" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <h4 className="font-bold text-foreground line-clamp-2">{video.title}</h4>
-                    {video.description && (
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{video.description}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    <CardContent className="p-5">
+                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{video.title}</h3>
+                      {video.description && (
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{video.description}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Event Gallery Modal */}
       <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
