@@ -279,20 +279,20 @@ const EventsSection = () => {
                 </div>
               );
             }
-            // return (
-              // <div className="space-y-4">
-              //   <div className="aspect-video rounded-lg overflow-hidden">
-              //     <iframe
-              //       key={selectedVideo.id}
-              //       src={`https://www.youtube.com/embed/${ytId}?autoplay=1`}
-              //       title={selectedVideo.title}
-              //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              //       allowFullScreen
-              //       className="w-full h-full"
-              //       style={{ border: 0 }}
-              //     />
-              //   </div>
-              // </div>
+            return (
+              <div className="space-y-4">
+                <div className="aspect-video rounded-lg overflow-hidden">
+                  <iframe
+                    key={selectedVideo.id}
+                    {/* src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} */}
+                    title={selectedVideo.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                    style={{ border: 0 }}
+                  />
+                </div>
+              </div>
             );
           })()}
         </DialogContent>
