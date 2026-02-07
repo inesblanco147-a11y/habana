@@ -248,23 +248,18 @@ const EventsSection = () => {
           </DialogHeader>
           {selectedVideo?.videoUrl ? (
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
-    <video
-      key={selectedVideo.id}
-      src={selectedVideo.videoUrl}
-      controls
-      autoPlay
-      playsInline
-      className="w-full h-full"
-      controlsList="nodownload"
-    >
-      Tu navegador no soporta la reproducción de videos.
-    </video>
-  </div>
-) : (
-  <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
-    <p className="text-muted-foreground">No se encontró el video.</p>
-  </div>
-)}
+              <video
+                key={selectedVideo.id}
+                src={selectedVideo.videoUrl}
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full"
+                controlsList="nodownload"
+              >
+                Tu navegador no soporta la reproducción de videos.
+              </video>
+            </div>
           ) : (
             <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
               <p className="text-muted-foreground">No se encontró el video.</p>
