@@ -22,7 +22,9 @@ export const useEvents = () => {
         images: event.images && event.images.length > 0 
           ? event.images 
           : ["/placeholder.svg"],
-        featured: event.featured || false
+        featured: event.featured || false,
+        showDate: (event as any).show_date ?? true,
+        showLocation: (event as any).show_location ?? true,
       }));
     }
   });

@@ -35,6 +35,7 @@ export const useCourses = () => {
         showObjectives: (course as any).show_objectives ?? true,
         showIncludes: (course as any).show_includes ?? true,
         showPrice: (course as any).show_price ?? true,
+        showLocation: (course as any).show_location ?? true,
       }));
     }
   });

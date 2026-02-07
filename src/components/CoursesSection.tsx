@@ -142,10 +142,12 @@ const CoursesSection = () => {
                           <span>{course.duration}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{course.location}</span>
-                      </div>
+                      {course.showLocation && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          <span>{course.location}</span>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex justify-between items-center">
@@ -243,10 +245,12 @@ const CoursesSection = () => {
                       <span>{selectedCourse.duration}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-hasace-red" />
-                    <span>{selectedCourse.location}</span>
-                  </div>
+                  {selectedCourse.showLocation && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-hasace-red" />
+                      <span>{selectedCourse.location}</span>
+                    </div>
+                  )}
                   {selectedCourse.showParticipants && (
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-hasace-red" />

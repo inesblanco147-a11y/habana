@@ -34,6 +34,7 @@ export type Database = {
           show_date: boolean
           show_duration: boolean
           show_includes: boolean
+          show_location: boolean
           show_objectives: boolean
           show_participants: boolean
           show_price: boolean
@@ -59,6 +60,7 @@ export type Database = {
           show_date?: boolean
           show_duration?: boolean
           show_includes?: boolean
+          show_location?: boolean
           show_objectives?: boolean
           show_participants?: boolean
           show_price?: boolean
@@ -84,6 +86,7 @@ export type Database = {
           show_date?: boolean
           show_duration?: boolean
           show_includes?: boolean
+          show_location?: boolean
           show_objectives?: boolean
           show_participants?: boolean
           show_price?: boolean
@@ -143,6 +146,8 @@ export type Database = {
           id: string
           images: string[]
           location: string
+          show_date: boolean
+          show_location: boolean
           title: string
           updated_at: string
         }
@@ -154,6 +159,8 @@ export type Database = {
           id?: string
           images?: string[]
           location: string
+          show_date?: boolean
+          show_location?: boolean
           title: string
           updated_at?: string
         }
@@ -165,6 +172,8 @@ export type Database = {
           id?: string
           images?: string[]
           location?: string
+          show_date?: boolean
+          show_location?: boolean
           title?: string
           updated_at?: string
         }

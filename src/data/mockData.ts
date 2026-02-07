@@ -79,7 +79,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Material didáctico digital", "Certificado con validez oficial", "Coffee breaks", "Práctica supervisada"],
     maxParticipants: 25,
     currentParticipants: 18,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
   },
   {
     id: "2",
@@ -97,7 +97,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Kit de vendaje profesional", "Acceso a plataforma online por 6 meses", "Certificado internacional", "Mentoría post-curso"],
     maxParticipants: 20,
     currentParticipants: 19,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
   },
   {
     id: "3",
@@ -115,7 +115,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Videos grabados de técnicas", "Manual en PDF", "Certificado digital", "Sesión de dudas en vivo"],
     maxParticipants: 50,
     currentParticipants: 32,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
   },
   {
     id: "4",
@@ -133,7 +133,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Material de evaluación pediátrica", "Certificado avalado por SEP", "Comidas incluidas", "Acceso a casos clínicos"],
     maxParticipants: 15,
     currentParticipants: 15,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
   }
 ];
 

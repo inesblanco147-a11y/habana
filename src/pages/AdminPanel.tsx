@@ -142,7 +142,7 @@ const AdminPanel = () => {
 
   // Course handlers
   const handleAddCourse = () => {
-    setEditingCourse({ id: "", title: "", description: "", image: "", modality: "presencial", availability: "disponible", date: "", duration: "", location: "", price: 0, instructor: "", objectives: [], includes: [], maxParticipants: 20, currentParticipants: 0, showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true });
+    setEditingCourse({ id: "", title: "", description: "", image: "", modality: "presencial", availability: "disponible", date: "", duration: "", location: "", price: 0, instructor: "", objectives: [], includes: [], maxParticipants: 20, currentParticipants: 0, showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true });
     setIsCourseModalOpen(true);
   };
   const handleEditCourse = (course: Course) => { setEditingCourse({ ...course }); setIsCourseModalOpen(true); };
@@ -167,7 +167,7 @@ const AdminPanel = () => {
   };
 
   // Event handlers
-  const handleAddEvent = () => { setEditingEvent({ id: "", title: "", description: "", date: "", location: "", images: [], featured: false }); setIsEventModalOpen(true); };
+  const handleAddEvent = () => { setEditingEvent({ id: "", title: "", description: "", date: "", location: "", images: [], featured: false, showDate: true, showLocation: true }); setIsEventModalOpen(true); };
   const handleEditEvent = (event: Event) => { setEditingEvent({ ...event }); setIsEventModalOpen(true); };
   const handleSaveEvent = () => {
     if (!editingEvent) return;
@@ -575,6 +575,7 @@ const AdminPanel = () => {
                   <div className="flex items-center gap-2"><Switch checked={editingCourse.showObjectives} onCheckedChange={c => setEditingCourse({...editingCourse, showObjectives: c})} /><Label>Objetivos</Label></div>
                   <div className="flex items-center gap-2"><Switch checked={editingCourse.showIncludes} onCheckedChange={c => setEditingCourse({...editingCourse, showIncludes: c})} /><Label>Qué incluye</Label></div>
                   <div className="flex items-center gap-2"><Switch checked={editingCourse.showPrice} onCheckedChange={c => setEditingCourse({...editingCourse, showPrice: c})} /><Label>Precio</Label></div>
+                  <div className="flex items-center gap-2"><Switch checked={editingCourse.showLocation} onCheckedChange={c => setEditingCourse({...editingCourse, showLocation: c})} /><Label>Ubicación</Label></div>
                 </div>
               </div>
             </div>
@@ -648,6 +649,13 @@ const AdminPanel = () => {
               </div>
               <div className="space-y-2"><Label>Imágenes del Evento</Label><MultiImageUpload value={editingEvent.images.filter(img => img !== "/placeholder.svg")} onChange={urls => setEditingEvent({...editingEvent, images: urls})} folder="events" maxImages={10} /></div>
               <div className="flex items-center gap-2"><Switch checked={editingEvent.featured} onCheckedChange={c => setEditingEvent({...editingEvent, featured: c})} /><Label>Evento Destacado</Label></div>
+              <div className="border rounded-lg p-4 space-y-3">
+                <Label className="text-base font-semibold">Visibilidad en la tarjeta</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2"><Switch checked={editingEvent.showDate ?? true} onCheckedChange={c => setEditingEvent({...editingEvent, showDate: c})} /><Label>Mostrar Fecha</Label></div>
+                  <div className="flex items-center gap-2"><Switch checked={editingEvent.showLocation ?? true} onCheckedChange={c => setEditingEvent({...editingEvent, showLocation: c})} /><Label>Mostrar Ubicación</Label></div>
+                </div>
+              </div>
             </div>
           )}
           <DialogFooter>
