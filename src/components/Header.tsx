@@ -24,7 +24,7 @@ const menuItems = [
     href: "#services",
   },
   {
-    label: "Galeria",
+    label: "Galería",
     href: "#events",
   },
   {
