@@ -285,7 +285,7 @@ const EventsSection = () => {
                   <div className="aspect-video rounded-lg overflow-hidden">
                     <iframe
                       key={selectedVideo.id}
-                      src={`${ytId}?autoplay=1`}
+                      src={`https://youtu.be/pnZqZrRf4Ys?si=8_JLw0l2srFeQvy9`}
                       title={selectedVideo.title}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
