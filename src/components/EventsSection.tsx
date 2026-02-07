@@ -106,7 +106,7 @@ const EventsSection = () => {
               </div>
               <CardContent className="p-5">
                 <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{event.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+                {/* <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p> */}
                 <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
