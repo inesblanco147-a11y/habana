@@ -56,7 +56,7 @@ const CoursesSection = () => {
   };
   const handleWhatsApp = (course: Course) => {
     const message = encodeURIComponent(`Hola, me interesa inscribirme al curso: ${course.title}`);
-    window.open(`https://wa.me/524421234567?text=${message}`, "_blank");
+    window.open(`https://wa.me/524427981962?text=${message}`, "_blank");
   };
 
   return (
