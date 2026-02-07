@@ -251,7 +251,7 @@ const EventsSection = () => {
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <ReactPlayer
                 key={selectedVideo.id}
-                src={selectedVideo.videourl}
+                src={selectedVideo.videoUrl}
                 controls
                 autoPlay
                 playsInline
