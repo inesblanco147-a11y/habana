@@ -26,7 +26,7 @@ const HelpSection = () => {
     { value: "info-servicios", label: "Información de servicios" },
     { value: "agendar-cita", label: "Agendar una cita" },
     { value: "cursos", label: "Cursos y capacitaciones" },
-    { value: "productos", label: "Productos y equipamiento" },
+    { value: "productos", label: "Productos" },
     { value: "facturacion", label: "Facturación" },
     { value: "otro", label: "Otro tema" },
   ];
@@ -44,7 +44,7 @@ const HelpSection = () => {
       `*Mensaje:* ${formData.message}`,
     ];
     const whatsappMessage = encodeURIComponent(messageLines.join("\n"));
-    const number = whatsappNumber || "524421234567";
+    const number = whatsappNumber || "524427981962";
     window.open(`https://wa.me/${number}?text=${whatsappMessage}`, "_blank");
 
     toast({ title: "Redirigiendo a WhatsApp", description: "Se abrirá WhatsApp con tu mensaje." });
@@ -173,18 +173,18 @@ const HelpSection = () => {
             <p className="text-muted-foreground mb-4">¿Prefieres contactarnos directamente?</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
-                href={`tel:${contactPhone || "+524421234567"}`}
+                href={`tel:${contactPhone || "+524427981962"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Phone className="h-4 w-4" />
-                {contactPhone || "+52 442 123 4567"}
+                {contactPhone || "+52 442 798 1962"}
               </a>
               <a
-                href={`mailto:${contactEmail || "contacto@hace.mx"}`}
+                href={`mailto:${contactEmail || "contacto@gm.mx"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Mail className="h-4 w-4" />
-                {contactEmail || "contacto@hasace.mx"}
+                {contactEmail || "contacto@gm.mx"}
               </a>
             </div>
           </div>
