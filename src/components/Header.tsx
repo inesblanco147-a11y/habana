@@ -72,7 +72,12 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2" aria-label="Toggle menu">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="lg:hidden p-2"
+            bg-white
+            aria-label="Toggle menu"
+          >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -94,20 +99,6 @@ const Header = () => {
                 </a>
               ))}
               <hr className="my-2" />
-              {/* <Button onClick={handleAppointmentClick} className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 text-white font-bold shadow-lg">
-                <Calendar className="h-4 w-4" />
-                Agendar Cita
-              </Button> */}
-              <div className="flex gap-4 px-4 py-2">
-                <button className="flex items-center gap-2 text-muted-foreground">
-                  <ShoppingCart className="h-5 w-5" />
-                  Carrito (0)
-                </button>
-                <button className="flex items-center gap-2 text-muted-foreground">
-                  <User className="h-5 w-5" />
-                  Login
-                </button>
-              </div>
             </div>
           </nav>
         </div>
