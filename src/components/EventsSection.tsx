@@ -251,7 +251,7 @@ const EventsSection = () => {
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <ReactPlayer
                 key={selectedVideo.id}
-                url={selectedVideo.videoUrl} // ✅ CORRECTO
+                url={selectedVideo.videoUrl}
                 controls
                 playing // Cambiado de autoPlay a playing
                 playsinline // lowercase
