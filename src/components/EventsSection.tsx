@@ -249,7 +249,7 @@ const EventsSection = () => {
           </DialogHeader>
           <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <ReactPlayer
-                url={"https://www.youtube.com/watch?v=0UcM6F3DnpE"}
+                url="https://www.youtube.com/watch?v=0UcM6F3DnpE"
                 controls
                 playing
                 width="100%"
