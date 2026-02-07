@@ -28,7 +28,13 @@ export const useCourses = () => {
         objectives: course.objectives || [],
         includes: course.includes || [],
         maxParticipants: course.max_participants,
-        currentParticipants: course.current_participants
+        currentParticipants: course.current_participants,
+        showDate: (course as any).show_date ?? true,
+        showDuration: (course as any).show_duration ?? true,
+        showParticipants: (course as any).show_participants ?? true,
+        showObjectives: (course as any).show_objectives ?? true,
+        showIncludes: (course as any).show_includes ?? true,
+        showPrice: (course as any).show_price ?? true,
       }));
     }
   });
@@ -53,9 +59,6 @@ export const usePastCourses = () => {
         modality: course.modality as CourseModality,
         date: course.date,
         participants: course.participants,
-        rating: Number(course.rating),
-        testimonial: course.testimonial,
-        testimonialAuthor: course.testimonial_author,
         instructor: course.instructor,
         galleryImages: course.gallery_images || []
       }));

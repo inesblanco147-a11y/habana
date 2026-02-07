@@ -75,20 +75,11 @@ export const upcomingCourses: Course[] = [
     location: "HASACE, Querétaro",
     price: 4500,
     instructor: "Dr. Carlos Mendoza",
-    objectives: [
-      "Dominar técnicas de facilitación neuromuscular",
-      "Aplicar protocolos de neuroplasticidad",
-      "Evaluar y tratar pacientes neurológicos",
-      "Diseñar programas de rehabilitación personalizados"
-    ],
-    includes: [
-      "Material didáctico digital",
-      "Certificado con validez oficial",
-      "Coffee breaks",
-      "Práctica supervisada"
-    ],
+    objectives: ["Dominar técnicas de facilitación neuromuscular", "Aplicar protocolos de neuroplasticidad", "Evaluar y tratar pacientes neurológicos", "Diseñar programas de rehabilitación personalizados"],
+    includes: ["Material didáctico digital", "Certificado con validez oficial", "Coffee breaks", "Práctica supervisada"],
     maxParticipants: 25,
-    currentParticipants: 18
+    currentParticipants: 18,
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
   },
   {
     id: "2",
@@ -102,20 +93,11 @@ export const upcomingCourses: Course[] = [
     location: "HASACE + Online",
     price: 6800,
     instructor: "Dra. María González",
-    objectives: [
-      "Evaluar lesiones deportivas comunes",
-      "Aplicar técnicas de vendaje funcional",
-      "Diseñar programas de retorno al deporte",
-      "Implementar estrategias de prevención"
-    ],
-    includes: [
-      "Kit de vendaje profesional",
-      "Acceso a plataforma online por 6 meses",
-      "Certificado internacional",
-      "Mentoría post-curso"
-    ],
+    objectives: ["Evaluar lesiones deportivas comunes", "Aplicar técnicas de vendaje funcional", "Diseñar programas de retorno al deporte", "Implementar estrategias de prevención"],
+    includes: ["Kit de vendaje profesional", "Acceso a plataforma online por 6 meses", "Certificado internacional", "Mentoría post-curso"],
     maxParticipants: 20,
-    currentParticipants: 19
+    currentParticipants: 19,
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
   },
   {
     id: "3",
@@ -129,19 +111,11 @@ export const upcomingCourses: Course[] = [
     location: "Plataforma Virtual",
     price: 2500,
     instructor: "Lic. Roberto Sánchez",
-    objectives: [
-      "Conocer los principios de la terapia manual",
-      "Realizar evaluación articular básica",
-      "Aplicar técnicas de movilización grado I-II"
-    ],
-    includes: [
-      "Videos grabados de técnicas",
-      "Manual en PDF",
-      "Certificado digital",
-      "Sesión de dudas en vivo"
-    ],
+    objectives: ["Conocer los principios de la terapia manual", "Realizar evaluación articular básica", "Aplicar técnicas de movilización grado I-II"],
+    includes: ["Videos grabados de técnicas", "Manual en PDF", "Certificado digital", "Sesión de dudas en vivo"],
     maxParticipants: 50,
-    currentParticipants: 32
+    currentParticipants: 32,
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
   },
   {
     id: "4",
@@ -155,20 +129,11 @@ export const upcomingCourses: Course[] = [
     location: "HASACE, Querétaro",
     price: 5500,
     instructor: "Dra. Ana Martínez",
-    objectives: [
-      "Evaluar el desarrollo psicomotor",
-      "Aplicar técnicas de estimulación temprana",
-      "Tratar alteraciones del tono muscular",
-      "Involucrar a la familia en el tratamiento"
-    ],
-    includes: [
-      "Material de evaluación pediátrica",
-      "Certificado avalado por SEP",
-      "Comidas incluidas",
-      "Acceso a casos clínicos"
-    ],
+    objectives: ["Evaluar el desarrollo psicomotor", "Aplicar técnicas de estimulación temprana", "Tratar alteraciones del tono muscular", "Involucrar a la familia en el tratamiento"],
+    includes: ["Material de evaluación pediátrica", "Certificado avalado por SEP", "Comidas incluidas", "Acceso a casos clínicos"],
     maxParticipants: 15,
-    currentParticipants: 15
+    currentParticipants: 15,
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true
   }
 ];
 
@@ -181,9 +146,6 @@ export const pastCourses: PastCourse[] = [
     modality: "presencial",
     date: "2024-11-15",
     participants: 22,
-    rating: 4.8,
-    testimonial: "Excelente curso, muy práctico y con casos reales. Lo recomiendo ampliamente.",
-    testimonialAuthor: "Lic. Patricia Herrera",
     instructor: "Dr. Eduardo Ramírez"
   },
   {
@@ -194,9 +156,6 @@ export const pastCourses: PastCourse[] = [
     modality: "hibrido",
     date: "2024-10-20",
     participants: 28,
-    rating: 4.9,
-    testimonial: "El mejor curso de kinesiotape al que he asistido. Material de primera calidad.",
-    testimonialAuthor: "Lic. Fernando López",
     instructor: "Dra. Laura Vega"
   },
   {
@@ -207,87 +166,57 @@ export const pastCourses: PastCourse[] = [
     modality: "online",
     date: "2024-09-08",
     participants: 45,
-    rating: 4.7,
-    testimonial: "Muy actualizado y relevante. Las técnicas son aplicables desde el día uno.",
-    testimonialAuthor: "Lic. Carmen Ortiz",
     instructor: "Dr. Miguel Ángel Torres"
   }
 ];
 
 export const products: Product[] = [
   {
-    id: "prod1",
-    name: "Banda Elástica de Resistencia - Set Completo",
+    id: "prod1", name: "Banda Elástica de Resistencia - Set Completo",
     description: "Set de 5 bandas elásticas con diferentes niveles de resistencia para rehabilitación y fortalecimiento muscular.",
-    price: 450,
-    image: "",
-    category: "Equipamiento",
-    inStock: true,
-    featured: true
+    price: 450, image: "", category: "Equipamiento", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod2",
-    name: "Rodillera Ortopédica con Soporte Lateral",
+    id: "prod2", name: "Rodillera Ortopédica con Soporte Lateral",
     description: "Rodillera de neopreno con varillas laterales para estabilización de rodilla en lesiones ligamentarias.",
-    price: 890,
-    image: "",
-    category: "Ortopedia",
-    inStock: true,
-    featured: true
+    price: 890, image: "", category: "Ortopedia", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod3",
-    name: "Pelota de Ejercicio 65cm",
+    id: "prod3", name: "Pelota de Ejercicio 65cm",
     description: "Pelota de ejercicio anti-explosión ideal para rehabilitación, fortalecimiento y mejora del equilibrio.",
-    price: 380,
-    image: "",
-    category: "Equipamiento",
-    inStock: true
+    price: 380, image: "", category: "Equipamiento", inStock: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod4",
-    name: "Muñequera con Soporte de Pulgar",
+    id: "prod4", name: "Muñequera con Soporte de Pulgar",
     description: "Muñequera ajustable con férula de pulgar para lesiones de muñeca y síndrome del túnel carpiano.",
-    price: 520,
-    image: "",
-    category: "Ortopedia",
-    inStock: false
+    price: 520, image: "", category: "Ortopedia", inStock: false,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod5",
-    name: "Kit de Masaje Miofascial",
+    id: "prod5", name: "Kit de Masaje Miofascial",
     description: "Kit completo con rodillo de espuma, bola de lacrosse y palo de masaje para liberación miofascial.",
-    price: 680,
-    image: "",
-    category: "Terapia Manual",
-    inStock: true,
-    featured: true
+    price: 680, image: "", category: "Terapia Manual", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod6",
-    name: "Electro Estimulador TENS Portátil",
+    id: "prod6", name: "Electro Estimulador TENS Portátil",
     description: "Dispositivo TENS de uso doméstico para control del dolor con 8 programas preestablecidos.",
-    price: 1250,
-    image: "",
-    category: "Electroterapia",
-    inStock: true
+    price: 1250, image: "", category: "Electroterapia", inStock: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod7",
-    name: "Tobillera Estabilizadora Premium",
+    id: "prod7", name: "Tobillera Estabilizadora Premium",
     description: "Tobillera de alta gama con sistema de cordones y soporte en 8 para esguinces de tobillo.",
-    price: 750,
-    image: "",
-    category: "Ortopedia",
-    inStock: true
+    price: 750, image: "", category: "Ortopedia", inStock: true,
+    showPrice: true, hasSizes: false, sizes: []
   },
   {
-    id: "prod8",
-    name: "Disco de Balance para Propiocepción",
+    id: "prod8", name: "Disco de Balance para Propiocepción",
     description: "Disco inflable para entrenamiento propioceptivo y rehabilitación de equilibrio.",
-    price: 290,
-    image: "",
-    category: "Equipamiento",
-    inStock: true
+    price: 290, image: "", category: "Equipamiento", inStock: true,
+    showPrice: true, hasSizes: false, sizes: []
   }
 ];
