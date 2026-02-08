@@ -29,7 +29,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Column 2: Quick Links 
           <div>
             <h4 className="text-lg mb-4 text-white font-bold uppercase tracking-wide">Enlaces Rápidos</h4>
             <ul className="space-y-3">
@@ -41,9 +41,9 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div>*/}
 
-          {/* Column 3: Services */}
+          {/* Column 3: Services 
           <div>
             <h4 className="text-lg mb-4 text-white font-bold uppercase tracking-wide">Servicios</h4>
             <ul className="space-y-3">
@@ -55,7 +55,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div>*/}
 
           {/* Column 4: Contact */}
           <div>
