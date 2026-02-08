@@ -5,13 +5,16 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useProducts } from "@/hooks/useProducts";
+import { useProductCategories } from "@/hooks/useProductCategories";
 import { Product } from "@/types/product";
 import productDefaultImage from "@/assets/product-default.jpg";
 
 const ProductsSection = () => {
   const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useProductCategories();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("todos");
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(price);
@@ -26,7 +29,9 @@ const ProductsSection = () => {
     setIsModalOpen(true);
   };
 
-  const categories = [...new Set(products.map((p) => p.category))];
+  const filteredProducts = categoryFilter === "todos"
+    ? products
+    : products.filter((p) => p.category === categoryFilter);
 
   return (
     <section id="products" className="py-16 lg:py-24 bg-muted/20">
@@ -42,23 +47,30 @@ const ProductsSection = () => {
 
         {/* Category Pills */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          <Badge variant="outline" className="cursor-pointer bg-hasace-red/10 text-hasace-red border-hasace-red/20">
+          <Button
+            variant={categoryFilter === "todos" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setCategoryFilter("todos")}
+            className={categoryFilter === "todos" ? "bg-hasace-red hover:bg-hasace-red/90" : ""}
+          >
             Todos
-          </Badge>
-          {categories.map((category) => (
-            <Badge
-              key={category}
-              variant="outline"
-              className="cursor-pointer hover:bg-muted bg-hasace-red/10 text-hasace-red border-hasace-red/20"
+          </Button>
+          {categories.map((cat) => (
+            <Button
+              key={cat.id}
+              variant={categoryFilter === cat.name ? "default" : "outline"}
+              size="sm"
+              onClick={() => setCategoryFilter(cat.name)}
+              className={categoryFilter === cat.name ? "bg-hasace-red hover:bg-hasace-red/90" : ""}
             >
-              {category}
-            </Badge>
+              {cat.name}
+            </Button>
           ))}
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Card
               key={product.id}
               className="bg-card border-0 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"

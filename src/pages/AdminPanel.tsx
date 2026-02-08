@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
-  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon
+  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,8 @@ import { useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from "@/hooks/useDo
 import { useCreateService, useUpdateService, useDeleteService } from "@/hooks/useServiceMutations";
 import { useCreateGallery, useUpdateGallery, useDeleteGallery } from "@/hooks/useGalleryMutations";
 import { useCreateVideo, useUpdateVideo, useDeleteVideo } from "@/hooks/useVideoMutations";
+import { useProductCategories } from "@/hooks/useProductCategories";
+import { useCreateProductCategory, useUpdateProductCategory, useDeleteProductCategory } from "@/hooks/useProductCategoryMutations";
 import { useSiteSettings, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -61,6 +63,7 @@ const AdminPanel = () => {
   const { data: servicesData = [], isLoading: loadingServices } = useServices();
   const { data: galleryData = [], isLoading: loadingGallery } = useGallery();
   const { data: videosData = [], isLoading: loadingVideos } = useVideos();
+  const { data: productCategoriesData = [] } = useProductCategories();
 
   // Mutations
   const createCourse = useCreateCourse();
@@ -87,6 +90,9 @@ const AdminPanel = () => {
   const createVideo = useCreateVideo();
   const updateVideo = useUpdateVideo();
   const deleteVideoMut = useDeleteVideo();
+  const createProductCategory = useCreateProductCategory();
+  const updateProductCategoryMut = useUpdateProductCategory();
+  const deleteProductCategoryMut = useDeleteProductCategory();
   const updateSetting = useUpdateSiteSetting();
   
   // Modal states
@@ -109,6 +115,9 @@ const AdminPanel = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
   const [editingSettings, setEditingSettings] = useState<Record<string, string>>({});
   const [newSizeName, setNewSizeName] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState("");
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -238,6 +247,7 @@ const AdminPanel = () => {
       case "past_course": deletePastCourse.mutate(deleteConfirm.id); break;
       case "gallery": deleteGallery.mutate(deleteConfirm.id); break;
       case "video": deleteVideoMut.mutate(deleteConfirm.id); break;
+      case "category": deleteProductCategoryMut.mutate(deleteConfirm.id); break;
     }
     setDeleteConfirm(null);
   };
@@ -323,9 +333,10 @@ const AdminPanel = () => {
                   <TabsTrigger value="services" className="gap-2"><Sparkles className="h-4 w-4" /><span className="hidden sm:inline">Servicios</span></TabsTrigger>
                   <TabsTrigger value="gallery" className="gap-2"><Image className="h-4 w-4" /><span className="hidden sm:inline">Galería</span></TabsTrigger>
                   <TabsTrigger value="videos" className="gap-2"><VideoIcon className="h-4 w-4" /><span className="hidden sm:inline">Videos</span></TabsTrigger>
+                  <TabsTrigger value="categories" className="gap-2"><Tag className="h-4 w-4" /><span className="hidden sm:inline">Categorías</span></TabsTrigger>
                   <TabsTrigger value="settings" className="gap-2"><Settings className="h-4 w-4" /><span className="hidden sm:inline">Configuración</span></TabsTrigger>
                 </TabsList>
-                {activeTab !== "settings" && (
+                {activeTab !== "settings" && activeTab !== "categories" && (
                   <Button onClick={getAddHandler()}><Plus className="h-4 w-4 mr-2" />Agregar {getTabLabel()}</Button>
                 )}
               </div>
@@ -511,6 +522,90 @@ const AdminPanel = () => {
                 )}
               </TabsContent>
 
+              {/* Categories Tab */}
+              <TabsContent value="categories">
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Agregar Categoría</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Nombre de la categoría"
+                          value={newCategoryName}
+                          onChange={e => setNewCategoryName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === "Enter" && newCategoryName.trim()) {
+                              e.preventDefault();
+                              createProductCategory.mutate(newCategoryName.trim(), { onSuccess: () => setNewCategoryName("") });
+                            }
+                          }}
+                        />
+                        <Button
+                          onClick={() => {
+                            if (newCategoryName.trim()) {
+                              createProductCategory.mutate(newCategoryName.trim(), { onSuccess: () => setNewCategoryName("") });
+                            }
+                          }}
+                          disabled={!newCategoryName.trim() || createProductCategory.isPending}
+                        >
+                          {createProductCategory.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+                          Agregar
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {productCategoriesData.map(cat => (
+                        <TableRow key={cat.id}>
+                          <TableCell>
+                            {editingCategoryId === cat.id ? (
+                              <Input
+                                value={editingCategoryName}
+                                onChange={e => setEditingCategoryName(e.target.value)}
+                                onKeyDown={e => {
+                                  if (e.key === "Enter") {
+                                    updateProductCategoryMut.mutate({ id: cat.id, name: editingCategoryName.trim() }, { onSuccess: () => setEditingCategoryId(null) });
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <span className="font-medium">{cat.name}</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              {editingCategoryId === cat.id ? (
+                                <Button size="sm" variant="ghost" onClick={() => {
+                                  updateProductCategoryMut.mutate({ id: cat.id, name: editingCategoryName.trim() }, { onSuccess: () => setEditingCategoryId(null) });
+                                }} disabled={updateProductCategoryMut.isPending}>
+                                  <Save className="h-4 w-4" />
+                                </Button>
+                              ) : (
+                                <Button size="sm" variant="ghost" onClick={() => { setEditingCategoryId(cat.id); setEditingCategoryName(cat.name); }}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              )}
+                              <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setDeleteConfirm({ type: "category", id: cat.id, name: cat.name })}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+
               {/* Settings Tab */}
               <TabsContent value="settings">
                 {loadingSettings ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
@@ -549,7 +644,7 @@ const AdminPanel = () => {
               <div className="space-y-2"><Label>Título</Label><Input value={editingCourse.title} onChange={e => setEditingCourse({...editingCourse, title: e.target.value})} /></div>
               <div className="space-y-2"><Label>Descripción</Label><Textarea value={editingCourse.description} onChange={e => setEditingCourse({...editingCourse, description: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Modalidad</Label><Select value={editingCourse.modality} onValueChange={v => setEditingCourse({...editingCourse, modality: v as CourseModality})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent className="bg-card"><SelectItem value="presencial">Presencial</SelectItem><SelectItem value="online">Online</SelectItem><SelectItem value="hibrido">Híbrido</SelectItem></SelectContent></Select></div>
+                <div className="space-y-2"><Label>Modalidad</Label><Select value={editingCourse.modality} onValueChange={v => setEditingCourse({...editingCourse, modality: v as CourseModality})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent className="bg-card"><SelectItem value="presencial">Presencial</SelectItem><SelectItem value="online">Online</SelectItem><SelectItem value="híbrido">Híbrido</SelectItem></SelectContent></Select></div>
                 <div className="space-y-2"><Label>Disponibilidad</Label><Select value={editingCourse.availability} onValueChange={v => setEditingCourse({...editingCourse, availability: v as CourseAvailability})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent className="bg-card"><SelectItem value="disponible">Disponible</SelectItem><SelectItem value="ultimos-lugares">Últimos lugares</SelectItem><SelectItem value="agotado">Agotado</SelectItem></SelectContent></Select></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -597,7 +692,7 @@ const AdminPanel = () => {
               <div className="space-y-2"><Label>Nombre</Label><Input value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} /></div>
               <div className="space-y-2"><Label>Descripción</Label><Textarea value={editingProduct.description} onChange={e => setEditingProduct({...editingProduct, description: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Categoría</Label><Input value={editingProduct.category} onChange={e => setEditingProduct({...editingProduct, category: e.target.value})} /></div>
+                <div className="space-y-2"><Label>Categoría</Label><Select value={editingProduct.category} onValueChange={v => setEditingProduct({...editingProduct, category: v})}><SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger><SelectContent className="bg-card">{productCategoriesData.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></div>
                 <div className="space-y-2"><Label>Precio (MXN)</Label><Input type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} /></div>
               </div>
               <div className="space-y-2"><Label>Imagen del Producto</Label><ImageUpload value={editingProduct.image} onChange={url => setEditingProduct({...editingProduct, image: url})} folder="products" /></div>
