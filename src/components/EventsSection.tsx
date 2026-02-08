@@ -250,7 +250,7 @@ const EventsSection = () => {
             <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
               <video
                 key={selectedVideo.id}
-                src="https://snmstzifttscapnizykt.supabase.co/storage/v1/object/public/public//video2.mp4"
+                src={selectedVideo.videoUrl}
                 controls
                 autoPlay
                 playsInline
