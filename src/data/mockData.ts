@@ -86,7 +86,7 @@ export const upcomingCourses: Course[] = [
     title: "Rehabilitación Deportiva: De la Lesión al Alto Rendimiento",
     description: "Curso integral sobre prevención, tratamiento y recuperación de lesiones deportivas.",
     image: "",
-    modality: "hibrido",
+    modality: "híbrido",
     availability: "ultimos-lugares",
     date: "2025-04-20",
     duration: "40 horas",
@@ -153,7 +153,7 @@ export const pastCourses: PastCourse[] = [
     title: "Kinesiotaping Nivel Avanzado",
     description: "Técnicas avanzadas de vendaje neuromuscular para diversas patologías.",
     image: "",
-    modality: "hibrido",
+    modality: "híbrido",
     date: "2024-10-20",
     participants: 28,
     instructor: "Dra. Laura Vega"
