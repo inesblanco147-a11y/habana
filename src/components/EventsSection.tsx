@@ -8,7 +8,6 @@ import { useEvents } from "@/hooks/useEvents";
 import { useGallery } from "@/hooks/useGallery";
 import { useVideos } from "@/hooks/useVideos";
 import { Event } from "@/types/event";
-import { Video } from "@/types/video";
 
 const EventsSection = () => {
   const { data: events = [] } = useEvents();
@@ -29,7 +28,6 @@ const EventsSection = () => {
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
@@ -139,7 +137,7 @@ const EventsSection = () => {
                   <Card
                     key={video.id}
                     className="group overflow-hidden bg-card border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                    onClick={() => setSelectedVideo(video)}
+                    onClick={() => window.open(video.videoUrl, '_blank')}
                   >
                     <div className="relative h-48 overflow-hidden">
                       <img
@@ -234,39 +232,6 @@ const EventsSection = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Video Player Modal */}
-      <Dialog
-        open={!!selectedVideo}
-        onOpenChange={(open) => {
-          if (!open) setSelectedVideo(null);
-        }}
-      >
-        <DialogContent className="max-w-3xl p-6">
-          <DialogHeader>
-            <DialogTitle>{selectedVideo?.title}</DialogTitle>
-            <p className="text-sm text-muted-foreground">{selectedVideo?.description || "Reproduciendo video"}</p>
-          </DialogHeader>
-          {selectedVideo?.videoUrl ? (
-            <div className="w-full aspect-video rounded-lg overflow-hidden bg-black">
-              <video
-                key={selectedVideo.id}
-                src={selectedVideo.videoUrl}
-                controls
-                autoPlay
-                playsInline
-                className="w-full h-full"
-                controlsList="nodownload"
-              >
-                Tu navegador no soporta la reproducción de videos.
-              </video>
-            </div>
-          ) : (
-            <div className="w-full aspect-video rounded-lg flex items-center justify-center bg-muted">
-              <p className="text-muted-foreground">No se encontró el video.</p>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </section>
   );
 };
