@@ -120,8 +120,7 @@ const ProductsSection = () => {
                   onClick={() => openProductModal(product)}
                   className="w-full bg-hasace-red hover:bg-hasace-red/90 font-bold"
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Consultar
+                  Ver más
                 </Button>
               </CardFooter>
             </Card>
