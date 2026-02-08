@@ -121,7 +121,7 @@ const Footer = () => {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="https://wa.me/524421234567"
+                href="https://wa.me/5244227981962"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
