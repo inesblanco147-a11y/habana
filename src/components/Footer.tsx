@@ -139,7 +139,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-white/70">
-              © 2025 HASACE - Clínica de Rehabilitación Física. Todos los derechos reservados.
+              © 2026 HASACE - Clínica de Rehabilitación Física. Todos los derechos reservados.
             </p>
             <div className="flex gap-6">
               <a href="#" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
