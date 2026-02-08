@@ -23,7 +23,7 @@ const CoursesSection = () => {
       online: "bg-blue-500 text-white",
       híbrido: "bg-purple-500 text-white",
     };
-    const labels = { presencial: "Presencial", online: "Online", hibrido: "Híbrido" };
+    const labels = { presencial: "Presencial", online: "Online", híbrido: "Híbrido" };
     return <Badge className={`${colors[modality]} hover:opacity-90`}>{labels[modality]}</Badge>;
   };
 
