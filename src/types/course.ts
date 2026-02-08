@@ -1,4 +1,4 @@
-export type CourseModality = "presencial" | "online" | "hibrido";
+export type CourseModality = "presencial" | "online" | "híbrido";
 export type CourseAvailability = "disponible" | "ultimos-lugares" | "agotado";
 
 export interface Course {
