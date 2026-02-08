@@ -92,7 +92,7 @@ const CoursesSection = () => {
             </TabsList>
             {activeTab === "upcoming" && (
               <div className="flex gap-2 flex-wrap">
-                {(["todos", "presencial", "online", "hibrido"] as const).map((filter) => (
+                {(["todos", "presencial", "online", "híbrido"] as const).map((filter) => (
                   <Button
                     key={filter}
                     variant={modalityFilter === filter ? "default" : "outline"}
