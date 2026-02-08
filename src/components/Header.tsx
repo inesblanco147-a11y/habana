@@ -110,8 +110,8 @@ const Header = () => {
                 <button className="flex items-center gap-2 text-muted-foreground">
                   <User className="h-5 w-5" />
                   Login
-                </button>*/}
-              </div>
+                </button>
+              </div>*/}
             </div>
           </nav>
         </div>
