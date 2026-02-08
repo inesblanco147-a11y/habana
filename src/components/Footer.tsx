@@ -19,7 +19,7 @@ const Footer = () => {
   return (
     <footer className="bg-slate-900 text-white">
       <div className="container mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Column 1: Logo & Description */}
           <div className="lg:col-span-1">
             <img src={hasaceLogo} alt="HASACE - Clínica de Rehabilitación" className="h-10 w-auto lg:h-14 rounded" />
