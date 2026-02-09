@@ -44,7 +44,7 @@ const HelpSection = () => {
       `*Mensaje:* ${formData.message}`,
     ];
     const whatsappMessage = encodeURIComponent(messageLines.join("\n"));
-    const number = whatsappNumber || "524427981962";
+    const number = whatsappNumber || "524422137365";
     window.open(`https://wa.me/${number}?text=${whatsappMessage}`, "_blank");
 
     toast({ title: "Redirigiendo a WhatsApp", description: "Se abrirá WhatsApp con tu mensaje." });
@@ -173,7 +173,7 @@ const HelpSection = () => {
             <p className="text-muted-foreground mb-4">¿Prefieres contactarnos directamente?</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
-                href={`tel:${contactPhone || "+524427981962"}`}
+                href={`tel:${contactPhone || "+524422137365"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Phone className="h-4 w-4" />
