@@ -180,11 +180,11 @@ const HelpSection = () => {
                 {contactPhone || "+52 4422137365"}
               </a>
               <a
-                href={`mailto:${contactEmail || "contacto@gm.mx"}`}
+                href={`mailto:${contactEmail || "habanasaludcenter@hotmail.com"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Mail className="h-4 w-4" />
-                {contactEmail || "contacto@gm.mx"}
+                {contactEmail || "habanasaludcenter@hotmail.com"}
               </a>
             </div>
           </div>
