@@ -21,7 +21,7 @@ const ProductsSection = () => {
 
   const handleWhatsApp = (productName: string) => {
     const message = encodeURIComponent(`Hola, me interesa el producto: ${productName}. ¿Está disponible?`);
-    window.open(`https://wa.me/524427981962?text=${message}`, "_blank");
+    window.open(`https://wa.me/524422137365?text=${message}`, "_blank");
   };
 
   const openProductModal = (product: Product) => {
@@ -29,9 +29,8 @@ const ProductsSection = () => {
     setIsModalOpen(true);
   };
 
-  const filteredProducts = categoryFilter === "todos"
-    ? products
-    : products.filter((p) => p.category === categoryFilter);
+  const filteredProducts =
+    categoryFilter === "todos" ? products : products.filter((p) => p.category === categoryFilter);
 
   return (
     <section id="products" className="py-16 lg:py-24 bg-muted/20">
@@ -148,7 +147,7 @@ const ProductsSection = () => {
             variant="outline"
             onClick={() => {
               const message = encodeURIComponent("Hola, estoy buscando un producto específico para rehabilitación.");
-              window.open(`https://wa.me/524427981962?text=${message}`, "_blank");
+              window.open(`https://wa.me/524422137365?text=${message}`, "_blank");
             }}
             className="border-hasace-red text-hasace-red hover:bg-hasace-red hover:text-white"
           >

@@ -25,8 +25,10 @@ const ServicesSection = () => {
   };
 
   const handleWhatsApp = (serviceName: string) => {
-    const message = encodeURIComponent(`Hola, me interesa el servicio: ${serviceName}. ¿Me pueden dar más información?`);
-    const number = whatsappNumber || "524427981962";
+    const message = encodeURIComponent(
+      `Hola, me interesa el servicio: ${serviceName}. ¿Me pueden dar más información?`,
+    );
+    const number = whatsappNumber || "524422137365";
     window.open(`https://wa.me/${number}?text=${message}`, "_blank");
   };
 
@@ -159,7 +161,9 @@ const ServicesSection = () => {
                     <p className="text-sm text-muted-foreground">Precio</p>
                     {selectedService.offerActive && selectedService.discount > 0 ? (
                       <div className="flex items-center justify-center gap-3">
-                        <span className="text-muted-foreground line-through text-xl">{formatPrice(selectedService.price)}</span>
+                        <span className="text-muted-foreground line-through text-xl">
+                          {formatPrice(selectedService.price)}
+                        </span>
                         <span className="text-3xl font-bold text-hasace-red">
                           {formatPrice(calculateDiscountedPrice(selectedService.price, selectedService.discount))}
                         </span>
