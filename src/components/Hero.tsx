@@ -51,10 +51,9 @@ const Hero = () => {
             style={{ animationDelay: "0.4s" }}
           >
             <Button
-              href="#cita"
+              onClick={handleAppointmentClick}
               className="bg-hasace-red hover:bg-hasace-red/90 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:scale-105 transition-transform border-2 border-hasace-red"
             >
-              {/* onClick={handleAppointmentClick} */}
               <Calendar className="mr-2 h-5 w-5" />
               Agendar Cita
             </Button>
