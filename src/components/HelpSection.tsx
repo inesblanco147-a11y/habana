@@ -177,7 +177,7 @@ const HelpSection = () => {
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Phone className="h-4 w-4" />
-                {contactPhone || "+52 442 798 1962"}
+                {contactPhone || "+52 4422137365"}
               </a>
               <a
                 href={`mailto:${contactEmail || "contacto@gm.mx"}`}
