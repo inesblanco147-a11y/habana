@@ -50,13 +50,13 @@ const Hero = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
             style={{ animationDelay: "0.4s" }}
           >
-            <Button
+            {/* <Button
               onClick={handleAppointmentClick}
               className="bg-hasace-red hover:bg-hasace-red/90 text-white px-10 py-7 text-xl font-bold shadow-2xl hover:scale-105 transition-transform border-2 border-hasace-red"
             >
               <Calendar className="mr-2 h-5 w-5" />
               Agendar Cita
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
