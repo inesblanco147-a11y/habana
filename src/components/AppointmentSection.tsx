@@ -15,12 +15,12 @@ const AppointmentSection = () => {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [slotsError, setSlotsError] = useState<string | null>(null);
-  
+
   const googleCalendarUrl = useSiteSetting("google_calendar_url");
   const whatsappNumber = useSiteSetting("whatsapp_number");
-  
+
   const { data: servicesFromDB = [] } = useServices();
-  const services = servicesFromDB.map(s => ({ value: s.name, label: s.name }));
+  const services = servicesFromDB.map((s) => ({ value: s.name, label: s.name }));
 
   // Fetch available slots when date changes
   useEffect(() => {
@@ -36,39 +36,47 @@ const AppointmentSection = () => {
       setSelectedTime("");
 
       try {
-        const dateStr = selectedDate.toISOString().split('T')[0];
-        const { data, error } = await supabase.functions.invoke('get-available-slots', {
+        const dateStr = selectedDate.toISOString().split("T")[0];
+        const { data, error } = await supabase.functions.invoke("get-available-slots", {
           body: null,
-          method: 'GET',
+          method: "GET",
           headers: {},
         });
-        
+
         // Use fetch directly since we need query params
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/get-available-slots?date=${dateStr}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (!response.ok) {
-          throw new Error('Error al obtener horarios');
+          throw new Error("Error al obtener horarios");
         }
 
         const result = await response.json();
         setAvailableSlots(result.slots || []);
       } catch (error) {
-        console.error('Error fetching slots:', error);
-        setSlotsError('No se pudieron cargar los horarios');
+        console.error("Error fetching slots:", error);
+        setSlotsError("No se pudieron cargar los horarios");
         // Fallback to default slots
         setAvailableSlots([
-          "09:00", "10:00", "11:00", "12:00",
-          "13:00", "14:00", "15:00", "16:00", 
-          "17:00", "18:00", "19:00"
+          "09:00",
+          "10:00",
+          "11:00",
+          "12:00",
+          "13:00",
+          "14:00",
+          "15:00",
+          "16:00",
+          "17:00",
+          "18:00",
+          "19:00",
         ]);
       } finally {
         setIsLoadingSlots(false);
@@ -77,28 +85,34 @@ const AppointmentSection = () => {
 
     fetchSlots();
   }, [selectedDate]);
-  
+
   const handleGoogleCalendar = () => {
     if (googleCalendarUrl) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = googleCalendarUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
   };
-  
+
   const handleWhatsApp = () => {
     const dateStr = selectedDate ? selectedDate.toLocaleDateString("es-MX") : "";
-    const serviceLabel = services.find(s => s.value === selectedService)?.label || "";
-    const message = encodeURIComponent(`Hola, me gustaría agendar una cita:\n\n` + `📅 Fecha: ${dateStr}\n` + `🕐 Hora: ${selectedTime}\n` + `📋 Servicio: ${serviceLabel}\n\n` + `¿Tienen disponibilidad?`);
+    const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
+    const message = encodeURIComponent(
+      `Hola, me gustaría agendar una cita:\n\n` +
+        `📅 Fecha: ${dateStr}\n` +
+        `🕐 Hora: ${selectedTime}\n` +
+        `📋 Servicio: ${serviceLabel}\n\n` +
+        `¿Tienen disponibilidad?`,
+    );
     const number = whatsappNumber || "524421234567";
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = `https://wa.me/${number}?text=${message}`;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -116,8 +130,8 @@ const AppointmentSection = () => {
           </h2>
           <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
           <p className="max-w-2xl mx-auto text-muted-foreground">
-            Selecciona la fecha, hora y servicio que necesitas. Puedes agendar directamente 
-            a través de Google Calendar o contactarnos por WhatsApp.
+            Selecciona la fecha, hora y servicio que necesitas. Puedes agendar directamente a través de Google Calendar
+            o contactarnos por WhatsApp.
           </p>
         </div>
 
@@ -132,12 +146,12 @@ const AppointmentSection = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
-                <CalendarComponent 
-                  mode="single" 
-                  selected={selectedDate} 
-                  onSelect={setSelectedDate} 
-                  disabled={date => date < new Date() || date.getDay() === 0} 
-                  className="rounded-md border" 
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(date) => date < new Date() || date.getDay() === 0}
+                  className="rounded-md border"
                 />
               </CardContent>
             </Card>
@@ -159,7 +173,7 @@ const AppointmentSection = () => {
                       <SelectValue placeholder="Selecciona un servicio" />
                     </SelectTrigger>
                     <SelectContent className="bg-card border shadow-lg z-50">
-                      {services.map(service => (
+                      {services.map((service) => (
                         <SelectItem key={service.value} value={service.value}>
                           {service.label}
                         </SelectItem>
@@ -171,7 +185,7 @@ const AppointmentSection = () => {
                 {/* Time Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Horario disponible</label>
-                  
+
                   {!selectedDate ? (
                     <p className="text-sm text-muted-foreground py-4 text-center">
                       Selecciona una fecha para ver los horarios disponibles
@@ -187,12 +201,12 @@ const AppointmentSection = () => {
                     </p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
-                      {availableSlots.map(time => (
-                        <Button 
-                          key={time} 
-                          variant={selectedTime === time ? "default" : "outline"} 
-                          size="sm" 
-                          onClick={() => setSelectedTime(time)} 
+                      {availableSlots.map((time) => (
+                        <Button
+                          key={time}
+                          variant={selectedTime === time ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedTime(time)}
                           className={`text-xs ${selectedTime === time ? "bg-hasace-red hover:bg-hasace-red/90" : ""}`}
                         >
                           {time}
@@ -213,18 +227,17 @@ const AppointmentSection = () => {
                   <div className="p-4 bg-muted rounded-lg space-y-2">
                     <h4 className="font-medium">Resumen de tu cita:</h4>
                     <p className="text-sm text-muted-foreground">
-                      📅 {selectedDate?.toLocaleDateString("es-MX", {
+                      📅{" "}
+                      {selectedDate?.toLocaleDateString("es-MX", {
                         weekday: "long",
                         year: "numeric",
                         month: "long",
-                        day: "numeric"
+                        day: "numeric",
                       })}
                     </p>
+                    <p className="text-sm text-muted-foreground">🕐 {selectedTime} hrs</p>
                     <p className="text-sm text-muted-foreground">
-                      🕐 {selectedTime} hrs
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      📋 {services.find(s => s.value === selectedService)?.label}
+                      📋 {services.find((s) => s.value === selectedService)?.label}
                     </p>
                   </div>
                 )}
@@ -239,9 +252,9 @@ const AppointmentSection = () => {
                     Agendar con Google Calendar
                   </Button> */}
 
-                  <Button 
-                    onClick={handleWhatsApp} 
-                    disabled={!isFormComplete} 
+                  <Button
+                    onClick={handleWhatsApp}
+                    disabled={!isFormComplete}
                     className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
                   >
                     <MessageCircle className="h-4 w-4" />
@@ -250,7 +263,8 @@ const AppointmentSection = () => {
                 </div>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  Horario de atención: Lunes a Sábado, 9:00 - 18:00
+                  Horario de atención: Lunes a Viernes, 9:00 - 18:00 <br />
+                  Sabado
                 </p>
               </CardContent>
             </Card>
