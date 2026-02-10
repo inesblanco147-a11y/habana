@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
-  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag
+  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
