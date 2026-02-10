@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          created_at: string
+          date: string
+          email: string
+          first_name: string
+          google_event_id: string | null
+          id: string
+          last_name: string
+          notes: string | null
+          phone: string
+          service: string | null
+          status: string
+          time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          email: string
+          first_name: string
+          google_event_id?: string | null
+          id?: string
+          last_name: string
+          notes?: string | null
+          phone: string
+          service?: string | null
+          status?: string
+          time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          email?: string
+          first_name?: string
+          google_event_id?: string | null
+          id?: string
+          last_name?: string
+          notes?: string | null
+          phone?: string
+          service?: string | null
+          status?: string
+          time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           availability: string
