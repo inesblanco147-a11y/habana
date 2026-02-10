@@ -58,8 +58,8 @@ const AppointmentSection = () => {
       }
       // Lunes a Viernes: 9:00 - 18:00 (valores por defecto)
 
-      // Generar slots
-      for (let hour = startHour; hour < endHour; hour++) {
+      // Generar slots (incluye la última hora)
+      for (let hour = startHour; hour <= endHour; hour++) {
         const timeStr = `${hour.toString().padStart(2, "0")}:00`;
         slots.push(timeStr);
       }
