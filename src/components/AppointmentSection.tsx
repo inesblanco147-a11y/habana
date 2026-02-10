@@ -39,31 +39,25 @@ const AppointmentSection = () => {
     }
 
     const generateBusinessHourSlots = (date: Date): string[] => {
-      const dayOfWeek = date.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+      const dayOfWeek = date.getDay();
       const slots: string[] = [];
 
-      // Configuración de horarios por día
       let startHour = 9;
       let endHour = 18;
-      const slotDuration = 60; // Duración de cada cita en minutos
 
-      // Ajustar horarios según el día
       if (dayOfWeek === 6) {
-        // Sábado: 9:00 - 17:00
-        endHour = 17;
+        endHour = 17; // Sábado hasta 17:00
       } else if (dayOfWeek === 0) {
-        // Domingo: 10:00 - 17:00
-        startHour = 10;
+        startHour = 10; // Domingo desde 10:00
         endHour = 17;
       }
-      // Lunes a Viernes: 9:00 - 18:00 (valores por defecto)
 
-      // Generar slots (incluye la última hora)
-      for (let hour = startHour; hour <= endHour; hour++) {
-        const timeStr = `${hour.toString().padStart(2, "0")}:00`;
-        slots.push(timeStr);
+      // Generar todos los slots hora por hora
+      for (let hour = startHour; hour < endHour; hour++) {
+        slots.push(`${hour.toString().padStart(2, "0")}:00`);
       }
 
+      console.log("Slots generados:", slots); // Para debug
       return slots;
     };
 
@@ -71,6 +65,9 @@ const AppointmentSection = () => {
       setIsLoadingSlots(true);
       setSlotsError(null);
       setSelectedTime("");
+
+      // Primero, generar los slots base del consultorio
+      const businessSlots = generateBusinessHourSlots(selectedDate);
 
       try {
         const dateStr = selectedDate.toISOString().split("T")[0];
@@ -82,18 +79,20 @@ const AppointmentSection = () => {
         if (!response.ok) throw new Error("Error al obtener horarios");
 
         const result = await response.json();
+        console.log("Slots de Google Calendar:", result.slots); // Para debug
 
-        // Filtrar slots de Google Calendar para que coincidan con horario de negocio
-        const businessSlots = generateBusinessHourSlots(selectedDate);
-        const filteredSlots = (result.slots || []).filter((slot: string) => businessSlots.includes(slot));
-
-        setAvailableSlots(filteredSlots.length > 0 ? filteredSlots : businessSlots);
+        // Si Google Calendar devuelve slots, usarlos
+        // Si no, usar los slots de negocio generados
+        if (result.slots && Array.isArray(result.slots) && result.slots.length > 0) {
+          // Filtrar para que solo incluya slots dentro del horario de negocio
+          const validSlots = result.slots.filter((slot: string) => businessSlots.includes(slot));
+          setAvailableSlots(validSlots.length > 0 ? validSlots : businessSlots);
+        } else {
+          setAvailableSlots(businessSlots);
+        }
       } catch (error) {
         console.error("Error fetching slots:", error);
         setSlotsError("Mostrando horarios disponibles del consultorio");
-
-        // Si falla, generar slots según horario de negocio
-        const businessSlots = generateBusinessHourSlots(selectedDate);
         setAvailableSlots(businessSlots);
       } finally {
         setIsLoadingSlots(false);
