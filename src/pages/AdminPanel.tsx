@@ -333,10 +333,11 @@ const AdminPanel = () => {
                   <TabsTrigger value="services" className="gap-2"><Sparkles className="h-4 w-4" /><span className="hidden sm:inline">Servicios</span></TabsTrigger>
                   <TabsTrigger value="gallery" className="gap-2"><Image className="h-4 w-4" /><span className="hidden sm:inline">Galería</span></TabsTrigger>
                   <TabsTrigger value="videos" className="gap-2"><VideoIcon className="h-4 w-4" /><span className="hidden sm:inline">Videos</span></TabsTrigger>
+                  <TabsTrigger value="appointments" className="gap-2"><ClipboardList className="h-4 w-4" /><span className="hidden sm:inline">Citas</span></TabsTrigger>
                   <TabsTrigger value="categories" className="gap-2"><Tag className="h-4 w-4" /><span className="hidden sm:inline">Categorías</span></TabsTrigger>
                   <TabsTrigger value="settings" className="gap-2"><Settings className="h-4 w-4" /><span className="hidden sm:inline">Configuración</span></TabsTrigger>
                 </TabsList>
-                {activeTab !== "settings" && activeTab !== "categories" && (
+                {activeTab !== "settings" && activeTab !== "categories" && activeTab !== "appointments" && (
                   <Button onClick={getAddHandler()}><Plus className="h-4 w-4 mr-2" />Agregar {getTabLabel()}</Button>
                 )}
               </div>
