@@ -46,6 +46,7 @@ import Header from "@/components/Header";
 import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import VideoUpload from "@/components/VideoUpload";
+import AppointmentsTab from "@/components/AppointmentsTab";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
