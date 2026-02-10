@@ -2,3 +2,6 @@ project_id = "snmstzifttscapnizykt"
 
 [functions.get-available-slots]
 verify_jwt = false
+
+[functions.create-appointment]
+verify_jwt = false
