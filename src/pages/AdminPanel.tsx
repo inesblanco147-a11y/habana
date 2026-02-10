@@ -607,6 +607,11 @@ const AdminPanel = () => {
                 </div>
               </TabsContent>
 
+              {/* Appointments Tab */}
+              <TabsContent value="appointments">
+                <AppointmentsTab />
+              </TabsContent>
+
               {/* Settings Tab */}
               <TabsContent value="settings">
                 {loadingSettings ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
