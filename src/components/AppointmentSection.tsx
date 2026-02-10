@@ -65,19 +65,7 @@ const AppointmentSection = () => {
         console.error("Error fetching slots:", error);
         setSlotsError("No se pudieron cargar los horarios");
         // Fallback to default slots
-        setAvailableSlots([
-          "09:00",
-          "10:00",
-          "11:00",
-          "12:00",
-          "13:00",
-          "14:00",
-          "15:00",
-          "16:00",
-          "17:00",
-          "18:00",
-          "19:00",
-        ]);
+        setAvailableSlots(["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]);
       } finally {
         setIsLoadingSlots(false);
       }
