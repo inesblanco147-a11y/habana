@@ -1,28 +1,36 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, MessageCircle, ExternalLink, Loader2 } from "lucide-react";
+import { Calendar, Clock, MessageCircle, Loader2, CheckCircle2, User, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
 import { useServices } from "@/hooks/useServices";
-import { supabase } from "@/integrations/supabase/client";
+import { useCreateAppointment } from "@/hooks/useAppointmentMutations";
 
 const AppointmentSection = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [slotsError, setSlotsError] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const googleCalendarUrl = useSiteSetting("google_calendar_url");
   const whatsappNumber = useSiteSetting("whatsapp_number");
-
   const { data: servicesFromDB = [] } = useServices();
   const services = servicesFromDB.map((s) => ({ value: s.name, label: s.name }));
+  const createAppointment = useCreateAppointment();
 
-  // Fetch available slots when date changes
   useEffect(() => {
     if (!selectedDate) {
       setAvailableSlots([]);
@@ -37,35 +45,21 @@ const AppointmentSection = () => {
 
       try {
         const dateStr = selectedDate.toISOString().split("T")[0];
-        const { data, error } = await supabase.functions.invoke("get-available-slots", {
-          body: null,
-          method: "GET",
-          headers: {},
-        });
-
-        // Use fetch directly since we need query params
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
         const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/get-available-slots?date=${dateStr}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
+          { method: "GET", headers: { "Content-Type": "application/json" } }
         );
 
-        if (!response.ok) {
-          throw new Error("Error al obtener horarios");
-        }
+        if (!response.ok) throw new Error("Error al obtener horarios");
 
         const result = await response.json();
         setAvailableSlots(result.slots || []);
       } catch (error) {
         console.error("Error fetching slots:", error);
         setSlotsError("No se pudieron cargar los horarios");
-        // Fallback to default slots
-        setAvailableSlots(["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]);
+        setAvailableSlots([
+          "09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00",
+        ]);
       } finally {
         setIsLoadingSlots(false);
       }
@@ -74,52 +68,117 @@ const AppointmentSection = () => {
     fetchSlots();
   }, [selectedDate]);
 
-  const handleGoogleCalendar = () => {
-    if (googleCalendarUrl) {
-      const link = document.createElement("a");
-      link.href = googleCalendarUrl;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!firstName.trim()) errors.firstName = "Nombre requerido";
+    if (!lastName.trim()) errors.lastName = "Apellidos requeridos";
+
+    const phoneClean = phone.replace(/[\s\-\(\)]/g, "");
+    const phoneRegex = /^(\+?52)?[1-9]\d{9}$/;
+    if (!phoneRegex.test(phoneClean)) errors.phone = "Formato: +52 seguido de 10 dígitos";
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) errors.email = "Email inválido";
+
+    if (!selectedDate) errors.date = "Selecciona una fecha";
+    if (!selectedTime) errors.time = "Selecciona un horario";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm() || !selectedDate) return;
+
+    const dateStr = selectedDate.toISOString().split("T")[0];
+
+    try {
+      await createAppointment.mutateAsync({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.replace(/[\s\-\(\)]/g, ""),
+        email: email.trim(),
+        date: dateStr,
+        time: selectedTime,
+        service: selectedService,
+        notes: notes.trim(),
+      });
+
+      setShowConfirmation(true);
+
+      // Open WhatsApp with pre-filled message
+      const dateDisplay = selectedDate.toLocaleDateString("es-MX", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+      });
+      const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
+      const message = encodeURIComponent(
+        `¡Hola! He agendado una cita:\n\n` +
+        `👤 ${firstName.trim()} ${lastName.trim()}\n` +
+        `📅 ${dateDisplay}\n` +
+        `🕐 ${selectedTime} hrs\n` +
+        (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
+        `\n¡Gracias!`
+      );
+      const number = whatsappNumber || "524421234567";
+      window.open(`https://wa.me/${number}?text=${message}`, "_blank", "noopener,noreferrer");
+    } catch {
+      // Error handled by mutation hook
     }
   };
 
-  const handleWhatsApp = () => {
-    const dateStr = selectedDate ? selectedDate.toLocaleDateString("es-MX") : "";
-    const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
-    const message = encodeURIComponent(
-      `Hola, me gustaría agendar una cita:\n\n` +
-        `📅 Fecha: ${dateStr}\n` +
-        `🕐 Hora: ${selectedTime}\n` +
-        `📋 Servicio: ${serviceLabel}\n\n` +
-        `¿Tienen disponibilidad?`,
-    );
-    const number = whatsappNumber || "524421234567";
-    const link = document.createElement("a");
-    link.href = `https://wa.me/${number}?text=${message}`;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const resetForm = () => {
+    setSelectedDate(undefined);
+    setSelectedTime("");
+    setSelectedService("");
+    setFirstName("");
+    setLastName("");
+    setPhone("");
+    setEmail("");
+    setNotes("");
+    setShowConfirmation(false);
+    setFormErrors({});
   };
 
-  const isFormComplete = selectedDate && selectedTime && selectedService;
+  const isFormComplete = selectedDate && selectedTime && firstName.trim() && lastName.trim() && phone.trim() && email.trim();
+
+  if (showConfirmation) {
+    return (
+      <section id="cita" className="py-16 lg:py-24 bg-muted/10">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-lg mx-auto shadow-xl border-b-4 border-hasace-green">
+            <CardContent className="pt-8 text-center space-y-4">
+              <CheckCircle2 className="h-16 w-16 text-hasace-green mx-auto" />
+              <h3 className="text-2xl font-bold">¡Cita Agendada!</h3>
+              <p className="text-muted-foreground">
+                Tu cita ha sido registrada exitosamente. Te hemos redirigido a WhatsApp para confirmar.
+              </p>
+              <div className="p-4 bg-muted rounded-lg text-left space-y-1">
+                <p className="text-sm">👤 {firstName} {lastName}</p>
+                <p className="text-sm">📅 {selectedDate?.toLocaleDateString("es-MX", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+                <p className="text-sm">🕐 {selectedTime} hrs</p>
+                {selectedService && <p className="text-sm">📋 {services.find(s => s.value === selectedService)?.label}</p>}
+              </div>
+              <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
+                Agendar otra cita
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="cita" className="py-16 lg:py-24 bg-muted/10">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl mb-4 font-bold uppercase tracking-wide text-destructive">
             Agenda tu Cita
           </h2>
           <div className="w-24 h-1 bg-hasace-red mx-auto rounded-full mb-4" />
           <p className="max-w-2xl mx-auto text-muted-foreground">
-            Selecciona la fecha, hora y servicio que necesitas. Puedes agendar directamente a través de Google Calendar
-            o contactarnos por WhatsApp.
+            Selecciona la fecha, hora y llena tus datos para agendar. Recibirás confirmación por WhatsApp.
           </p>
         </div>
 
@@ -144,21 +203,21 @@ const AppointmentSection = () => {
               </CardContent>
             </Card>
 
-            {/* Time & Service Card */}
+            {/* Form Card */}
             <Card className="bg-card shadow-xl border-b-4 border-hasace-red">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-hasace-red" />
-                  Hora y Servicio
+                  Detalles de la Cita
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Service Selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Tipo de servicio</label>
+              <CardContent className="space-y-4">
+                {/* Service */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Tipo de servicio</Label>
                   <Select value={selectedService} onValueChange={setSelectedService}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un servicio" />
+                      <SelectValue placeholder="Selecciona un servicio (opcional)" />
                     </SelectTrigger>
                     <SelectContent className="bg-card border shadow-lg z-50">
                       {services.map((service) => (
@@ -170,22 +229,21 @@ const AppointmentSection = () => {
                   </Select>
                 </div>
 
-                {/* Time Selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Horario disponible</label>
-
+                {/* Time Slots */}
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Horario disponible</Label>
                   {!selectedDate ? (
-                    <p className="text-sm text-muted-foreground py-4 text-center">
-                      Selecciona una fecha para ver los horarios disponibles
+                    <p className="text-sm text-muted-foreground py-3 text-center">
+                      Selecciona una fecha para ver horarios
                     </p>
                   ) : isLoadingSlots ? (
-                    <div className="flex items-center justify-center py-8 gap-2">
+                    <div className="flex items-center justify-center py-6 gap-2">
                       <Loader2 className="h-5 w-5 animate-spin text-hasace-red" />
-                      <span className="text-sm text-muted-foreground">Cargando horarios...</span>
+                      <span className="text-sm text-muted-foreground">Cargando...</span>
                     </div>
                   ) : availableSlots.length === 0 ? (
-                    <p className="text-sm text-destructive py-4 text-center">
-                      No hay horarios disponibles para esta fecha
+                    <p className="text-sm text-destructive py-3 text-center">
+                      No hay horarios disponibles
                     </p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
@@ -202,58 +260,108 @@ const AppointmentSection = () => {
                       ))}
                     </div>
                   )}
+                  {formErrors.time && <p className="text-xs text-destructive">{formErrors.time}</p>}
+                  {slotsError && <p className="text-xs text-amber-600 text-center">{slotsError}</p>}
+                </div>
 
-                  {slotsError && (
-                    <p className="text-xs text-amber-600 text-center mt-2">
-                      {slotsError} - Mostrando horarios predeterminados
-                    </p>
-                  )}
+                {/* Patient Data */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium flex items-center gap-1">
+                      <User className="h-3 w-3" /> Nombre *
+                    </Label>
+                    <Input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Nombre"
+                      maxLength={100}
+                    />
+                    {formErrors.firstName && <p className="text-xs text-destructive">{formErrors.firstName}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">Apellidos *</Label>
+                    <Input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Apellidos"
+                      maxLength={100}
+                    />
+                    {formErrors.lastName && <p className="text-xs text-destructive">{formErrors.lastName}</p>}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium flex items-center gap-1">
+                    <Phone className="h-3 w-3" /> Teléfono *
+                  </Label>
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+52 442 123 4567"
+                    maxLength={20}
+                  />
+                  {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium flex items-center gap-1">
+                    <Mail className="h-3 w-3" /> Correo electrónico *
+                  </Label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="correo@ejemplo.com"
+                    maxLength={255}
+                  />
+                  {formErrors.email && <p className="text-xs text-destructive">{formErrors.email}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Notas adicionales</Label>
+                  <Textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Información adicional (opcional)"
+                    maxLength={500}
+                    rows={2}
+                  />
                 </div>
 
                 {/* Summary */}
                 {isFormComplete && (
-                  <div className="p-4 bg-muted rounded-lg space-y-2">
-                    <h4 className="font-medium">Resumen de tu cita:</h4>
-                    <p className="text-sm text-muted-foreground">
-                      📅{" "}
-                      {selectedDate?.toLocaleDateString("es-MX", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                  <div className="p-3 bg-muted rounded-lg space-y-1">
+                    <h4 className="font-medium text-sm">Resumen:</h4>
+                    <p className="text-xs text-muted-foreground">
+                      👤 {firstName} {lastName}
                     </p>
-                    <p className="text-sm text-muted-foreground">🕐 {selectedTime} hrs</p>
-                    <p className="text-sm text-muted-foreground">
-                      📋 {services.find((s) => s.value === selectedService)?.label}
+                    <p className="text-xs text-muted-foreground">
+                      📅 {selectedDate?.toLocaleDateString("es-MX", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                     </p>
+                    <p className="text-xs text-muted-foreground">🕐 {selectedTime} hrs</p>
+                    {selectedService && (
+                      <p className="text-xs text-muted-foreground">
+                        📋 {services.find((s) => s.value === selectedService)?.label}
+                      </p>
+                    )}
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  {/* <Button 
-                    onClick={handleGoogleCalendar} 
-                    className="w-full gap-2 bg-hasace-red hover:bg-hasace-red/90 font-bold"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Agendar con Google Calendar
-                  </Button> */}
-
-                  <Button
-                    onClick={handleWhatsApp}
-                    disabled={!isFormComplete}
-                    className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Agendar por WhatsApp
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!isFormComplete || createAppointment.isPending}
+                  className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
+                >
+                  {createAppointment.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Agendando...</>
+                  ) : (
+                    <><MessageCircle className="h-4 w-4" /> Confirmar y Agendar por WhatsApp</>
+                  )}
+                </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
                   Horario de atención: Lunes a Viernes, 9:00 - 18:00 <br />
-                  Sabado 9:00 - 17:00 <br />
-                  Domingo 10:00 - 17:00
+                  Sábado 9:00 - 17:00 · Domingo 10:00 - 17:00
                 </p>
               </CardContent>
             </Card>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
-  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag
+  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,7 @@ import Header from "@/components/Header";
 import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import VideoUpload from "@/components/VideoUpload";
+import AppointmentsTab from "@/components/AppointmentsTab";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -333,10 +334,11 @@ const AdminPanel = () => {
                   <TabsTrigger value="services" className="gap-2"><Sparkles className="h-4 w-4" /><span className="hidden sm:inline">Servicios</span></TabsTrigger>
                   <TabsTrigger value="gallery" className="gap-2"><Image className="h-4 w-4" /><span className="hidden sm:inline">Galería</span></TabsTrigger>
                   <TabsTrigger value="videos" className="gap-2"><VideoIcon className="h-4 w-4" /><span className="hidden sm:inline">Videos</span></TabsTrigger>
+                  <TabsTrigger value="appointments" className="gap-2"><ClipboardList className="h-4 w-4" /><span className="hidden sm:inline">Citas</span></TabsTrigger>
                   <TabsTrigger value="categories" className="gap-2"><Tag className="h-4 w-4" /><span className="hidden sm:inline">Categorías</span></TabsTrigger>
                   <TabsTrigger value="settings" className="gap-2"><Settings className="h-4 w-4" /><span className="hidden sm:inline">Configuración</span></TabsTrigger>
                 </TabsList>
-                {activeTab !== "settings" && activeTab !== "categories" && (
+                {activeTab !== "settings" && activeTab !== "categories" && activeTab !== "appointments" && (
                   <Button onClick={getAddHandler()}><Plus className="h-4 w-4 mr-2" />Agregar {getTabLabel()}</Button>
                 )}
               </div>
@@ -604,6 +606,11 @@ const AdminPanel = () => {
                     </TableBody>
                   </Table>
                 </div>
+              </TabsContent>
+
+              {/* Appointments Tab */}
+              <TabsContent value="appointments">
+                <AppointmentsTab />
               </TabsContent>
 
               {/* Settings Tab */}
