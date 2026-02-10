@@ -38,6 +38,35 @@ const AppointmentSection = () => {
       return;
     }
 
+    const generateBusinessHourSlots = (date: Date): string[] => {
+      const dayOfWeek = date.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+      const slots: string[] = [];
+
+      // Configuración de horarios por día
+      let startHour = 9;
+      let endHour = 18;
+      const slotDuration = 60; // Duración de cada cita en minutos
+
+      // Ajustar horarios según el día
+      if (dayOfWeek === 6) {
+        // Sábado: 9:00 - 17:00
+        endHour = 17;
+      } else if (dayOfWeek === 0) {
+        // Domingo: 10:00 - 17:00
+        startHour = 10;
+        endHour = 17;
+      }
+      // Lunes a Viernes: 9:00 - 18:00 (valores por defecto)
+
+      // Generar slots
+      for (let hour = startHour; hour < endHour; hour++) {
+        const timeStr = `${hour.toString().padStart(2, "0")}:00`;
+        slots.push(timeStr);
+      }
+
+      return slots;
+    };
+
     const fetchSlots = async () => {
       setIsLoadingSlots(true);
       setSlotsError(null);
@@ -47,19 +76,25 @@ const AppointmentSection = () => {
         const dateStr = selectedDate.toISOString().split("T")[0];
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
-          { method: "GET", headers: { "Content-Type": "application/json" } }
+          { method: "GET", headers: { "Content-Type": "application/json" } },
         );
 
         if (!response.ok) throw new Error("Error al obtener horarios");
 
         const result = await response.json();
-        setAvailableSlots(result.slots || []);
+
+        // Filtrar slots de Google Calendar para que coincidan con horario de negocio
+        const businessSlots = generateBusinessHourSlots(selectedDate);
+        const filteredSlots = (result.slots || []).filter((slot: string) => businessSlots.includes(slot));
+
+        setAvailableSlots(filteredSlots.length > 0 ? filteredSlots : businessSlots);
       } catch (error) {
         console.error("Error fetching slots:", error);
-        setSlotsError("No se pudieron cargar los horarios");
-        setAvailableSlots([
-          "09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00",
-        ]);
+        setSlotsError("Mostrando horarios disponibles del consultorio");
+
+        // Si falla, generar slots según horario de negocio
+        const businessSlots = generateBusinessHourSlots(selectedDate);
+        setAvailableSlots(businessSlots);
       } finally {
         setIsLoadingSlots(false);
       }
@@ -109,16 +144,19 @@ const AppointmentSection = () => {
 
       // Open WhatsApp with pre-filled message
       const dateDisplay = selectedDate.toLocaleDateString("es-MX", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
       const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
       const message = encodeURIComponent(
         `¡Hola! He agendado una cita:\n\n` +
-        `👤 ${firstName.trim()} ${lastName.trim()}\n` +
-        `📅 ${dateDisplay}\n` +
-        `🕐 ${selectedTime} hrs\n` +
-        (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
-        `\n¡Gracias!`
+          `👤 ${firstName.trim()} ${lastName.trim()}\n` +
+          `📅 ${dateDisplay}\n` +
+          `🕐 ${selectedTime} hrs\n` +
+          (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
+          `\n¡Gracias!`,
       );
       const number = whatsappNumber || "524421234567";
       window.open(`https://wa.me/${number}?text=${message}`, "_blank", "noopener,noreferrer");
@@ -140,7 +178,8 @@ const AppointmentSection = () => {
     setFormErrors({});
   };
 
-  const isFormComplete = selectedDate && selectedTime && firstName.trim() && lastName.trim() && phone.trim() && email.trim();
+  const isFormComplete =
+    selectedDate && selectedTime && firstName.trim() && lastName.trim() && phone.trim() && email.trim();
 
   if (showConfirmation) {
     return (
@@ -154,10 +193,22 @@ const AppointmentSection = () => {
                 Tu cita ha sido registrada exitosamente. Te hemos redirigido a WhatsApp para confirmar.
               </p>
               <div className="p-4 bg-muted rounded-lg text-left space-y-1">
-                <p className="text-sm">👤 {firstName} {lastName}</p>
-                <p className="text-sm">📅 {selectedDate?.toLocaleDateString("es-MX", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+                <p className="text-sm">
+                  👤 {firstName} {lastName}
+                </p>
+                <p className="text-sm">
+                  📅{" "}
+                  {selectedDate?.toLocaleDateString("es-MX", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
                 <p className="text-sm">🕐 {selectedTime} hrs</p>
-                {selectedService && <p className="text-sm">📋 {services.find(s => s.value === selectedService)?.label}</p>}
+                {selectedService && (
+                  <p className="text-sm">📋 {services.find((s) => s.value === selectedService)?.label}</p>
+                )}
               </div>
               <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
                 Agendar otra cita
@@ -242,9 +293,7 @@ const AppointmentSection = () => {
                       <span className="text-sm text-muted-foreground">Cargando...</span>
                     </div>
                   ) : availableSlots.length === 0 ? (
-                    <p className="text-sm text-destructive py-3 text-center">
-                      No hay horarios disponibles
-                    </p>
+                    <p className="text-sm text-destructive py-3 text-center">No hay horarios disponibles</p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
                       {availableSlots.map((time) => (
@@ -336,7 +385,13 @@ const AppointmentSection = () => {
                       👤 {firstName} {lastName}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      📅 {selectedDate?.toLocaleDateString("es-MX", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                      📅{" "}
+                      {selectedDate?.toLocaleDateString("es-MX", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </p>
                     <p className="text-xs text-muted-foreground">🕐 {selectedTime} hrs</p>
                     {selectedService && (
@@ -353,9 +408,13 @@ const AppointmentSection = () => {
                   className="w-full gap-2 text-white bg-green-500 hover:bg-green-600 font-bold shadow-lg"
                 >
                   {createAppointment.isPending ? (
-                    <><Loader2 className="h-4 w-4 animate-spin" /> Agendando...</>
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Agendando...
+                    </>
                   ) : (
-                    <><MessageCircle className="h-4 w-4" /> Confirmar y Agendar por WhatsApp</>
+                    <>
+                      <MessageCircle className="h-4 w-4" /> Confirmar y Agendar por WhatsApp
+                    </>
                   )}
                 </Button>
 
