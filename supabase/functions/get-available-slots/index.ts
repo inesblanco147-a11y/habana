@@ -159,7 +159,6 @@ serve(async (req) => {
       }
     }
 
-    // Combine both sources
     // Generar slots dinámicamente según el día
     const baseSlots = generateSlots(dateParam);
 
