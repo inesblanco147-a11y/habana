@@ -10,7 +10,34 @@ const corsHeaders = {
 const GOOGLE_CALENDAR_API = "https://www.googleapis.com/calendar/v3";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-const BASE_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+function generateSlots(dateParam: string): string[] {
+  const date = new Date(dateParam + "T12:00:00Z"); // Usar mediodía UTC para evitar problemas de zona horaria
+  const dayOfWeek = date.getUTCDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+
+  const slots: string[] = [];
+  let startHour = 9;
+  let endHour = 18;
+
+  // Ajustar horarios según el día de la semana
+  if (dayOfWeek === 6) {
+    // Sábado: 9:00 - 17:00
+    endHour = 17;
+  } else if (dayOfWeek === 0) {
+    // Domingo: 10:00 - 17:00
+    startHour = 10;
+    endHour = 17;
+  }
+  // Lunes a Viernes: 9:00 - 18:00 (valores por defecto)
+
+  // Generar slots cada hora
+  for (let hour = startHour; hour < endHour; hour++) {
+    slots.push(`${hour.toString().padStart(2, "0")}:00`);
+  }
+
+  return slots;
+}
+
+// const BASE_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
 interface CalendarEvent {
   start: { dateTime?: string; date?: string };
@@ -133,7 +160,11 @@ serve(async (req) => {
     }
 
     // Combine both sources
-    const availableSlots = BASE_SLOTS.filter(
+    // Generar slots dinámicamente según el día
+    const baseSlots = generateSlots(dateParam);
+
+    // Filtrar slots ocupados (de DB y Google Calendar)
+    const availableSlots = baseSlots.filter(
       (slot) => !dbBookedTimes.has(slot) && !isSlotOccupied(slot, calendarEvents),
     );
 
@@ -142,14 +173,21 @@ serve(async (req) => {
         date: dateParam,
         slots: availableSlots,
         calendarConnected,
-        totalSlots: BASE_SLOTS.length,
+        totalSlots: baseSlots.length,
         availableCount: availableSlots.length,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error", slots: BASE_SLOTS }), {
+
+    // En caso de error, generar slots por defecto (asumiendo día laboral)
+    const fallbackSlots = [];
+    for (let hour = 9; hour < 18; hour++) {
+      fallbackSlots.push(`${hour.toString().padStart(2, "0")}:00`);
+    }
+
+    return new Response(JSON.stringify({ error: "Internal server error", slots: fallbackSlots }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
