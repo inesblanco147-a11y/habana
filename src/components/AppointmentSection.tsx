@@ -220,7 +220,19 @@ const AppointmentSection = () => {
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  disabled={(date) => date < new Date() || date.getDay() === 0}
+                  disabled={(date) => {
+                    // Obtener la fecha actual sin horas (solo día)
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    // Obtener la fecha del calendario sin horas
+                    const calendarDate = new Date(date);
+                    calendarDate.setHours(0, 0, 0, 0);
+
+                    // Deshabilitar solo fechas pasadas (antes de hoy)
+                    // Ya NO deshabilitamos domingos (quitamos: || date.getDay() === 0)
+                    return calendarDate < today;
+                  }}
                   className="rounded-md border"
                 />
               </CardContent>
