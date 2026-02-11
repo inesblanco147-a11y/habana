@@ -19,7 +19,7 @@ function generateSlots(dateParam: string): string[] {
   let endHour = 18;
 
   // Ajustar horarios según el día de la semana
-  if (dayOfWeek === 6) {
+  if (dayOfWeek === 7) {
     // Sábado: 9:00 - 17:00
     endHour = 17;
   } else if (dayOfWeek === 0) {
