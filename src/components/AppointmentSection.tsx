@@ -31,34 +31,40 @@ const AppointmentSection = () => {
   const services = servicesFromDB.map((s) => ({ value: s.name, label: s.name }));
   const createAppointment = useCreateAppointment();
 
-  useEffect(() => {
-    if (!selectedDate) {
+ useEffect(() => {
+  if (!selectedDate) {
+    setAvailableSlots([]);
+    setSelectedTime("");
+    return;
+  }
+
+  const fetchSlots = async () => {
+    setIsLoadingSlots(true);
+    setSlotsError(null);
+    setSelectedTime("");
+
+    try {
+      const dateStr = selectedDate.toISOString().split("T")[0];
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
+        { method: "GET", headers: { "Content-Type": "application/json" } }
+      );
+
+      if (!response.ok) throw new Error("Error al obtener horarios");
+
+      const result = await response.json();
+      setAvailableSlots(result.slots || []);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      setSlotsError("No se pudieron cargar los horarios");
       setAvailableSlots([]);
-      setSelectedTime("");
-      return;
+    } finally {
+      setIsLoadingSlots(false);
     }
+  };
 
-    const generateBusinessHourSlots = (date: Date): string[] => {
-      const dayOfWeek = date.getDay();
-      const slots: string[] = [];
-
-      let startHour = 9;
-      let endHour = 18;
-
-      if (dayOfWeek === 6) {
-        endHour = 17;
-      } else if (dayOfWeek === 0) {
-        startHour = 10;
-        endHour = 17;
-      }
-
-      // Generar TODOS los slots
-      for (let hour = startHour; hour < endHour; hour++) {
-        slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      }
-
-      return slots;
-    };
+  fetchSlots();
+}, [selectedDate]);
 
     setIsLoadingSlots(true);
     setSlotsError(null);
