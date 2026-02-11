@@ -31,49 +31,101 @@ const AppointmentSection = () => {
   const services = servicesFromDB.map((s) => ({ value: s.name, label: s.name }));
   const createAppointment = useCreateAppointment();
 
-  useEffect(() => {
-    if (!selectedDate) {
-      setAvailableSlots([]);
-      setSelectedTime("");
-      return;
-    }
+  // useEffect(() => {
+  //   if (!selectedDate) {
+  //     setAvailableSlots([]);
+  //     setSelectedTime("");
+  //     return;
+  //   }
 
-    const generateBusinessHourSlots = (date: Date): string[] => {
-      const dayOfWeek = date.getDay();
-      const slots: string[] = [];
+  //   const generateBusinessHourSlots = (date: Date): string[] => {
+  //     const dayOfWeek = date.getDay();
+  //     const slots: string[] = [];
 
-      let startHour = 9;
-      let endHour = 18;
+  //     let startHour = 9;
+  //     let endHour = 18;
 
-      if (dayOfWeek === 6) {
-        endHour = 17;
-      } else if (dayOfWeek === 0) {
-        startHour = 10;
-        endHour = 17;
-      }
+  //     if (dayOfWeek === 6) {
+  //       endHour = 17;
+  //     } else if (dayOfWeek === 0) {
+  //       startHour = 10;
+  //       endHour = 17;
+  //     }
 
-      // Generar TODOS los slots
-      for (let hour = startHour; hour < endHour; hour++) {
-        slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      }
+  //     // Generar TODOS los slots
+  //     for (let hour = startHour; hour < endHour; hour++) {
+  //       slots.push(`${hour.toString().padStart(2, "0")}:00`);
+  //     }
 
-      return slots;
-    };
+  //     return slots;
+  //   };
 
+  //   setIsLoadingSlots(true);
+  //   setSlotsError(null);
+  //   setSelectedTime("");
+
+  //   // Generar slots localmente
+  //   const businessSlots = generateBusinessHourSlots(selectedDate);
+
+  //   console.log("📅 Fecha seleccionada:", selectedDate);
+  //   console.log("🕐 Slots generados:", businessSlots);
+
+  //   // FORZAR el uso de slots locales (sin llamar a Google Calendar)
+  //   setAvailableSlots(businessSlots);
+  //   setIsLoadingSlots(false);
+  // }, [selectedDate]);
+  ¡Exacto! Ese es un problema de sincronización en tiempo real. Actualmente, la Edge Function solo se ejecuta cuando cargas la página o cambias de fecha, pero no está verificando constantemente si hay nuevas citas en Google Calendar.
+
+Hay varias formas de solucionarlo:
+🔧 Solución 1: Refrescar automáticamente cada X tiempo (Recomendada)
+
+Modifica el useEffect en AppointmentSection.tsx para que revise Google Calendar cada 30-60 segundos:
+jsx
+
+useEffect(() => {
+  if (!selectedDate) {
+    setAvailableSlots([]);
+    setSelectedTime("");
+    return;
+  }
+
+  const fetchSlots = async () => {
     setIsLoadingSlots(true);
     setSlotsError(null);
-    setSelectedTime("");
 
-    // Generar slots localmente
-    const businessSlots = generateBusinessHourSlots(selectedDate);
+    try {
+      const dateStr = selectedDate.toISOString().split("T")[0];
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
+        { method: "GET", headers: { "Content-Type": "application/json" } }
+      );
 
-    console.log("📅 Fecha seleccionada:", selectedDate);
-    console.log("🕐 Slots generados:", businessSlots);
+      if (!response.ok) throw new Error("Error al obtener horarios");
 
-    // FORZAR el uso de slots locales (sin llamar a Google Calendar)
-    setAvailableSlots(businessSlots);
-    setIsLoadingSlots(false);
-  }, [selectedDate]);
+      const result = await response.json();
+      setAvailableSlots(result.slots || []);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      setSlotsError("No se pudieron cargar los horarios");
+      setAvailableSlots([]);
+    } finally {
+      setIsLoadingSlots(false);
+    }
+  };
+
+  // Ejecutar inmediatamente
+  fetchSlots();
+
+  // NUEVO: Configurar intervalo para actualizar cada 60 segundos
+  const intervalId = setInterval(() => {
+    fetchSlots();
+  }, 60000); // 60000ms = 1 minuto
+
+  // Limpiar intervalo cuando el componente se desmonte o cambie la fecha
+  return () => {
+    clearInterval(intervalId);
+  };
+}, [selectedDate]);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
