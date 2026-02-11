@@ -38,60 +38,41 @@ const AppointmentSection = () => {
       return;
     }
 
-    const fetchSlots = async () => {
-      setIsLoadingSlots(true);
-      setSlotsError(null);
-      setSelectedTime("");
+    const generateBusinessHourSlots = (date: Date): string[] => {
+      const dayOfWeek = date.getDay();
+      const slots: string[] = [];
 
-      try {
-        const dateStr = selectedDate.toISOString().split("T")[0];
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
-          { method: "GET", headers: { "Content-Type": "application/json" } },
-        );
+      let startHour = 9;
+      let endHour = 18;
 
-        if (!response.ok) throw new Error("Error al obtener horarios");
-
-        const result = await response.json();
-        let slots = result.slots || [];
-
-        // NUEVO: Filtrar horarios que ya pasaron si es el día de hoy
-        const today = new Date();
-        const selectedDay = new Date(selectedDate);
-        selectedDay.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-
-        const isToday = selectedDay.getTime() === today.getTime();
-
-        if (isToday) {
-          const now = new Date();
-          const currentHour = now.getHours();
-          const currentMinutes = now.getMinutes();
-
-          // Filtrar slots que sean al menos 4 horas después de ahora
-          slots = slots.filter((slot) => {
-            const [slotHour] = slot.split(":").map(Number);
-            const hoursDifference = slotHour - currentHour;
-
-            // Si la diferencia es mayor a 4 horas, mostrar
-            // Si es exactamente 4 horas, verificar minutos
-            if (hoursDifference > 4) return true;
-            if (hoursDifference === 4) return currentMinutes === 0;
-            return false;
-          });
-        }
-
-        setAvailableSlots(slots);
-      } catch (error) {
-        console.error("Error fetching slots:", error);
-        setSlotsError("No se pudieron cargar los horarios");
-        setAvailableSlots([]);
-      } finally {
-        setIsLoadingSlots(false);
+      if (dayOfWeek === 6) {
+        endHour = 17;
+      } else if (dayOfWeek === 0) {
+        startHour = 10;
+        endHour = 17;
       }
+
+      // Generar TODOS los slots
+      for (let hour = startHour; hour < endHour; hour++) {
+        slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      }
+
+      return slots;
     };
 
-    fetchSlots();
+    setIsLoadingSlots(true);
+    setSlotsError(null);
+    setSelectedTime("");
+
+    // Generar slots localmente
+    const businessSlots = generateBusinessHourSlots(selectedDate);
+
+    console.log("📅 Fecha seleccionada:", selectedDate);
+    console.log("🕐 Slots generados:", businessSlots);
+
+    // FORZAR el uso de slots locales (sin llamar a Google Calendar)
+    setAvailableSlots(businessSlots);
+    setIsLoadingSlots(false);
   }, [selectedDate]);
 
   const validateForm = (): boolean => {
