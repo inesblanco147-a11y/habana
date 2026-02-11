@@ -46,60 +46,33 @@ const AppointmentSection = () => {
       let endHour = 18;
 
       if (dayOfWeek === 6) {
-        endHour = 17; // Sábado hasta 17:00
+        endHour = 17;
       } else if (dayOfWeek === 0) {
-        startHour = 10; // Domingo desde 10:00
+        startHour = 10;
         endHour = 17;
       }
 
-      // Generar todos los slots hora por hora
+      // Generar TODOS los slots
       for (let hour = startHour; hour < endHour; hour++) {
         slots.push(`${hour.toString().padStart(2, "0")}:00`);
       }
 
-      console.log("Slots generados:", slots); // Para debug
       return slots;
     };
 
-    const fetchSlots = async () => {
-      setIsLoadingSlots(true);
-      setSlotsError(null);
-      setSelectedTime("");
+    setIsLoadingSlots(true);
+    setSlotsError(null);
+    setSelectedTime("");
 
-      // Primero, generar los slots base del consultorio
-      const businessSlots = generateBusinessHourSlots(selectedDate);
+    // Generar slots localmente
+    const businessSlots = generateBusinessHourSlots(selectedDate);
 
-      try {
-        const dateStr = selectedDate.toISOString().split("T")[0];
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
-          { method: "GET", headers: { "Content-Type": "application/json" } },
-        );
+    console.log("📅 Fecha seleccionada:", selectedDate);
+    console.log("🕐 Slots generados:", businessSlots);
 
-        if (!response.ok) throw new Error("Error al obtener horarios");
-
-        const result = await response.json();
-        console.log("Slots de Google Calendar:", result.slots); // Para debug
-
-        // Si Google Calendar devuelve slots, usarlos
-        // Si no, usar los slots de negocio generados
-        if (result.slots && Array.isArray(result.slots) && result.slots.length > 0) {
-          // Filtrar para que solo incluya slots dentro del horario de negocio
-          const validSlots = result.slots.filter((slot: string) => businessSlots.includes(slot));
-          setAvailableSlots(validSlots.length > 0 ? validSlots : businessSlots);
-        } else {
-          setAvailableSlots(businessSlots);
-        }
-      } catch (error) {
-        console.error("Error fetching slots:", error);
-        setSlotsError("Mostrando horarios disponibles del consultorio");
-        setAvailableSlots(businessSlots);
-      } finally {
-        setIsLoadingSlots(false);
-      }
-    };
-
-    fetchSlots();
+    // FORZAR el uso de slots locales (sin llamar a Google Calendar)
+    setAvailableSlots(businessSlots);
+    setIsLoadingSlots(false);
   }, [selectedDate]);
 
   const validateForm = (): boolean => {
