@@ -70,6 +70,7 @@ const AppointmentSection = () => {
     console.log("🕐 Slots generados:", businessSlots);
 
     const result = await response.json();
+
     console.log("📅 Respuesta completa de Google Calendar:", result);
     console.log("🕐 Slots recibidos:", result.slots);
     console.log("🚫 Slots ocupados:", result.occupied);
