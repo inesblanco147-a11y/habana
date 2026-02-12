@@ -52,7 +52,6 @@ const AppointmentSection = () => {
         endHour = 17;
       }
 
-      // Generar TODOS los slots
       for (let hour = startHour; hour < endHour; hour++) {
         slots.push(`${hour.toString().padStart(2, "0")}:00`);
       }
@@ -60,20 +59,68 @@ const AppointmentSection = () => {
       return slots;
     };
 
-    setIsLoadingSlots(true);
-    setSlotsError(null);
-    setSelectedTime("");
+    const fetchSlots = async () => {
+      setIsLoadingSlots(true);
+      setSlotsError(null);
+      setSelectedTime("");
 
-    const result = await response.json();
+      const allBusinessSlots = generateBusinessHourSlots(selectedDate);
 
-    console.log("📅 Respuesta completa de Google Calendar:", result);
-    console.log("🕐 Slots recibidos:", result.slots);
-    console.log("🚫 Slots ocupados:", result.occupied);
-    console.log("📊 Debug info:", result.debug);
+      console.log("🏢 Slots de negocio generados:", allBusinessSlots);
 
-    // FORZAR el uso de slots locales (sin llamar a Google Calendar)
-    setAvailableSlots(businessSlots);
-    setIsLoadingSlots(false);
+      try {
+        const dateStr = selectedDate.toISOString().split("T")[0];
+        console.log("📅 Consultando disponibilidad para:", dateStr);
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-available-slots?date=${dateStr}`,
+          { method: "GET", headers: { "Content-Type": "application/json" } },
+        );
+
+        if (!response.ok) {
+          console.warn("⚠️ Error al conectar con Google Calendar");
+          setAvailableSlots(allBusinessSlots);
+          setSlotsError("Sin conexión a Google Calendar. Mostrando todos los horarios.");
+          setIsLoadingSlots(false);
+          return;
+        }
+
+        const result = await response.json();
+
+        // ===== LOGS DE DEBUG =====
+        console.log("📦 Respuesta completa de Google Calendar:", result);
+        console.log("✅ Slots disponibles recibidos:", result.slots);
+        console.log("🚫 Slots ocupados:", result.occupied);
+        console.log("📊 Info de debug:", result.debug);
+        // ===== FIN LOGS DE DEBUG =====
+
+        if (result.slots && Array.isArray(result.slots)) {
+          const availableFromCalendar = result.slots.filter((slot: string) => allBusinessSlots.includes(slot));
+
+          console.log("🎯 Slots finales a mostrar:", availableFromCalendar);
+          setAvailableSlots(availableFromCalendar);
+
+          if (availableFromCalendar.length === 0) {
+            setSlotsError("Todos los horarios están ocupados para esta fecha");
+          }
+        } else {
+          console.warn("⚠️ No se recibieron slots, mostrando todos");
+          setAvailableSlots(allBusinessSlots);
+        }
+      } catch (error) {
+        console.error("❌ Error al obtener slots:", error);
+        setSlotsError("Error de conexión. Mostrando horarios del consultorio.");
+        setAvailableSlots(allBusinessSlots);
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    };
+
+    fetchSlots();
+
+    const interval = setInterval(fetchSlots, 30000);
+
+    return () => clearInterval(interval);
   }, [selectedDate]);
 
   const validateForm = (): boolean => {
