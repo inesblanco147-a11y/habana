@@ -1,7 +1,43 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const GOOGLE_CALENDAR_API = "https://www.googleapis.com/calendar/v3";
+const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const CALENDAR_ID = "primary";
+
+async function getAccessToken(): Promise<string | null> {
+  const clientId = Deno.env.get("GOOGLE_CALENDAR_CLIENT_ID");
+  const clientSecret = Deno.env.get("GOOGLE_CALENDAR_CLIENT_SECRET");
+  const refreshToken = Deno.env.get("GOOGLE_CALENDAR_REFRESH_TOKEN");
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    console.error("❌ Faltan credenciales OAuth2");
+    return null;
+  }
+
+  try {
+    const response = await fetch(GOOGLE_TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("❌ Token refresh failed:", await response.text());
+      return null;
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error("❌ Error refreshing token:", error);
+    return null;
+  }
+}
 
 serve(async (req) => {
   const corsHeaders = {
@@ -19,17 +55,17 @@ serve(async (req) => {
 
     if (!date) {
       return new Response(
-        JSON.stringify({ error: "Fecha requerida" }), 
+        JSON.stringify({ error: "Fecha requerida" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const accessToken = Deno.env.get("GOOGLE_CALENDAR_ACCESS_TOKEN");
-    
+    const accessToken = await getAccessToken();
+
     if (!accessToken) {
-      console.error("❌ No hay token configurado");
+      console.error("❌ No se pudo obtener access token");
       return new Response(
-        JSON.stringify({ error: "Token no configurado", slots: [] }), 
+        JSON.stringify({ error: "Token no configurado", slots: [] }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -57,7 +93,7 @@ serve(async (req) => {
     // Consultar Google Calendar
     const timeMin = `${date}T00:00:00Z`;
     const timeMax = `${date}T23:59:59Z`;
-    
+
     const calendarUrl = `${GOOGLE_CALENDAR_API}/calendars/${encodeURIComponent(CALENDAR_ID)}/events?` +
       `timeMin=${encodeURIComponent(timeMin)}&` +
       `timeMax=${encodeURIComponent(timeMax)}&` +
@@ -74,11 +110,11 @@ serve(async (req) => {
     if (!response.ok) {
       console.error(`❌ Error ${response.status} de Google Calendar`);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           slots: allSlots,
           occupied: [],
-          warning: "No se pudo verificar calendario"
-        }), 
+          warning: "No se pudo verificar calendario",
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -90,7 +126,7 @@ serve(async (req) => {
 
     // Extraer horarios ocupados
     const occupiedSlots = new Set<string>();
-    
+
     events.forEach((event: any) => {
       if (event.status === "cancelled") {
         return;
@@ -100,24 +136,23 @@ serve(async (req) => {
         const startTime = new Date(event.start.dateTime);
         const localHour = startTime.getHours();
         const slot = `${localHour.toString().padStart(2, "0")}:00`;
-        
+
         occupiedSlots.add(slot);
-        console.log(`🚫 Bloqueado: ${slot} - ${event.summary || 'Sin título'}`);
-        
+        console.log(`🚫 Bloqueado: ${slot} - ${event.summary || "Sin título"}`);
       } else if (event.start?.date) {
         console.log(`📅 Evento todo el día - bloqueando todos`);
-        allSlots.forEach(s => occupiedSlots.add(s));
+        allSlots.forEach((s) => occupiedSlots.add(s));
       }
     });
 
     // Filtrar disponibles
-    const availableSlots = allSlots.filter(slot => !occupiedSlots.has(slot));
+    const availableSlots = allSlots.filter((slot) => !occupiedSlots.has(slot));
 
-    console.log(`✅ Disponibles: ${availableSlots.join(', ')}`);
-    console.log(`🚫 Ocupados: ${Array.from(occupiedSlots).join(', ')}`);
+    console.log(`✅ Disponibles: ${availableSlots.join(", ")}`);
+    console.log(`🚫 Ocupados: ${Array.from(occupiedSlots).join(", ")}`);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         slots: availableSlots,
         occupied: Array.from(occupiedSlots).sort(),
         total: allSlots.length,
@@ -125,15 +160,14 @@ serve(async (req) => {
           date,
           eventsFound: events.length,
           businessHours: `${startHour}:00 - ${endHour}:00`,
-        }
-      }), 
+        },
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("💥 Error:", error);
     return new Response(
-      JSON.stringify({ error: error.message, slots: [] }), 
+      JSON.stringify({ error: error.message, slots: [] }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
