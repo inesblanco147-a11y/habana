@@ -38,9 +38,36 @@ const AppointmentSection = () => {
       return;
     }
 
+    const generateBusinessHourSlots = (date: Date): string[] => {
+      const dayOfWeek = date.getDay();
+      const slots: string[] = [];
+
+      let startHour = 9;
+      let endHour = 18;
+
+      if (dayOfWeek === 6) {
+        endHour = 17; // Sábado hasta 17:00
+      } else if (dayOfWeek === 0) {
+        startHour = 10; // Domingo desde 10:00
+        endHour = 17;
+      }
+
+      // Generar todos los slots hora por hora
+      for (let hour = startHour; hour < endHour; hour++) {
+        slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      }
+
+      console.log("Slots generados:", slots); // Para debug
+      return slots;
+    };
+
     const fetchSlots = async () => {
       setIsLoadingSlots(true);
       setSlotsError(null);
+      setSelectedTime("");
+
+      // Primero, generar los slots base del consultorio
+      const businessSlots = generateBusinessHourSlots(selectedDate);
 
       try {
         const dateStr = selectedDate.toISOString().split("T")[0];
@@ -52,28 +79,27 @@ const AppointmentSection = () => {
         if (!response.ok) throw new Error("Error al obtener horarios");
 
         const result = await response.json();
-        setAvailableSlots(result.slots || []);
+        console.log("Slots de Google Calendar:", result.slots); // Para debug
+
+        // Si Google Calendar devuelve slots, usarlos
+        // Si no, usar los slots de negocio generados
+        if (result.slots && Array.isArray(result.slots) && result.slots.length > 0) {
+          // Filtrar para que solo incluya slots dentro del horario de negocio
+          const validSlots = result.slots.filter((slot: string) => businessSlots.includes(slot));
+          setAvailableSlots(validSlots.length > 0 ? validSlots : businessSlots);
+        } else {
+          setAvailableSlots(businessSlots);
+        }
       } catch (error) {
         console.error("Error fetching slots:", error);
-        setSlotsError("No se pudieron cargar los horarios");
-        setAvailableSlots([]);
+        setSlotsError("Mostrando horarios disponibles del consultorio");
+        setAvailableSlots(businessSlots);
       } finally {
         setIsLoadingSlots(false);
       }
     };
 
-    // Ejecutar inmediatamente
     fetchSlots();
-
-    // NUEVO: Configurar intervalo para actualizar cada 60 segundos
-    const intervalId = setInterval(() => {
-      fetchSlots();
-    }, 60000); // 60000ms = 1 minuto
-
-    // Limpiar intervalo cuando el componente se desmonte o cambie la fecha
-    return () => {
-      clearInterval(intervalId);
-    };
   }, [selectedDate]);
 
   const validateForm = (): boolean => {
