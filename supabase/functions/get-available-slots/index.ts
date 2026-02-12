@@ -133,8 +133,11 @@ serve(async (req) => {
       }
 
       if (event.start?.dateTime) {
-        const startTime = new Date(event.start.dateTime);
-        const localHour = startTime.getHours();
+        // Parse hour directly from the dateTime string to avoid UTC conversion
+        // Format: "2026-02-20T10:00:00-06:00" → extract "10"
+        const timeMatch = event.start.dateTime.match(/T(\d{2}):\d{2}/);
+        const localHour = timeMatch ? parseInt(timeMatch[1], 10) : -1;
+        if (localHour < 0) return;
         const slot = `${localHour.toString().padStart(2, "0")}:00`;
 
         occupiedSlots.add(slot);
