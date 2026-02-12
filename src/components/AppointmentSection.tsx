@@ -67,6 +67,11 @@ const AppointmentSection = () => {
     // Generar slots localmente
     const businessSlots = generateBusinessHourSlots(selectedDate);
 
+    const result = await response.json();
+    console.log("📅 Respuesta completa de Google Calendar:", result);
+    console.log("🕐 Slots recibidos:", result.slots);
+    console.log("🚫 Slots ocupados:", result.occupied);
+    console.log("📊 Debug info:", result.debug);
     console.log("📅 Fecha seleccionada:", selectedDate);
     console.log("🕐 Slots generados:", businessSlots);
 
