@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, MessageCircle, Loader2, CheckCircle2, User, Mail, Phone } from "lucide-react";
+import { Calendar, Clock, MessageCircle, Loader2, CheckCircle2, User, Mail, Phone, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -25,6 +25,7 @@ const AppointmentSection = () => {
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   const whatsappNumber = useSiteSetting("whatsapp_number");
   const { data: servicesFromDB = [] } = useServices();
@@ -162,24 +163,9 @@ const AppointmentSection = () => {
 
       setShowConfirmation(true);
 
-      // Open WhatsApp with pre-filled message
-      const dateDisplay = selectedDate.toLocaleDateString("es-MX", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
-      const message = encodeURIComponent(
-        `¡Hola! He agendado una cita:\n\n` +
-          `👤 ${firstName.trim()} ${lastName.trim()}\n` +
-          `📅 ${dateDisplay}\n` +
-          `🕐 ${selectedTime} hrs\n` +
-          (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
-          `\n¡Gracias!`,
-      );
+      // Open WhatsApp without pre-filled message
       const number = whatsappNumber || "524421234567";
-      window.open(`https://wa.me/${number}?text=${message}`, "_blank", "noopener,noreferrer");
+      window.open(`https://wa.me/${number}`, "_blank", "noopener,noreferrer");
     } catch {
       // Error handled by mutation hook
     }
@@ -196,10 +182,39 @@ const AppointmentSection = () => {
     setNotes("");
     setShowConfirmation(false);
     setFormErrors({});
+    setCopiedToClipboard(false);
   };
 
   const isFormComplete =
     selectedDate && selectedTime && firstName.trim() && lastName.trim() && phone.trim() && email.trim();
+
+  const getAppointmentDetailsText = () => {
+    const dateDisplay = selectedDate?.toLocaleDateString("es-MX", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }) || "";
+    const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
+    return (
+      `¡Hola! He agendado una cita:\n\n` +
+      `👤 ${firstName} ${lastName}\n` +
+      `📅 ${dateDisplay}\n` +
+      `🕐 ${selectedTime} hrs\n` +
+      (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
+      `\n¡Gracias!`
+    );
+  };
+
+  const handleCopyDetails = async () => {
+    try {
+      await navigator.clipboard.writeText(getAppointmentDetailsText());
+      setCopiedToClipboard(true);
+      setTimeout(() => setCopiedToClipboard(false), 2000);
+    } catch {
+      // Fallback silencioso
+    }
+  };
 
   if (showConfirmation) {
     return (
@@ -210,7 +225,7 @@ const AppointmentSection = () => {
               <CheckCircle2 className="h-16 w-16 text-hasace-green mx-auto" />
               <h3 className="text-2xl font-bold">¡Cita Agendada!</h3>
               <p className="text-muted-foreground">
-                Tu cita ha sido registrada exitosamente. Te hemos redirigido a WhatsApp para confirmar.
+                Tu cita ha sido registrada exitosamente. Copia los detalles y pégalos en WhatsApp para confirmar.
               </p>
               <div className="p-4 bg-muted rounded-lg text-left space-y-1">
                 <p className="text-sm">
@@ -230,6 +245,14 @@ const AppointmentSection = () => {
                   <p className="text-sm">📋 {services.find((s) => s.value === selectedService)?.label}</p>
                 )}
               </div>
+              <Button
+                onClick={handleCopyDetails}
+                variant="outline"
+                className="gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                {copiedToClipboard ? "¡Copiado!" : "Copiar detalles"}
+              </Button>
               <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
                 Agendar otra cita
               </Button>

@@ -134,20 +134,21 @@ serve(async (req) => {
       try {
         const startDateTime = `${date}T${time}:00`;
         const [hours, minutes] = time.split(':').map(Number);
-        const endMinutes = minutes + 30;
-        const endHours = hours + Math.floor(endMinutes / 60);
-        const endTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+        const endHours = hours + 1;
+        const endTime = `${String(endHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         const endDateTime = `${date}T${endTime}:00`;
 
         const calendarEvent = {
-          summary: `Cita: ${firstName} ${lastName}`,
+          summary: `Cita - ${firstName} ${lastName}`,
           description: `Paciente: ${firstName} ${lastName}\nTeléfono: ${phone}\nEmail: ${email}\nServicio: ${service || 'No especificado'}\nNotas: ${notes || 'Sin notas'}`,
           start: { dateTime: startDateTime, timeZone: 'America/Mexico_City' },
           end: { dateTime: endDateTime, timeZone: 'America/Mexico_City' },
+          attendees: [{ email: 'hasace1964@gmail.com' }],
+          reminders: { useDefault: false, overrides: [{ method: 'email', minutes: 1440 }] },
         };
 
         const calResponse = await fetch(
-          `${GOOGLE_CALENDAR_API}/calendars/primary/events`,
+          `${GOOGLE_CALENDAR_API}/calendars/primary/events?sendNotifications=true`,
           {
             method: 'POST',
             headers: {
