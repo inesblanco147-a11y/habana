@@ -97,6 +97,7 @@ serve(async (req) => {
     const calendarUrl = `${GOOGLE_CALENDAR_API}/calendars/${encodeURIComponent(CALENDAR_ID)}/events?` +
       `timeMin=${encodeURIComponent(timeMin)}&` +
       `timeMax=${encodeURIComponent(timeMax)}&` +
+      `timeZone=${encodeURIComponent('America/Mexico_City')}&` +
       `singleEvents=true&` +
       `orderBy=startTime`;
 
