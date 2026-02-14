@@ -1,45 +1,36 @@
 
 
-## Plan: Actualizar WhatsApp y agregar notificaciones por email
+## Plan: Corregir horas desfasadas y notificaciones por email
 
-### Cambio 1: AppointmentSection.tsx - Flujo de WhatsApp y confirmacion
+### Problema 1: Horas incorrectas en get-available-slots
 
-**En `handleSubmit`:**
-- Remover el parametro `?text=...` del link de WhatsApp, dejando solo `https://wa.me/[NUMERO]`
-- Guardar los detalles de la cita en un nuevo estado para mostrarlos en la pantalla de confirmacion
+**Causa raiz**: La API de Google Calendar devuelve las horas en formato UTC (ej: `2026-02-14T16:00:00Z` para una cita a las 10:00 en Mexico). La regex extrae `16` en lugar de `10`.
 
-**En la pantalla de confirmacion (`showConfirmation`):**
-- Agregar un boton "Copiar detalles" que copie al portapapeles un mensaje con:
-  - Nombre completo del paciente
-  - Fecha en formato largo en espanol (ej: "jueves, 20 de febrero de 2026")
-  - Hora de la cita
-  - Servicio (si fue seleccionado)
-- Importar el icono `Copy` de lucide-react
-- Usar `navigator.clipboard.writeText()` para copiar
-- Mostrar feedback visual al copiar (texto del boton cambia temporalmente a "Copiado")
-- Actualizar el texto descriptivo para indicar que pueden pegar los detalles en WhatsApp
+**Solucion**: Agregar el parametro `timeZone=America/Mexico_City` a la consulta de Google Calendar API. Esto fuerza a la API a devolver los horarios en la zona horaria local, asi la regex extraera correctamente `10` de `2026-02-14T10:00:00-06:00`.
 
-### Cambio 2: create-appointment Edge Function - Notificaciones por email
+**Archivo**: `supabase/functions/get-available-slots/index.ts`
+- Agregar `&timeZone=${encodeURIComponent('America/Mexico_City')}` a la URL de consulta del calendario (linea 97-101)
 
-**En la creacion del evento de Google Calendar:**
-- Cambiar duracion de 30 minutos a 1 hora
-- Cambiar titulo de `"Cita: ..."` a `"Cita - ..."`
-- Agregar `attendees: [{ email: "hasace1964@gmail.com" }]` al evento
-- Agregar `reminders: { useDefault: false, overrides: [{ method: 'email', minutes: 1440 }] }`
-- Agregar `?sendNotifications=true` como query parameter en la URL del POST a Google Calendar API
+### Problema 2: No se envian notificaciones por email
 
-Esto hara que Google Calendar envie automaticamente un email de notificacion a hasace1964@gmail.com cada vez que se cree una cita, y ademas un recordatorio por email 24 horas antes.
+**Causa raiz**: El parametro `sendNotifications=true` esta deprecado en Google Calendar API v3. El parametro correcto es `sendUpdates=all`.
+
+**Solucion**: Cambiar el query parameter en la URL del POST al crear eventos.
+
+**Archivo**: `supabase/functions/create-appointment/index.ts`
+- Cambiar `?sendNotifications=true` por `?sendUpdates=all` en la URL del endpoint (linea 151)
 
 ### Seccion tecnica
 
-**Archivos a modificar:**
-1. `src/components/AppointmentSection.tsx` - lineas 146-186 (handleSubmit) y 204-241 (confirmacion)
-2. `supabase/functions/create-appointment/index.ts` - lineas 134-159 (creacion de evento)
+**get-available-slots** - Linea 97-101, agregar timeZone al calendarUrl:
+```
+const calendarUrl = `...&timeZone=${encodeURIComponent('America/Mexico_City')}`;
+```
 
-**Estado nuevo en AppointmentSection:**
-- `copiedToClipboard: boolean` para feedback del boton copiar
+**create-appointment** - Linea 151, cambiar parametro:
+```
+`${GOOGLE_CALENDAR_API}/calendars/primary/events?sendUpdates=all`
+```
 
-**Google Calendar API:**
-- El parametro `sendNotifications=true` en la URL del endpoint hace que Google envie emails a los attendees
-- Los reminders con `method: 'email'` y `minutes: 1440` envian recordatorio 24hrs antes
+Ambos cambios requieren redespliegue de las edge functions.
 
