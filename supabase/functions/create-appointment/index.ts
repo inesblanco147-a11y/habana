@@ -8,6 +8,8 @@ const corsHeaders = {
 
 const GOOGLE_CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const GMAIL_API = 'https://gmail.googleapis.com/gmail/v1';
+const ADMIN_EMAIL = 'hasace1964@gmail.com';
 
 async function getAccessToken(): Promise<string | null> {
   const clientId = Deno.env.get('GOOGLE_CALENDAR_CLIENT_ID');
@@ -38,7 +40,65 @@ async function getAccessToken(): Promise<string | null> {
   } catch (error) {
     console.error('Error refreshing token:', error);
     return null;
+}
+
+function base64url(str: string): string {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  let binary = '';
+  for (const byte of data) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function sendEmailNotification(
+  accessToken: string,
+  data: { firstName: string; lastName: string; phone: string; email: string; date: string; time: string; service: string; notes: string }
+): Promise<void> {
+  const { firstName, lastName, phone, email, date, time, service, notes } = data;
+
+  const subject = `Nueva Cita - ${firstName} ${lastName}`;
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Nueva Cita Agendada</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Paciente</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${firstName} ${lastName}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Fecha</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${date}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Hora</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${time}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Servicio</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${service || 'No especificado'}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Teléfono</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${phone}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #e5e7eb;">Email</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${email}</td></tr>
+        <tr><td style="padding: 8px; font-weight: bold;">Notas</td><td style="padding: 8px;">${notes || 'Sin notas'}</td></tr>
+      </table>
+    </div>
+  `;
+
+  const mimeMessage = [
+    `From: ${ADMIN_EMAIL}`,
+    `To: ${ADMIN_EMAIL}`,
+    `Subject: ${subject}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=utf-8',
+    '',
+    htmlBody,
+  ].join('\r\n');
+
+  const encodedMessage = base64url(mimeMessage);
+
+  const response = await fetch(`${GMAIL_API}/users/me/messages/send`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ raw: encodedMessage }),
+  });
+
+  if (response.ok) {
+    console.log('Email notification sent successfully');
+  } else {
+    console.error('Failed to send email:', await response.text());
   }
+}
 }
 
 function validateInput(body: Record<string, unknown>): { valid: boolean; error?: string; data?: Record<string, string> } {
@@ -168,6 +228,15 @@ serve(async (req) => {
         }
       } catch (error) {
         console.error('Error creating calendar event:', error);
+      }
+    }
+
+    // Send email notification (non-blocking)
+    if (accessToken) {
+      try {
+        await sendEmailNotification(accessToken, { firstName, lastName, phone, email, date, time, service, notes });
+      } catch (error) {
+        console.error('Error sending email notification:', error);
       }
     }
 
