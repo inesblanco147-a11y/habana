@@ -1,36 +1,55 @@
 
 
-## Plan: Corregir horas desfasadas y notificaciones por email
+## Plan: Enviar notificaciones por email usando Gmail API
 
-### Problema 1: Horas incorrectas en get-available-slots
+### Problema
 
-**Causa raiz**: La API de Google Calendar devuelve las horas en formato UTC (ej: `2026-02-14T16:00:00Z` para una cita a las 10:00 en Mexico). La regex extrae `16` en lugar de `10`.
+Google Calendar no envia emails de invitacion al organizador del calendario (la misma cuenta que crea el evento). Por eso hasace1964@gmail.com nunca recibe notificacion aunque `sendUpdates=all` este configurado correctamente.
 
-**Solucion**: Agregar el parametro `timeZone=America/Mexico_City` a la consulta de Google Calendar API. Esto fuerza a la API a devolver los horarios en la zona horaria local, asi la regex extraera correctamente `10` de `2026-02-14T10:00:00-06:00`.
+### Solucion
 
-**Archivo**: `supabase/functions/get-available-slots/index.ts`
-- Agregar `&timeZone=${encodeURIComponent('America/Mexico_City')}` a la URL de consulta del calendario (linea 97-101)
+Agregar envio directo de email usando la Gmail API con las mismas credenciales OAuth que ya existen. Despues de crear el evento en Google Calendar, la funcion enviara un email a hasace1964@gmail.com con los detalles de la cita.
 
-### Problema 2: No se envian notificaciones por email
+### Requisito previo importante
 
-**Causa raiz**: El parametro `sendNotifications=true` esta deprecado en Google Calendar API v3. El parametro correcto es `sendUpdates=all`.
+El refresh token actual probablemente solo tiene permiso para Google Calendar. Para usar Gmail API, necesitas re-autorizar la aplicacion agregando el scope `https://www.googleapis.com/auth/gmail.send`. Esto se hace una sola vez:
 
-**Solucion**: Cambiar el query parameter en la URL del POST al crear eventos.
+1. Ir a la consola de Google Cloud (console.cloud.google.com)
+2. En APIs & Services, habilitar la Gmail API
+3. Generar un nuevo refresh token que incluya ambos scopes: `calendar` y `gmail.send`
+4. Actualizar el secret `GOOGLE_CALENDAR_REFRESH_TOKEN` con el nuevo token
+
+### Cambios tecnicos
 
 **Archivo**: `supabase/functions/create-appointment/index.ts`
-- Cambiar `?sendNotifications=true` por `?sendUpdates=all` en la URL del endpoint (linea 151)
 
-### Seccion tecnica
+1. Agregar constante `GMAIL_API = 'https://gmail.googleapis.com/gmail/v1'`
 
-**get-available-slots** - Linea 97-101, agregar timeZone al calendarUrl:
+2. Crear funcion `sendEmailNotification()` que:
+   - Construya un email en formato MIME con los detalles de la cita (nombre, fecha, hora, servicio, telefono, notas)
+   - Codifique el email en base64url
+   - Envie via `POST https://gmail.googleapis.com/gmail/v1/users/me/messages/send` usando el mismo access token
+   - El email sera enviado desde y hacia hasace1964@gmail.com (auto-envio)
+
+3. Llamar `sendEmailNotification()` despues de crear el evento en Google Calendar, sin bloquear la respuesta al usuario (si falla el email, la cita se guarda igual)
+
+4. El email incluira:
+   - Asunto: "Nueva Cita - [Nombre del paciente]"
+   - Cuerpo: Fecha, hora, servicio, telefono, email y notas del paciente
+
+### Estructura del email MIME
+
 ```
-const calendarUrl = `...&timeZone=${encodeURIComponent('America/Mexico_City')}`;
+From: hasace1964@gmail.com
+To: hasace1964@gmail.com
+Subject: Nueva Cita - [Nombre]
+Content-Type: text/html; charset=utf-8
+
+[HTML con detalles de la cita]
 ```
 
-**create-appointment** - Linea 151, cambiar parametro:
-```
-`${GOOGLE_CALENDAR_API}/calendars/primary/events?sendUpdates=all`
-```
+### Notas
 
-Ambos cambios requieren redespliegue de las edge functions.
-
+- Se mantiene `sendUpdates=all` en Google Calendar por si en el futuro se agregan attendees externos
+- El envio de email es independiente del evento de Google Calendar: si uno falla, el otro funciona
+- No se necesitan nuevos secrets, se reutilizan los mismos OAuth credentials
