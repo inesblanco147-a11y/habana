@@ -148,7 +148,7 @@ serve(async (req) => {
         };
 
         const calResponse = await fetch(
-          `${GOOGLE_CALENDAR_API}/calendars/primary/events?sendNotifications=true`,
+          `${GOOGLE_CALENDAR_API}/calendars/primary/events?sendUpdates=all`,
           {
             method: 'POST',
             headers: {
