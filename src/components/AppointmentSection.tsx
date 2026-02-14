@@ -471,8 +471,8 @@ const AppointmentSection = () => {
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  Horario de atención: Lunes a Viernes, 9:00 - 18:00 <br />
-                  Sábado 9:00 - 17:00 · Domingo 10:00 - 17:00
+                  Horario de atención: Lunes a Viernes, 9:00 - 20:00 <br />
+                  Sábado 9:00 - 18:00 · Domingo 10:00 - 16:00
                 </p>
               </CardContent>
             </Card>
