@@ -54,33 +54,33 @@ serve(async (req) => {
     const date = url.searchParams.get("date");
 
     if (!date) {
-      return new Response(
-        JSON.stringify({ error: "Fecha requerida" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Fecha requerida" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const accessToken = await getAccessToken();
 
     if (!accessToken) {
       console.error("❌ No se pudo obtener access token");
-      return new Response(
-        JSON.stringify({ error: "Token no configurado", slots: [] }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Token no configurado", slots: [] }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Generar slots de negocio según el día
     const dateObj = new Date(date + "T12:00:00");
     const dayOfWeek = dateObj.getDay();
     let startHour = 9;
-    let endHour = 18;
+    let endHour = 20;
 
     if (dayOfWeek === 6) {
-      endHour = 17;
+      endHour = 18;
     } else if (dayOfWeek === 0) {
       startHour = 10;
-      endHour = 17;
+      endHour = 16;
     }
 
     const allSlots: string[] = [];
@@ -94,17 +94,18 @@ serve(async (req) => {
     const timeMin = `${date}T00:00:00Z`;
     const timeMax = `${date}T23:59:59Z`;
 
-    const calendarUrl = `${GOOGLE_CALENDAR_API}/calendars/${encodeURIComponent(CALENDAR_ID)}/events?` +
+    const calendarUrl =
+      `${GOOGLE_CALENDAR_API}/calendars/${encodeURIComponent(CALENDAR_ID)}/events?` +
       `timeMin=${encodeURIComponent(timeMin)}&` +
       `timeMax=${encodeURIComponent(timeMax)}&` +
-      `timeZone=${encodeURIComponent('America/Mexico_City')}&` +
+      `timeZone=${encodeURIComponent("America/Mexico_City")}&` +
       `singleEvents=true&` +
       `orderBy=startTime`;
 
     const response = await fetch(calendarUrl, {
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
-        "Accept": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
       },
     });
 
@@ -116,7 +117,7 @@ serve(async (req) => {
           occupied: [],
           warning: "No se pudo verificar calendario",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -166,13 +167,13 @@ serve(async (req) => {
           businessHours: `${startHour}:00 - ${endHour}:00`,
         },
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("💥 Error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message, slots: [] }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: error.message, slots: [] }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
