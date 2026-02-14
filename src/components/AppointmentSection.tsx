@@ -44,13 +44,13 @@ const AppointmentSection = () => {
       const slots: string[] = [];
 
       let startHour = 9;
-      let endHour = 18;
+      let endHour = 20;
 
       if (dayOfWeek === 6) {
-        endHour = 17;
+        endHour = 18;
       } else if (dayOfWeek === 0) {
         startHour = 10;
-        endHour = 17;
+        endHour = 16;
       }
 
       for (let hour = startHour; hour < endHour; hour++) {
@@ -189,12 +189,13 @@ const AppointmentSection = () => {
     selectedDate && selectedTime && firstName.trim() && lastName.trim() && phone.trim() && email.trim();
 
   const getAppointmentDetailsText = () => {
-    const dateDisplay = selectedDate?.toLocaleDateString("es-MX", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }) || "";
+    const dateDisplay =
+      selectedDate?.toLocaleDateString("es-MX", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }) || "";
     const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
     return (
       `¡Hola! He agendado una cita:\n\n` +
@@ -245,11 +246,7 @@ const AppointmentSection = () => {
                   <p className="text-sm">📋 {services.find((s) => s.value === selectedService)?.label}</p>
                 )}
               </div>
-              <Button
-                onClick={handleCopyDetails}
-                variant="outline"
-                className="gap-2"
-              >
+              <Button onClick={handleCopyDetails} variant="outline" className="gap-2">
                 <Copy className="h-4 w-4" />
                 {copiedToClipboard ? "¡Copiado!" : "Copiar detalles"}
               </Button>
