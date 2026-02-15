@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight, Award, GraduationCap, Briefcase } from "luci
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useDoctors, Doctor } from "@/hooks/useDoctors";
+import { useDoctors } from "@/hooks/useDoctors";
+import { Doctor } from "@/types/doctor";
 import aboutMission from "@/assets/about-mission.jpg";
 import aboutVision from "@/assets/about-vision.jpg";
 

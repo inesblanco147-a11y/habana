@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { 
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
-  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList
+  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList,
+  ArrowUp, ArrowDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import VideoUpload from "@/components/VideoUpload";
 import AppointmentsTab from "@/components/AppointmentsTab";
+import { useSwapOrder } from "@/hooks/useReorder";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -95,6 +97,22 @@ const AdminPanel = () => {
   const updateProductCategoryMut = useUpdateProductCategory();
   const deleteProductCategoryMut = useDeleteProductCategory();
   const updateSetting = useUpdateSiteSetting();
+  const swapServices = useSwapOrder("services");
+  const swapProducts = useSwapOrder("products");
+  const swapCourses = useSwapOrder("courses");
+  const swapGallery = useSwapOrder("gallery");
+  const swapDoctors = useSwapOrder("doctors");
+
+  const handleSwap = (
+    items: { id: string; displayOrder: number }[],
+    index: number,
+    direction: "up" | "down",
+    swapFn: typeof swapServices
+  ) => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= items.length) return;
+    swapFn.mutate({ items, indexA: index, indexB: targetIndex });
+  };
   
   // Modal states
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -153,7 +171,7 @@ const AdminPanel = () => {
 
   // Course handlers
   const handleAddCourse = () => {
-    setEditingCourse({ id: "", title: "", description: "", image: "", modality: "presencial", availability: "disponible", date: "", duration: "", location: "", price: 0, instructor: "", objectives: [], includes: [], maxParticipants: 20, currentParticipants: 0, showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true });
+    setEditingCourse({ id: "", title: "", description: "", image: "", modality: "presencial", availability: "disponible", date: "", duration: "", location: "", price: 0, instructor: "", objectives: [], includes: [], maxParticipants: 20, currentParticipants: 0, showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true, displayOrder: 0 });
     setIsCourseModalOpen(true);
   };
   const handleEditCourse = (course: Course) => { setEditingCourse({ ...course }); setIsCourseModalOpen(true); };
@@ -166,7 +184,7 @@ const AdminPanel = () => {
 
   // Product handlers
   const handleAddProduct = () => {
-    setEditingProduct({ id: "", name: "", description: "", price: 0, image: "", category: "", inStock: true, featured: false, showPrice: true, hasSizes: false, sizes: [] });
+    setEditingProduct({ id: "", name: "", description: "", price: 0, image: "", category: "", inStock: true, featured: false, showPrice: true, hasSizes: false, sizes: [], displayOrder: 0 });
     setIsProductModalOpen(true);
   };
   const handleEditProduct = (product: Product) => { setEditingProduct({ ...product }); setIsProductModalOpen(true); };
@@ -188,7 +206,7 @@ const AdminPanel = () => {
   };
 
   // Doctor handlers
-  const handleAddDoctor = () => { setEditingDoctor({ id: "", name: "", title: "", specialty: "", summary: "", experience: "", education: [], certifications: [], image: "" }); setIsDoctorModalOpen(true); };
+  const handleAddDoctor = () => { setEditingDoctor({ id: "", name: "", title: "", specialty: "", summary: "", experience: "", education: [], certifications: [], image: "", displayOrder: 0 }); setIsDoctorModalOpen(true); };
   const handleEditDoctor = (doctor: Doctor) => { setEditingDoctor({ ...doctor }); setIsDoctorModalOpen(true); };
   const handleSaveDoctor = () => {
     if (!editingDoctor) return;
@@ -198,7 +216,7 @@ const AdminPanel = () => {
   };
 
   // Service handlers
-  const handleAddService = () => { setEditingService({ id: "", name: "", description: "", image: "", price: 0, discount: 0, offerActive: false, offerDescription: "", category: "", showPrice: true }); setIsServiceModalOpen(true); };
+  const handleAddService = () => { setEditingService({ id: "", name: "", description: "", image: "", price: 0, discount: 0, offerActive: false, offerDescription: "", category: "", showPrice: true, displayOrder: 0 }); setIsServiceModalOpen(true); };
   const handleEditService = (service: Service) => { setEditingService({ ...service }); setIsServiceModalOpen(true); };
   const handleSaveService = () => {
     if (!editingService) return;
@@ -218,7 +236,7 @@ const AdminPanel = () => {
   };
 
   // Gallery handlers
-  const handleAddGallery = () => { setEditingGallery({ id: "", title: "", description: "", images: [] }); setIsGalleryModalOpen(true); };
+  const handleAddGallery = () => { setEditingGallery({ id: "", title: "", description: "", images: [], displayOrder: 0 }); setIsGalleryModalOpen(true); };
   const handleEditGallery = (item: GalleryItem) => { setEditingGallery({ ...item }); setIsGalleryModalOpen(true); };
   const handleSaveGallery = () => {
     if (!editingGallery) return;
@@ -350,10 +368,14 @@ const AdminPanel = () => {
               <TabsContent value="courses">
                 {loadingCourses ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Título</TableHead><TableHead>Modalidad</TableHead><TableHead>Fecha</TableHead><TableHead>Precio</TableHead><TableHead>Disponibilidad</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Título</TableHead><TableHead>Modalidad</TableHead><TableHead>Fecha</TableHead><TableHead>Precio</TableHead><TableHead>Disponibilidad</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {coursesData.map(course => (
+                    {coursesData.map((course, idx) => (
                       <TableRow key={course.id}>
+                        <TableCell><div className="flex flex-col gap-1">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapCourses.isPending} onClick={() => handleSwap(coursesData, idx, "up", swapCourses)}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === coursesData.length - 1 || swapCourses.isPending} onClick={() => handleSwap(coursesData, idx, "down", swapCourses)}><ArrowDown className="h-3 w-3" /></Button>
+                        </div></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{course.title}</TableCell>
                         <TableCell><Badge variant="outline">{course.modality}</Badge></TableCell>
                         <TableCell>{course.date}</TableCell>
@@ -395,10 +417,14 @@ const AdminPanel = () => {
               <TabsContent value="products">
                 {loadingProducts ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Stock</TableHead><TableHead>Destacado</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Stock</TableHead><TableHead>Destacado</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {productsData.map(product => (
+                    {productsData.map((product, idx) => (
                       <TableRow key={product.id}>
+                        <TableCell><div className="flex flex-col gap-1">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapProducts.isPending} onClick={() => handleSwap(productsData, idx, "up", swapProducts)}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === productsData.length - 1 || swapProducts.isPending} onClick={() => handleSwap(productsData, idx, "down", swapProducts)}><ArrowDown className="h-3 w-3" /></Button>
+                        </div></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{product.name}</TableCell>
                         <TableCell><Badge variant="outline">{product.category}</Badge></TableCell>
                         <TableCell>{formatPrice(product.price)}</TableCell>
@@ -441,10 +467,14 @@ const AdminPanel = () => {
               <TabsContent value="doctors">
                 {loadingDoctors ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Nombre</TableHead><TableHead>Título</TableHead><TableHead>Especialidad</TableHead><TableHead>Experiencia</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Título</TableHead><TableHead>Especialidad</TableHead><TableHead>Experiencia</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {doctorsData.map(doctor => (
+                    {doctorsData.map((doctor, idx) => (
                       <TableRow key={doctor.id}>
+                        <TableCell><div className="flex flex-col gap-1">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapDoctors.isPending} onClick={() => handleSwap(doctorsData, idx, "up", swapDoctors)}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === doctorsData.length - 1 || swapDoctors.isPending} onClick={() => handleSwap(doctorsData, idx, "down", swapDoctors)}><ArrowDown className="h-3 w-3" /></Button>
+                        </div></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{doctor.name}</TableCell>
                         <TableCell>{doctor.title}</TableCell>
                         <TableCell><Badge variant="outline">{doctor.specialty}</Badge></TableCell>
@@ -463,10 +493,14 @@ const AdminPanel = () => {
               <TabsContent value="services">
                 {loadingServices ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Descuento</TableHead><TableHead>Oferta Activa</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Descuento</TableHead><TableHead>Oferta Activa</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {servicesData.map(service => (
+                    {servicesData.map((service, idx) => (
                       <TableRow key={service.id}>
+                        <TableCell><div className="flex flex-col gap-1">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapServices.isPending} onClick={() => handleSwap(servicesData, idx, "up", swapServices)}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === servicesData.length - 1 || swapServices.isPending} onClick={() => handleSwap(servicesData, idx, "down", swapServices)}><ArrowDown className="h-3 w-3" /></Button>
+                        </div></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{service.name}</TableCell>
                         <TableCell><Badge variant="outline">{service.category}</Badge></TableCell>
                         <TableCell>{formatPrice(service.price)}</TableCell>
@@ -486,10 +520,14 @@ const AdminPanel = () => {
               <TabsContent value="gallery">
                 {loadingGallery ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Título</TableHead><TableHead>Descripción</TableHead><TableHead>Imágenes</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Título</TableHead><TableHead>Descripción</TableHead><TableHead>Imágenes</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {galleryData.map(item => (
+                    {galleryData.map((item, idx) => (
                       <TableRow key={item.id}>
+                        <TableCell><div className="flex flex-col gap-1">
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapGallery.isPending} onClick={() => handleSwap(galleryData, idx, "up", swapGallery)}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === galleryData.length - 1 || swapGallery.isPending} onClick={() => handleSwap(galleryData, idx, "down", swapGallery)}><ArrowDown className="h-3 w-3" /></Button>
+                        </div></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{item.title}</TableCell>
                         <TableCell className="max-w-[300px] truncate">{item.description}</TableCell>
                         <TableCell><Badge variant="outline">{item.images.length} fotos</Badge></TableCell>

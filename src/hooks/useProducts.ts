@@ -9,7 +9,8 @@ export const useProducts = () => {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .order("created_at", { ascending: true });
+        .order("display_order", { ascending: true })
+        .order("name", { ascending: true });
 
       if (error) throw error;
       
@@ -25,6 +26,7 @@ export const useProducts = () => {
         showPrice: (product as any).show_price ?? true,
         hasSizes: (product as any).has_sizes ?? false,
         sizes: ((product as any).sizes as ProductSize[]) || [],
+        displayOrder: (product as any).display_order ?? 0,
       }));
     }
   });

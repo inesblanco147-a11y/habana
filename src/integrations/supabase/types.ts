@@ -69,6 +69,7 @@ export type Database = {
           current_participants: number
           date: string
           description: string
+          display_order: number
           duration: string
           id: string
           image: string | null
@@ -95,6 +96,7 @@ export type Database = {
           current_participants?: number
           date: string
           description: string
+          display_order?: number
           duration: string
           id?: string
           image?: string | null
@@ -121,6 +123,7 @@ export type Database = {
           current_participants?: number
           date?: string
           description?: string
+          display_order?: number
           duration?: string
           id?: string
           image?: string | null
@@ -147,6 +150,7 @@ export type Database = {
         Row: {
           certifications: string[]
           created_at: string
+          display_order: number
           education: string[]
           experience: string
           id: string
@@ -160,6 +164,7 @@ export type Database = {
         Insert: {
           certifications?: string[]
           created_at?: string
+          display_order?: number
           education?: string[]
           experience: string
           id?: string
@@ -173,6 +178,7 @@ export type Database = {
         Update: {
           certifications?: string[]
           created_at?: string
+          display_order?: number
           education?: string[]
           experience?: string
           id?: string
@@ -231,6 +237,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string
+          display_order: number
           id: string
           images: string[]
           title: string
@@ -239,6 +246,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string
+          display_order?: number
           id?: string
           images?: string[]
           title: string
@@ -247,6 +255,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string
+          display_order?: number
           id?: string
           images?: string[]
           title?: string
@@ -322,6 +331,7 @@ export type Database = {
           category: string
           created_at: string
           description: string
+          display_order: number
           featured: boolean | null
           has_sizes: boolean
           id: string
@@ -337,6 +347,7 @@ export type Database = {
           category: string
           created_at?: string
           description: string
+          display_order?: number
           featured?: boolean | null
           has_sizes?: boolean
           id?: string
@@ -352,6 +363,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string
+          display_order?: number
           featured?: boolean | null
           has_sizes?: boolean
           id?: string
@@ -371,6 +383,7 @@ export type Database = {
           created_at: string
           description: string
           discount: number | null
+          display_order: number
           id: string
           image: string | null
           name: string
@@ -385,6 +398,7 @@ export type Database = {
           created_at?: string
           description: string
           discount?: number | null
+          display_order?: number
           id?: string
           image?: string | null
           name: string
@@ -399,6 +413,7 @@ export type Database = {
           created_at?: string
           description?: string
           discount?: number | null
+          display_order?: number
           id?: string
           image?: string | null
           name?: string

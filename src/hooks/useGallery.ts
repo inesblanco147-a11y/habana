@@ -9,7 +9,8 @@ export const useGallery = () => {
       const { data, error } = await supabase
         .from("gallery")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("display_order", { ascending: true })
+        .order("title", { ascending: true });
 
       if (error) throw error;
 
@@ -18,6 +19,7 @@ export const useGallery = () => {
         title: item.title,
         description: item.description,
         images: item.images || [],
+        displayOrder: (item as any).display_order ?? 0,
       }));
     },
   });

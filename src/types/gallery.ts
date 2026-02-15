@@ -3,4 +3,5 @@ export interface GalleryItem {
   title: string;
   description: string;
   images: string[];
+  displayOrder: number;
 }
