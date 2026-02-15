@@ -56,7 +56,7 @@ const AppointmentSection = () => {
       // IMPORTANTE: Usar < para no incluir la última hora
       // Si endHour = 20, genera hasta 19:00
       // Si quieres hasta 20:00, pon endHour = 21
-      for (let hour = startHour; hour < endHour; hour++) {
+      for (let hour = startHour; hour <= endHour; hour++) {
         slots.push(`${hour.toString().padStart(2, "0")}:00`);
       }
 
