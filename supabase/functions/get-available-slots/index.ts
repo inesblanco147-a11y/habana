@@ -74,13 +74,13 @@ serve(async (req) => {
     const dateObj = new Date(date + "T12:00:00");
     const dayOfWeek = dateObj.getDay();
     let startHour = 9;
-    let endHour = 20; // Último slot será 19:00
+    let endHour = 21; // Último slot será 19:00
 
     if (dayOfWeek === 6) {
-      endHour = 18; // Último slot será 17:00
+      endHour = 19; // Último slot será 17:00
     } else if (dayOfWeek === 0) {
       startHour = 10;
-      endHour = 16; // Último slot será 15:00
+      endHour = 17; // Último slot será 15:00
     }
 
     const allSlots: string[] = [];
