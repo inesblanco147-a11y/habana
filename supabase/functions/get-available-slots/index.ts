@@ -84,7 +84,7 @@ serve(async (req) => {
     }
 
     const allSlots: string[] = [];
-    for (let hour = startHour; hour < endHour; hour++) {
+    for (let hour = startHour; hour <= endHour; hour++) {
       // Mantén
       allSlots.push(`${hour.toString().padStart(2, "0")}:00`);
     }
