@@ -44,7 +44,7 @@ const AppointmentSection = () => {
       const slots: string[] = [];
 
       let startHour = 9;
-      let endHour = 22; // Lunes a Viernes hasta 20:00
+      let endHour = 20; // Lunes a Viernes hasta 20:00
 
       if (dayOfWeek === 6) {
         endHour = 18; // Sábado hasta 18:00
