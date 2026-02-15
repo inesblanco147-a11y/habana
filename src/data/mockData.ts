@@ -20,7 +20,8 @@ export const doctors: Doctor[] = [
       "Fellow American College of Sports Medicine",
       "Certificación en Terapia de Ondas de Choque"
     ],
-    image: ""
+    image: "",
+    displayOrder: 0
   },
   {
     id: "doc2",
@@ -39,7 +40,8 @@ export const doctors: Doctor[] = [
       "Certificación en Facilitación Neuromuscular Propioceptiva",
       "Diplomado en Neuroplasticidad"
     ],
-    image: ""
+    image: "",
+    displayOrder: 1
   },
   {
     id: "doc3",
@@ -58,7 +60,8 @@ export const doctors: Doctor[] = [
       "Certificación en Integración Sensorial",
       "Especialista en Hidroterapia Pediátrica"
     ],
-    image: ""
+    image: "",
+    displayOrder: 2
   }
 ];
 
@@ -79,7 +82,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Material didáctico digital", "Certificado con validez oficial", "Coffee breaks", "Práctica supervisada"],
     maxParticipants: 25,
     currentParticipants: 18,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true, displayOrder: 0
   },
   {
     id: "2",
@@ -97,7 +100,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Kit de vendaje profesional", "Acceso a plataforma online por 6 meses", "Certificado internacional", "Mentoría post-curso"],
     maxParticipants: 20,
     currentParticipants: 19,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true, displayOrder: 1
   },
   {
     id: "3",
@@ -115,7 +118,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Videos grabados de técnicas", "Manual en PDF", "Certificado digital", "Sesión de dudas en vivo"],
     maxParticipants: 50,
     currentParticipants: 32,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true, displayOrder: 2
   },
   {
     id: "4",
@@ -133,7 +136,7 @@ export const upcomingCourses: Course[] = [
     includes: ["Material de evaluación pediátrica", "Certificado avalado por SEP", "Comidas incluidas", "Acceso a casos clínicos"],
     maxParticipants: 15,
     currentParticipants: 15,
-    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true
+    showDate: true, showDuration: true, showParticipants: true, showObjectives: true, showIncludes: true, showPrice: true, showLocation: true, displayOrder: 3
   }
 ];
 
@@ -175,48 +178,48 @@ export const products: Product[] = [
     id: "prod1", name: "Banda Elástica de Resistencia - Set Completo",
     description: "Set de 5 bandas elásticas con diferentes niveles de resistencia para rehabilitación y fortalecimiento muscular.",
     price: 450, image: "", category: "Equipamiento", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 0
   },
   {
     id: "prod2", name: "Rodillera Ortopédica con Soporte Lateral",
     description: "Rodillera de neopreno con varillas laterales para estabilización de rodilla en lesiones ligamentarias.",
     price: 890, image: "", category: "Ortopedia", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 1
   },
   {
     id: "prod3", name: "Pelota de Ejercicio 65cm",
     description: "Pelota de ejercicio anti-explosión ideal para rehabilitación, fortalecimiento y mejora del equilibrio.",
     price: 380, image: "", category: "Equipamiento", inStock: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 2
   },
   {
     id: "prod4", name: "Muñequera con Soporte de Pulgar",
     description: "Muñequera ajustable con férula de pulgar para lesiones de muñeca y síndrome del túnel carpiano.",
     price: 520, image: "", category: "Ortopedia", inStock: false,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 3
   },
   {
     id: "prod5", name: "Kit de Masaje Miofascial",
     description: "Kit completo con rodillo de espuma, bola de lacrosse y palo de masaje para liberación miofascial.",
     price: 680, image: "", category: "Terapia Manual", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 4
   },
   {
     id: "prod6", name: "Electro Estimulador TENS Portátil",
     description: "Dispositivo TENS de uso doméstico para control del dolor con 8 programas preestablecidos.",
     price: 1250, image: "", category: "Electroterapia", inStock: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 5
   },
   {
     id: "prod7", name: "Tobillera Estabilizadora Premium",
     description: "Tobillera de alta gama con sistema de cordones y soporte en 8 para esguinces de tobillo.",
     price: 750, image: "", category: "Ortopedia", inStock: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 6
   },
   {
     id: "prod8", name: "Disco de Balance para Propiocepción",
     description: "Disco inflable para entrenamiento propioceptivo y rehabilitación de equilibrio.",
     price: 290, image: "", category: "Equipamiento", inStock: true,
-    showPrice: true, hasSizes: false, sizes: []
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 7
   }
 ];

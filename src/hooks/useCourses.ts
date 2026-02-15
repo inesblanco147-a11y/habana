@@ -9,7 +9,8 @@ export const useCourses = () => {
       const { data, error } = await supabase
         .from("courses")
         .select("*")
-        .order("date", { ascending: true });
+        .order("display_order", { ascending: true })
+        .order("title", { ascending: true });
 
       if (error) throw error;
       
@@ -36,6 +37,7 @@ export const useCourses = () => {
         showIncludes: (course as any).show_includes ?? true,
         showPrice: (course as any).show_price ?? true,
         showLocation: (course as any).show_location ?? true,
+        displayOrder: (course as any).display_order ?? 0,
       }));
     }
   });

@@ -8,4 +8,5 @@ export interface Doctor {
   education: string[];
   certifications: string[];
   image: string;
+  displayOrder: number;
 }

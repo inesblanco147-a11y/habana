@@ -15,4 +15,5 @@ export interface Product {
   showPrice: boolean;
   hasSizes: boolean;
   sizes: ProductSize[];
+  displayOrder: number;
 }

@@ -9,4 +9,5 @@ export interface Service {
   offerDescription: string;
   category: string;
   showPrice: boolean;
+  displayOrder: number;
 }

@@ -1,17 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-export interface Doctor {
-  id: string;
-  name: string;
-  title: string;
-  specialty: string;
-  summary: string;
-  experience: string;
-  education: string[];
-  certifications: string[];
-  image: string;
-}
+import { Doctor } from "@/types/doctor";
 
 export const useDoctors = () => {
   return useQuery({
@@ -20,7 +9,8 @@ export const useDoctors = () => {
       const { data, error } = await supabase
         .from("doctors")
         .select("*")
-        .order("created_at", { ascending: true });
+        .order("display_order", { ascending: true })
+        .order("name", { ascending: true });
 
       if (error) throw error;
       
@@ -33,7 +23,8 @@ export const useDoctors = () => {
         experience: doc.experience,
         education: doc.education || [],
         certifications: doc.certifications || [],
-        image: doc.image || ""
+        image: doc.image || "",
+        displayOrder: (doc as any).display_order ?? 0,
       }));
     }
   });
