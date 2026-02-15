@@ -44,18 +44,23 @@ const AppointmentSection = () => {
       const slots: string[] = [];
 
       let startHour = 9;
-      let endHour = 20;
+      let endHour = 20; // Lunes a Viernes hasta 20:00
 
       if (dayOfWeek === 6) {
-        endHour = 18;
+        endHour = 18; // Sábado hasta 18:00
       } else if (dayOfWeek === 0) {
-        startHour = 10;
-        endHour = 16;
+        startHour = 10; // Domingo desde 10:00
+        endHour = 16; // Domingo hasta 16:00
       }
 
+      // IMPORTANTE: Usar < para no incluir la última hora
+      // Si endHour = 20, genera hasta 19:00
+      // Si quieres hasta 20:00, pon endHour = 21
       for (let hour = startHour; hour < endHour; hour++) {
         slots.push(`${hour.toString().padStart(2, "0")}:00`);
       }
+
+      console.log(`🕐 Frontend generó slots:`, slots);
 
       return slots;
     };

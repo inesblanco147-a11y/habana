@@ -73,8 +73,8 @@ serve(async (req) => {
     // Generar slots de negocio según el día
     const dateObj = new Date(date + "T12:00:00");
     const dayOfWeek = dateObj.getDay();
-    let startHour = 5;
-    let endHour = 13;
+    let startHour = 9;
+    let endHour = 20;
 
     if (dayOfWeek === 6) {
       endHour = 18;
