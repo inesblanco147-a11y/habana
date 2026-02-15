@@ -74,22 +74,23 @@ serve(async (req) => {
     const dateObj = new Date(date + "T12:00:00");
     const dayOfWeek = dateObj.getDay();
     let startHour = 9;
-    let endHour = 20; // Último slot será 19:00
+    let endHour = 19; // Lunes a Viernes: último slot 19:00
 
     if (dayOfWeek === 6) {
-      endHour = 18; // Último slot será 17:00
+      endHour = 17; // Sábado: último slot 17:00
     } else if (dayOfWeek === 0) {
-      startHour = 10;
-      endHour = 16; // Último slot será 15:00
+      startHour = 10; // Domingo: desde 10:00
+      endHour = 15; // Domingo: último slot 15:00
     }
 
     const allSlots: string[] = [];
     for (let hour = startHour; hour <= endHour; hour++) {
-      // Mantén
+      // ← CAMBIO AQUÍ: <= en lugar de
       allSlots.push(`${hour.toString().padStart(2, "0")}:00`);
     }
 
     console.log(`📅 Fecha: ${date} | Día: ${dayOfWeek} | Slots generados: ${allSlots.length}`);
+    console.log(`🕐 Slots: ${allSlots.join(", ")}`); // ← Log adicional para verificar
 
     // Consultar Google Calendar
     const timeMin = `${date}T00:00:00Z`;
