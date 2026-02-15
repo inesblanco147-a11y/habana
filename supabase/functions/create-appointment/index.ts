@@ -170,6 +170,21 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Rate limiting: max 5 appointments per email per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentCount } = await supabase
+      .from('appointments')
+      .select('*', { count: 'exact', head: true })
+      .eq('email', email)
+      .gte('created_at', oneHourAgo);
+
+    if (recentCount !== null && recentCount >= 5) {
+      return new Response(
+        JSON.stringify({ error: 'Demasiadas solicitudes. Intente de nuevo más tarde.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Check if slot is already taken in DB
     const { data: existing } = await supabase
       .from('appointments')
