@@ -40,6 +40,7 @@ async function getAccessToken(): Promise<string | null> {
   } catch (error) {
     console.error('Error refreshing token:', error);
     return null;
+  }
 }
 
 function base64url(str: string): string {
@@ -98,7 +99,6 @@ async function sendEmailNotification(
   } else {
     console.error('Failed to send email:', await response.text());
   }
-}
 }
 
 function validateInput(body: Record<string, unknown>): { valid: boolean; error?: string; data?: Record<string, string> } {
