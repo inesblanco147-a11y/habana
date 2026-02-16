@@ -20,6 +20,7 @@ export const useCreatePastCourse = () => {
           participants: course.participants,
           instructor: course.instructor,
           gallery_images: course.galleryImages || [],
+          display_order: course.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -56,6 +57,7 @@ export const useUpdatePastCourse = () => {
           participants: course.participants,
           instructor: course.instructor,
           gallery_images: course.galleryImages || [],
+          display_order: course.displayOrder ?? 0,
         })
         .eq("id", course.id)
         .select()

@@ -149,7 +149,8 @@ export const pastCourses: PastCourse[] = [
     modality: "presencial",
     date: "2024-11-15",
     participants: 22,
-    instructor: "Dr. Eduardo Ramírez"
+    instructor: "Dr. Eduardo Ramírez",
+    displayOrder: 0
   },
   {
     id: "p2",
@@ -159,7 +160,8 @@ export const pastCourses: PastCourse[] = [
     modality: "híbrido",
     date: "2024-10-20",
     participants: 28,
-    instructor: "Dra. Laura Vega"
+    instructor: "Dra. Laura Vega",
+    displayOrder: 0
   },
   {
     id: "p3",
@@ -169,7 +171,8 @@ export const pastCourses: PastCourse[] = [
     modality: "online",
     date: "2024-09-08",
     participants: 45,
-    instructor: "Dr. Miguel Ángel Torres"
+    instructor: "Dr. Miguel Ángel Torres",
+    displayOrder: 0
   }
 ];
 

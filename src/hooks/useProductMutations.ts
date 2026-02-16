@@ -22,6 +22,7 @@ export const useCreateProduct = () => {
           show_price: product.showPrice,
           has_sizes: product.hasSizes,
           sizes: product.sizes as any,
+          display_order: product.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -60,6 +61,7 @@ export const useUpdateProduct = () => {
           show_price: product.showPrice,
           has_sizes: product.hasSizes,
           sizes: product.sizes as any,
+          display_order: product.displayOrder ?? 0,
         })
         .eq("id", product.id)
         .select()

@@ -15,6 +15,7 @@ export const useCreateGallery = () => {
           title: item.title,
           description: item.description,
           images: item.images || [],
+          display_order: item.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -46,6 +47,7 @@ export const useUpdateGallery = () => {
           title: item.title,
           description: item.description,
           images: item.images || [],
+          display_order: item.displayOrder ?? 0,
         })
         .eq("id", item.id)
         .select()
