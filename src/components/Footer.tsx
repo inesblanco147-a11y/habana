@@ -92,7 +92,9 @@ const Footer = () => {
                   <span>
                     Avenida Paseo de la Constitución # 290 local 8,
                     <br />
-                    Querétaro, Mexico
+                    Querétaro, Mexico.
+                    <br />
+                    C.P. 76125
                   </span>
                 </div>
               </li>
@@ -128,7 +130,7 @@ const Footer = () => {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="https://wa.me/5244227981962"
+                href="https://wa.me/524422137365"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 bg-hasace-red/20 rounded-lg hover:bg-hasace-red transition-colors"
