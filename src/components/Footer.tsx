@@ -87,7 +87,9 @@ const Footer = () => {
                   <span>
                     Avenida Paseo de la Constitución # 290 local 8,
                     <br />
-                    Querétaro, Mexico
+                    Querétaro, Mexico.
+                    <br />
+                    C.P. 76125
                   </span>
                 </div>
               </li>
