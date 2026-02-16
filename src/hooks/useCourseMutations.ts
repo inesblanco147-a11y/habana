@@ -33,6 +33,7 @@ export const useCreateCourse = () => {
           show_includes: course.showIncludes,
           show_price: course.showPrice,
           show_location: (course as any).showLocation ?? true,
+          display_order: course.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -82,6 +83,7 @@ export const useUpdateCourse = () => {
           show_includes: course.showIncludes,
           show_price: course.showPrice,
           show_location: (course as any).showLocation ?? true,
+          display_order: course.displayOrder ?? 0,
         })
         .eq("id", course.id)
         .select()

@@ -21,6 +21,7 @@ export const useCreateService = () => {
           offer_description: service.offerDescription,
           category: service.category,
           show_price: service.showPrice,
+          display_order: service.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -58,6 +59,7 @@ export const useUpdateService = () => {
           offer_description: service.offerDescription,
           category: service.category,
           show_price: service.showPrice,
+          display_order: service.displayOrder ?? 0,
         })
         .eq("id", service.id)
         .select()

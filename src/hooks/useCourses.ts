@@ -50,6 +50,7 @@ export const usePastCourses = () => {
       const { data, error } = await supabase
         .from("past_courses")
         .select("*")
+        .order("display_order", { ascending: true })
         .order("date", { ascending: false });
 
       if (error) throw error;
@@ -63,7 +64,8 @@ export const usePastCourses = () => {
         date: course.date,
         participants: course.participants,
         instructor: course.instructor,
-        galleryImages: course.gallery_images || []
+        galleryImages: course.gallery_images || [],
+        displayOrder: (course as any).display_order ?? 0,
       }));
     }
   });

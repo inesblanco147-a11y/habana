@@ -37,4 +37,5 @@ export interface PastCourse {
   participants: number;
   instructor: string;
   galleryImages?: string[];
+  displayOrder: number;
 }

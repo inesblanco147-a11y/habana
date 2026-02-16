@@ -2,7 +2,6 @@ import { useState } from "react";
 import { 
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
   Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList,
-  ArrowUp, ArrowDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +47,6 @@ import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import VideoUpload from "@/components/VideoUpload";
 import AppointmentsTab from "@/components/AppointmentsTab";
-import { useSwapOrder } from "@/hooks/useReorder";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -97,21 +95,18 @@ const AdminPanel = () => {
   const updateProductCategoryMut = useUpdateProductCategory();
   const deleteProductCategoryMut = useDeleteProductCategory();
   const updateSetting = useUpdateSiteSetting();
-  const swapServices = useSwapOrder("services");
-  const swapProducts = useSwapOrder("products");
-  const swapCourses = useSwapOrder("courses");
-  const swapGallery = useSwapOrder("gallery");
-  const swapDoctors = useSwapOrder("doctors");
 
-  const handleSwap = (
-    items: { id: string; displayOrder: number }[],
-    index: number,
-    direction: "up" | "down",
-    swapFn: typeof swapServices
+  // Inline order editing
+  const handleInlineOrderChange = (
+    id: string,
+    newOrder: number,
+    updateFn: { mutate: (data: any) => void },
+    items: any[],
+    idField: string = "id"
   ) => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= items.length) return;
-    swapFn.mutate({ items, indexA: index, indexB: targetIndex });
+    const item = items.find((i: any) => i[idField] === id);
+    if (!item) return;
+    updateFn.mutate({ ...item, displayOrder: newOrder });
   };
   
   // Modal states
@@ -226,7 +221,7 @@ const AdminPanel = () => {
   };
 
   // Past Course handlers
-  const handleAddPastCourse = () => { setEditingPastCourse({ id: "", title: "", description: "", image: "", modality: "presencial", date: "", participants: 0, instructor: "", galleryImages: [] }); setIsPastCourseModalOpen(true); };
+  const handleAddPastCourse = () => { setEditingPastCourse({ id: "", title: "", description: "", image: "", modality: "presencial", date: "", participants: 0, instructor: "", galleryImages: [], displayOrder: 0 }); setIsPastCourseModalOpen(true); };
   const handleEditPastCourse = (course: PastCourse) => { setEditingPastCourse({ ...course }); setIsPastCourseModalOpen(true); };
   const handleSavePastCourse = () => {
     if (!editingPastCourse) return;
@@ -370,12 +365,9 @@ const AdminPanel = () => {
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
                     <TableHead className="w-[60px]">Orden</TableHead><TableHead>Título</TableHead><TableHead>Modalidad</TableHead><TableHead>Fecha</TableHead><TableHead>Precio</TableHead><TableHead>Disponibilidad</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {coursesData.map((course, idx) => (
+                    {coursesData.map((course) => (
                       <TableRow key={course.id}>
-                        <TableCell><div className="flex flex-col gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapCourses.isPending} onClick={() => handleSwap(coursesData, idx, "up", swapCourses)}><ArrowUp className="h-3 w-3" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === coursesData.length - 1 || swapCourses.isPending} onClick={() => handleSwap(coursesData, idx, "down", swapCourses)}><ArrowDown className="h-3 w-3" /></Button>
-                        </div></TableCell>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={course.displayOrder} onChange={e => handleInlineOrderChange(course.id, Number(e.target.value), updateCourse, coursesData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{course.title}</TableCell>
                         <TableCell><Badge variant="outline">{course.modality}</Badge></TableCell>
                         <TableCell>{course.date}</TableCell>
@@ -395,10 +387,11 @@ const AdminPanel = () => {
               <TabsContent value="past_courses">
                 {loadingPastCourses ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
-                    <TableHead>Título</TableHead><TableHead>Modalidad</TableHead><TableHead>Fecha</TableHead><TableHead>Participantes</TableHead><TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[60px]">Orden</TableHead><TableHead>Título</TableHead><TableHead>Modalidad</TableHead><TableHead>Fecha</TableHead><TableHead>Participantes</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
                     {pastCoursesData.map(course => (
                       <TableRow key={course.id}>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={course.displayOrder} onChange={e => handleInlineOrderChange(course.id, Number(e.target.value), updatePastCourse, pastCoursesData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{course.title}</TableCell>
                         <TableCell><Badge variant="outline">{course.modality}</Badge></TableCell>
                         <TableCell>{course.date}</TableCell>
@@ -419,12 +412,9 @@ const AdminPanel = () => {
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
                     <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Stock</TableHead><TableHead>Destacado</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {productsData.map((product, idx) => (
+                    {productsData.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell><div className="flex flex-col gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapProducts.isPending} onClick={() => handleSwap(productsData, idx, "up", swapProducts)}><ArrowUp className="h-3 w-3" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === productsData.length - 1 || swapProducts.isPending} onClick={() => handleSwap(productsData, idx, "down", swapProducts)}><ArrowDown className="h-3 w-3" /></Button>
-                        </div></TableCell>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={product.displayOrder} onChange={e => handleInlineOrderChange(product.id, Number(e.target.value), updateProduct, productsData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{product.name}</TableCell>
                         <TableCell><Badge variant="outline">{product.category}</Badge></TableCell>
                         <TableCell>{formatPrice(product.price)}</TableCell>
@@ -469,12 +459,9 @@ const AdminPanel = () => {
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
                     <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Título</TableHead><TableHead>Especialidad</TableHead><TableHead>Experiencia</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {doctorsData.map((doctor, idx) => (
+                    {doctorsData.map((doctor) => (
                       <TableRow key={doctor.id}>
-                        <TableCell><div className="flex flex-col gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapDoctors.isPending} onClick={() => handleSwap(doctorsData, idx, "up", swapDoctors)}><ArrowUp className="h-3 w-3" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === doctorsData.length - 1 || swapDoctors.isPending} onClick={() => handleSwap(doctorsData, idx, "down", swapDoctors)}><ArrowDown className="h-3 w-3" /></Button>
-                        </div></TableCell>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={doctor.displayOrder} onChange={e => handleInlineOrderChange(doctor.id, Number(e.target.value), updateDoctor, doctorsData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{doctor.name}</TableCell>
                         <TableCell>{doctor.title}</TableCell>
                         <TableCell><Badge variant="outline">{doctor.specialty}</Badge></TableCell>
@@ -495,12 +482,9 @@ const AdminPanel = () => {
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
                     <TableHead className="w-[60px]">Orden</TableHead><TableHead>Nombre</TableHead><TableHead>Categoría</TableHead><TableHead>Precio</TableHead><TableHead>Descuento</TableHead><TableHead>Oferta Activa</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {servicesData.map((service, idx) => (
+                    {servicesData.map((service) => (
                       <TableRow key={service.id}>
-                        <TableCell><div className="flex flex-col gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapServices.isPending} onClick={() => handleSwap(servicesData, idx, "up", swapServices)}><ArrowUp className="h-3 w-3" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === servicesData.length - 1 || swapServices.isPending} onClick={() => handleSwap(servicesData, idx, "down", swapServices)}><ArrowDown className="h-3 w-3" /></Button>
-                        </div></TableCell>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={service.displayOrder} onChange={e => handleInlineOrderChange(service.id, Number(e.target.value), updateService, servicesData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{service.name}</TableCell>
                         <TableCell><Badge variant="outline">{service.category}</Badge></TableCell>
                         <TableCell>{formatPrice(service.price)}</TableCell>
@@ -522,12 +506,9 @@ const AdminPanel = () => {
                   <div className="overflow-x-auto"><Table><TableHeader><TableRow>
                     <TableHead className="w-[60px]">Orden</TableHead><TableHead>Título</TableHead><TableHead>Descripción</TableHead><TableHead>Imágenes</TableHead><TableHead className="text-right">Acciones</TableHead>
                   </TableRow></TableHeader><TableBody>
-                    {galleryData.map((item, idx) => (
+                    {galleryData.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell><div className="flex flex-col gap-1">
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === 0 || swapGallery.isPending} onClick={() => handleSwap(galleryData, idx, "up", swapGallery)}><ArrowUp className="h-3 w-3" /></Button>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled={idx === galleryData.length - 1 || swapGallery.isPending} onClick={() => handleSwap(galleryData, idx, "down", swapGallery)}><ArrowDown className="h-3 w-3" /></Button>
-                        </div></TableCell>
+                        <TableCell><Input type="number" className="w-16 h-8 text-center" value={item.displayOrder} onChange={e => handleInlineOrderChange(item.id, Number(e.target.value), updateGallery, galleryData)} /></TableCell>
                         <TableCell className="font-medium max-w-[200px] truncate">{item.title}</TableCell>
                         <TableCell className="max-w-[300px] truncate">{item.description}</TableCell>
                         <TableCell><Badge variant="outline">{item.images.length} fotos</Badge></TableCell>
@@ -719,6 +700,7 @@ const AdminPanel = () => {
                   <div className="flex items-center gap-2"><Switch checked={editingCourse.showLocation} onCheckedChange={c => setEditingCourse({...editingCourse, showLocation: c})} /><Label>Ubicación</Label></div>
                 </div>
               </div>
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingCourse.displayOrder || ""} onChange={e => setEditingCourse({...editingCourse, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero. Dejar en 0 para ordenar al final.</p></div>
             </div>
           )}
           <DialogFooter>
@@ -767,6 +749,7 @@ const AdminPanel = () => {
                   </div>
                 </div>
               )}
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingProduct.displayOrder || ""} onChange={e => setEditingProduct({...editingProduct, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero.</p></div>
             </div>
           )}
           <DialogFooter>
@@ -824,6 +807,7 @@ const AdminPanel = () => {
               <div className="space-y-2"><Label>Imagen del Doctor</Label><ImageUpload value={editingDoctor.image} onChange={url => setEditingDoctor({...editingDoctor, image: url})} folder="doctors" /></div>
               <div className="space-y-2"><Label>Educación (una por línea)</Label><Textarea value={editingDoctor.education.join("\n")} placeholder="Universidad...&#10;Especialidad..." onChange={e => setEditingDoctor({...editingDoctor, education: e.target.value.split("\n").filter(s => s.trim())})} /></div>
               <div className="space-y-2"><Label>Certificaciones (una por línea)</Label><Textarea value={editingDoctor.certifications.join("\n")} placeholder="Certificación...&#10;Diplomado..." onChange={e => setEditingDoctor({...editingDoctor, certifications: e.target.value.split("\n").filter(s => s.trim())})} /></div>
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingDoctor.displayOrder || ""} onChange={e => setEditingDoctor({...editingDoctor, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero.</p></div>
             </div>
           )}
           <DialogFooter>
@@ -854,6 +838,7 @@ const AdminPanel = () => {
                   <div className="space-y-2"><Label>Descripción de la Oferta</Label><Textarea value={editingService.offerDescription} placeholder="ej: ¡Promoción válida hasta fin de mes!" onChange={e => setEditingService({...editingService, offerDescription: e.target.value})} /></div>
                 </>
               )}
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingService.displayOrder || ""} onChange={e => setEditingService({...editingService, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero.</p></div>
             </div>
           )}
           <DialogFooter>
@@ -881,6 +866,7 @@ const AdminPanel = () => {
               </div>
               <div className="space-y-2"><Label>Imagen Principal</Label><ImageUpload value={editingPastCourse.image} onChange={url => setEditingPastCourse({...editingPastCourse, image: url})} folder="past-courses" /></div>
               <div className="space-y-2"><Label>Galería de Imágenes</Label><MultiImageUpload value={editingPastCourse.galleryImages || []} onChange={urls => setEditingPastCourse({...editingPastCourse, galleryImages: urls})} folder="past-courses" maxImages={10} /></div>
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingPastCourse.displayOrder || ""} onChange={e => setEditingPastCourse({...editingPastCourse, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero.</p></div>
             </div>
           )}
           <DialogFooter>
@@ -899,6 +885,7 @@ const AdminPanel = () => {
               <div><Label>Título</Label><Input value={editingGallery.title} onChange={e => setEditingGallery({...editingGallery, title: e.target.value})} /></div>
               <div><Label>Descripción</Label><Textarea value={editingGallery.description} onChange={e => setEditingGallery({...editingGallery, description: e.target.value})} /></div>
               <div><Label>Imágenes</Label><MultiImageUpload value={editingGallery.images} onChange={images => setEditingGallery({...editingGallery, images})} folder="gallery" /></div>
+              <div className="space-y-2"><Label>Orden de visualización</Label><Input type="number" placeholder="0" value={editingGallery.displayOrder || ""} onChange={e => setEditingGallery({...editingGallery, displayOrder: e.target.value === "" ? 0 : Number(e.target.value)})} /><p className="text-xs text-muted-foreground">Menor número = aparece primero.</p></div>
             </div>
           )}
           <DialogFooter>

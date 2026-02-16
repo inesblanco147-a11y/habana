@@ -19,7 +19,8 @@ export const useCreateDoctor = () => {
           experience: doctor.experience,
           education: doctor.education || [],
           certifications: doctor.certifications || [],
-          image: doctor.image || ""
+          image: doctor.image || "",
+          display_order: doctor.displayOrder ?? 0,
         })
         .select()
         .single();
@@ -60,7 +61,8 @@ export const useUpdateDoctor = () => {
           experience: doctor.experience,
           education: doctor.education || [],
           certifications: doctor.certifications || [],
-          image: doctor.image || ""
+          image: doctor.image || "",
+          display_order: doctor.displayOrder ?? 0,
         })
         .eq("id", doctor.id)
         .select()
