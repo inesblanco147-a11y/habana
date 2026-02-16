@@ -172,14 +172,20 @@ const HelpSection = () => {
           <div className="mt-8 text-center">
             <p className="text-muted-foreground mb-4">¿Prefieres contactarnos directamente?</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              {/* <a
+              <a
                 href={`tel:${contactPhone || "+524422137365"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
               >
                 <Phone className="h-4 w-4" />
                 {contactPhone || "+52 4422137365"}
-              </a> */}
-
+              </a>
+              <a
+                href={`tel:${contactPhone || "+524422137365"}`}
+                className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
+              >
+                <Phone className="h-4 w-4" />
+                {contactPhone || "+52 4422137365"}
+              </a>
               <a
                 href={`mailto:${contactEmail || "habanasaludcenter@hotmail.com"}`}
                 className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
