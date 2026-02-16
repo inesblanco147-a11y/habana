@@ -68,6 +68,8 @@ const Footer = () => {
                 >
                   <Phone className="h-4 w-4" />
                   442 106 3235
+                  <br />
+                  442 213 7365
                 </a>
               </li>
               <li>
