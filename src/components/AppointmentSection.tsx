@@ -169,7 +169,7 @@ const AppointmentSection = () => {
       setShowConfirmation(true);
 
       // Open WhatsApp without pre-filled message
-      const number = whatsappNumber || "524421234567";
+      const number = whatsappNumber || "524422137365";
       window.open(`https://wa.me/${number}`, "_blank", "noopener,noreferrer");
     } catch {
       // Error handled by mutation hook
