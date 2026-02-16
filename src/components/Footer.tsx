@@ -63,12 +63,17 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:+524421234567"
+                  href="tel:4421063235"
                   className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
                 >
                   <Phone className="h-4 w-4" />
                   442 106 3235
-                  <br />
+                </a>
+                <a
+                  href="tel:4422137365"
+                  className="flex items-center gap-2 text-sm text-white/70 hover:text-hasace-red transition-colors"
+                >
+                  <Phone className="h-4 w-4" />
                   442 213 7365
                 </a>
               </li>
@@ -87,9 +92,7 @@ const Footer = () => {
                   <span>
                     Avenida Paseo de la Constitución # 290 local 8,
                     <br />
-                    Querétaro, Mexico.
-                    <br />
-                    C.P. 76125
+                    Querétaro, Mexico
                   </span>
                 </div>
               </li>
