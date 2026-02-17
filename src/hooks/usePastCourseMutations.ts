@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PastCourse } from "@/types/course";
 import { useToast } from "@/hooks/use-toast";
+import { withTimeout } from "@/lib/mutationWithTimeout";
 
 export const useCreatePastCourse = () => {
   const queryClient = useQueryClient();
@@ -9,24 +10,26 @@ export const useCreatePastCourse = () => {
 
   return useMutation({
     mutationFn: async (course: Omit<PastCourse, "id">) => {
-      const { data, error } = await supabase
-        .from("past_courses")
-        .insert({
-          title: course.title,
-          description: course.description,
-          image: course.image || "",
-          modality: course.modality,
-          date: course.date,
-          participants: course.participants,
-          instructor: course.instructor,
-          gallery_images: course.galleryImages || [],
-          display_order: course.displayOrder ?? 0,
-        })
-        .select()
-        .single();
+      return withTimeout(async () => {
+        const { data, error } = await supabase
+          .from("past_courses")
+          .insert({
+            title: course.title,
+            description: course.description,
+            image: course.image || "",
+            modality: course.modality,
+            date: course.date,
+            participants: course.participants,
+            instructor: course.instructor,
+            gallery_images: course.galleryImages || [],
+            display_order: course.displayOrder ?? 0,
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      });
     },
     onSuccess: () => {
       toast({ title: "Curso pasado creado", description: "El registro se ha agregado correctamente." });
@@ -46,25 +49,27 @@ export const useUpdatePastCourse = () => {
 
   return useMutation({
     mutationFn: async (course: PastCourse) => {
-      const { data, error } = await supabase
-        .from("past_courses")
-        .update({
-          title: course.title,
-          description: course.description,
-          image: course.image || "",
-          modality: course.modality,
-          date: course.date,
-          participants: course.participants,
-          instructor: course.instructor,
-          gallery_images: course.galleryImages || [],
-          display_order: course.displayOrder ?? 0,
-        })
-        .eq("id", course.id)
-        .select()
-        .single();
+      return withTimeout(async () => {
+        const { data, error } = await supabase
+          .from("past_courses")
+          .update({
+            title: course.title,
+            description: course.description,
+            image: course.image || "",
+            modality: course.modality,
+            date: course.date,
+            participants: course.participants,
+            instructor: course.instructor,
+            gallery_images: course.galleryImages || [],
+            display_order: course.displayOrder ?? 0,
+          })
+          .eq("id", course.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      });
     },
     onSuccess: () => {
       toast({ title: "Curso pasado actualizado", description: "Los cambios se han guardado correctamente." });
@@ -84,12 +89,14 @@ export const useDeletePastCourse = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("past_courses")
-        .delete()
-        .eq("id", id);
+      return withTimeout(async () => {
+        const { error } = await supabase
+          .from("past_courses")
+          .delete()
+          .eq("id", id);
 
-      if (error) throw error;
+        if (error) throw error;
+      });
     },
     onSuccess: () => {
       toast({ title: "Curso pasado eliminado", description: "El registro se ha eliminado correctamente." });

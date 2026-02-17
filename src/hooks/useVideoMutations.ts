@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Video } from "@/types/video";
 import { useToast } from "@/hooks/use-toast";
+import { withTimeout } from "@/lib/mutationWithTimeout";
 
 export const useCreateVideo = () => {
   const queryClient = useQueryClient();
@@ -9,19 +10,21 @@ export const useCreateVideo = () => {
 
   return useMutation({
     mutationFn: async (video: Omit<Video, "id">) => {
-      const { data, error } = await supabase
-        .from("videos")
-        .insert({
-          title: video.title,
-          description: video.description,
-          thumbnail: video.thumbnail,
-          video_url: video.videoUrl,
-        })
-        .select()
-        .single();
+      return withTimeout(async () => {
+        const { data, error } = await supabase
+          .from("videos")
+          .insert({
+            title: video.title,
+            description: video.description,
+            thumbnail: video.thumbnail,
+            video_url: video.videoUrl,
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      });
     },
     onSuccess: () => {
       toast({ title: "Video creado", description: "El video se ha agregado correctamente." });
@@ -41,20 +44,22 @@ export const useUpdateVideo = () => {
 
   return useMutation({
     mutationFn: async (video: Video) => {
-      const { data, error } = await supabase
-        .from("videos")
-        .update({
-          title: video.title,
-          description: video.description,
-          thumbnail: video.thumbnail,
-          video_url: video.videoUrl,
-        })
-        .eq("id", video.id)
-        .select()
-        .single();
+      return withTimeout(async () => {
+        const { data, error } = await supabase
+          .from("videos")
+          .update({
+            title: video.title,
+            description: video.description,
+            thumbnail: video.thumbnail,
+            video_url: video.videoUrl,
+          })
+          .eq("id", video.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      });
     },
     onSuccess: () => {
       toast({ title: "Video actualizado", description: "Los cambios se han guardado correctamente." });
@@ -74,8 +79,10 @@ export const useDeleteVideo = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("videos").delete().eq("id", id);
-      if (error) throw error;
+      return withTimeout(async () => {
+        const { error } = await supabase.from("videos").delete().eq("id", id);
+        if (error) throw error;
+      });
     },
     onSuccess: () => {
       toast({ title: "Video eliminado", description: "El video se ha eliminado correctamente." });
