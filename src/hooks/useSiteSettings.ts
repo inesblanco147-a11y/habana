@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { withTimeout } from "@/lib/mutationWithTimeout";
 
 interface SiteSetting {
   id: string;
@@ -36,15 +37,17 @@ export const useUpdateSiteSetting = () => {
 
   return useMutation({
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .update({ value })
-        .eq("key", key)
-        .select()
-        .single();
+      return withTimeout(async () => {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .update({ value })
+          .eq("key", key)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["site_settings"] });

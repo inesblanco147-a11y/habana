@@ -92,18 +92,42 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      // Clear state immediately to prevent blank page issues
+      // Race with a 5 second timeout
+      const logoutPromise = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      };
+      const timeoutPromise = new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error("Logout timeout")), 5000)
+      );
+
+      try {
+        await Promise.race([logoutPromise(), timeoutPromise]);
+      } catch {
+        // Even if timeout, proceed with cleanup
+      }
+
+      // Always clear state and storage
       setAuthState({
         user: null,
         session: null,
         isAdmin: false,
         isLoading: false,
       });
+      localStorage.clear();
+      sessionStorage.clear();
       return { error: null };
     } catch (error) {
       console.error("Sign out error:", error);
+      // Force clear state even on error
+      setAuthState({
+        user: null,
+        session: null,
+        isAdmin: false,
+        isLoading: false,
+      });
+      localStorage.clear();
+      sessionStorage.clear();
       return { error: error as Error };
     }
   };

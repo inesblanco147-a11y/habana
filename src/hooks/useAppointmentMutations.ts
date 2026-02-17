@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CreateAppointmentData } from "@/types/appointment";
 import { useToast } from "@/hooks/use-toast";
+import { withTimeout } from "@/lib/mutationWithTimeout";
 
 export const useCreateAppointment = () => {
   const queryClient = useQueryClient();
@@ -9,31 +10,33 @@ export const useCreateAppointment = () => {
 
   return useMutation({
     mutationFn: async (data: CreateAppointmentData) => {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-appointment`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
-            email: data.email,
-            date: data.date,
-            time: data.time,
-            service: data.service,
-            notes: data.notes,
-          }),
+      return withTimeout(async () => {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-appointment`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName: data.firstName,
+              lastName: data.lastName,
+              phone: data.phone,
+              email: data.email,
+              date: data.date,
+              time: data.time,
+              service: data.service,
+              notes: data.notes,
+            }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Error al crear la cita");
         }
-      );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Error al crear la cita");
-      }
-
-      return result;
+        return result;
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
@@ -51,12 +54,14 @@ export const useUpdateAppointmentStatus = () => {
 
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("appointments" as any)
-        .update({ status } as any)
-        .eq("id", id);
+      return withTimeout(async () => {
+        const { error } = await supabase
+          .from("appointments" as any)
+          .update({ status } as any)
+          .eq("id", id);
 
-      if (error) throw error;
+        if (error) throw error;
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });

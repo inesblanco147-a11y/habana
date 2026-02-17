@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { 
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import {
   Plus, Edit, Trash2, Save, GraduationCap, ShoppingBag, ArrowLeft, Calendar,
-  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList,
+  Users, Loader2, LogOut, Settings, Sparkles, History, Image, Video as VideoIcon, Tag, ClipboardList, WifiOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,12 +49,18 @@ import ImageUpload from "@/components/ImageUpload";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import VideoUpload from "@/components/VideoUpload";
 import AppointmentsTab from "@/components/AppointmentsTab";
+import { useSessionMonitor } from "@/hooks/useSessionMonitor";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("courses");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { sessionExpired } = useSessionMonitor();
+  const { isOnline } = useNetworkStatus();
   
   // Fetch data
   const { data: coursesData = [], isLoading: loadingCourses } = useCourses();
@@ -137,13 +145,13 @@ const AdminPanel = () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
     try {
-      const { error } = await signOut();
-      if (error) {
-        toast({ variant: "destructive", title: "Error", description: "No se pudo cerrar sesión." });
-        setIsLoggingOut(false);
-      }
-    } catch (err) {
+      queryClient.clear();
+      await signOut();
+      navigate("/auth", { replace: true });
+    } catch {
       toast({ variant: "destructive", title: "Error", description: "Ocurrió un error al cerrar sesión." });
+      navigate("/auth", { replace: true });
+    } finally {
       setIsLoggingOut(false);
     }
   };
@@ -307,7 +315,41 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/30">
+      {/* Session Expired Modal */}
+      <Dialog open={sessionExpired}>
+        <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              Sesión expirada
+            </DialogTitle>
+            <DialogDescription>
+              Tu sesión ha expirado. Redirigiendo al login...
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Offline Banner */}
+      {!isOnline && (
+        <div className="bg-destructive text-destructive-foreground px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
+          <WifiOff className="h-4 w-4" />
+          Sin conexión a internet. Los cambios se aplicarán al reconectar.
+        </div>
+      )}
+
       <Header />
+
+      {/* Logout overlay */}
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-lg font-medium text-foreground">Cerrando sesión...</p>
+          </div>
+        </div>
+      )}
+
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <Button variant="ghost" onClick={() => window.history.back()}><ArrowLeft className="h-4 w-4 mr-2" />Volver al sitio</Button>
