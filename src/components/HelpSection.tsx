@@ -175,12 +175,9 @@ const HelpSection = () => {
               <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
                 4421063235
               </a>
-              <a
-                href={`tel:${whatsappNumber || "+524422137365"}`}
-                className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
-              >
+              <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
                 <Phone className="h-4 w-4" />
-                {whatsappNumber || "+52 4422137365"}
+                {whatsappNumber || "4422137365"}
               </a>
               <a
                 href={`mailto:${contactEmail || "habanasaludcenter@hotmail.com"}`}
