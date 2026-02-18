@@ -52,6 +52,12 @@ const seoConfig: Record<string, SEOConfig> = {
     keywords: "agendar cita, consulta rehabilitación, cita fisioterapia, Querétaro, HASACE",
     canonical: "https://hasace.mx/cita",
   },
+  "/contact": {
+    title: "Contáctanos | Habana Salud Center, HASACE Querétaro",
+    description: "Contáctanos para agendar tu cita o resolver tus dudas. Centro de Rehabilitación Física en Querétaro, México.",
+    keywords: "contacto HASACE, contacto rehabilitación Querétaro, fisioterapia contacto",
+    canonical: "https://hasace.mx/contact",
+  },
 };
 
 const SEOHead = () => {
