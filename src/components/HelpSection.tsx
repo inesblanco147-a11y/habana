@@ -174,10 +174,10 @@ const HelpSection = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
                 4421063235
+                <Phone className="h-4 w-4" />
               </a>
               <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
                 <Phone className="h-4 w-4" />
-                {whatsappNumber || "4422137365"}
               </a>
               <a
                 href={`mailto:${contactEmail || "habanasaludcenter@hotmail.com"}`}
