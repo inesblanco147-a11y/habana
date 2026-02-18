@@ -173,8 +173,8 @@ const HelpSection = () => {
             <p className="text-muted-foreground mb-4">¿Prefieres contactarnos directamente?</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
-                4421063235
                 <Phone className="h-4 w-4" />
+                4421063235
               </a>
               <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
                 <Phone className="h-4 w-4" />
