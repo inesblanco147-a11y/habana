@@ -9,6 +9,7 @@ const routeLabels: Record<string, string> = {
   "/productos": "Productos",
   "/galeria": "Galería",
   "/cita": "Agenda tu Cita",
+  "/contact": "Contáctanos",
 };
 
 const Breadcrumbs = () => {

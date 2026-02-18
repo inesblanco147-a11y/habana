@@ -13,6 +13,7 @@ import CursosPage from "./pages/CursosPage";
 import ProductosPage from "./pages/ProductosPage";
 import GaleriaPage from "./pages/GaleriaPage";
 import CitaPage from "./pages/CitaPage";
+import ContactPage from "./pages/ContactPage";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/productos" element={<ProductosPage />} />
             <Route path="/galeria" element={<GaleriaPage />} />
             <Route path="/cita" element={<CitaPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route 
               path="/admin" 
