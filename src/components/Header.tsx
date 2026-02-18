@@ -11,7 +11,7 @@ const menuItems = [
   { label: "Servicios", href: "/servicios" },
   { label: "Galería", href: "/galeria" },
   { label: "Cita", href: "/cita" },
-  { label: "Contáctanos", href: "/#contact" },
+  { label: "Contáctanos", href: "/contact" },
 ];
 
 const Header = () => {
@@ -53,12 +53,7 @@ const Header = () => {
       );
     }
     return (
-      <Link
-        key={item.label}
-        to={item.href}
-        className={className}
-        onClick={() => setIsMenuOpen(false)}
-      >
+      <Link key={item.label} to={item.href} className={className} onClick={() => setIsMenuOpen(false)}>
         {item.label}
       </Link>
     );
@@ -77,8 +72,8 @@ const Header = () => {
             {menuItems.map((item) =>
               renderLink(
                 item,
-                `text-sm font-semibold transition-colors ${isActive(item.href) ? "text-hasace-red" : "text-secondary hover:text-hasace-red"}`
-              )
+                `text-sm font-semibold transition-colors ${isActive(item.href) ? "text-hasace-red" : "text-secondary hover:text-hasace-red"}`,
+              ),
             )}
           </nav>
 
@@ -103,8 +98,8 @@ const Header = () => {
               {menuItems.map((item) =>
                 renderLink(
                   item,
-                  `px-4 py-3 rounded-md transition-colors ${isActive(item.href) ? "bg-hasace-red/10 text-hasace-red font-bold" : "text-foreground hover:bg-muted"}`
-                )
+                  `px-4 py-3 rounded-md transition-colors ${isActive(item.href) ? "bg-hasace-red/10 text-hasace-red font-bold" : "text-foreground hover:bg-muted"}`,
+                ),
               )}
               <hr className="my-2" />
             </div>
