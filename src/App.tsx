@@ -4,18 +4,26 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+
 import Index from "./pages/Index";
+import NosotrosPage from "./pages/NosotrosPage";
+import ServiciosPage from "./pages/ServiciosPage";
+import CursosPage from "./pages/CursosPage";
+import ProductosPage from "./pages/ProductosPage";
+import GaleriaPage from "./pages/GaleriaPage";
+import CitaPage from "./pages/CitaPage";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useToast } from "@/hooks/use-toast";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,
-      staleTime: 1000 * 60 * 2, // 2 minutes
+      staleTime: 1000 * 60 * 2,
       refetchOnWindowFocus: true,
     },
     mutations: {
@@ -25,7 +33,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Global error handler component
 const GlobalErrorHandler = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
@@ -53,21 +60,28 @@ const App = () => (
       <GlobalErrorHandler>
         <Toaster />
         <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute requireAdmin>
-                <AdminPanel />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/nosotros" element={<NosotrosPage />} />
+            <Route path="/servicios" element={<ServiciosPage />} />
+            <Route path="/cursos" element={<CursosPage />} />
+            <Route path="/productos" element={<ProductosPage />} />
+            <Route path="/galeria" element={<GaleriaPage />} />
+            <Route path="/cita" element={<CitaPage />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPanel />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
       </GlobalErrorHandler>
     </TooltipProvider>
   </QueryClientProvider>
