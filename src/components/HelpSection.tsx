@@ -172,12 +172,8 @@ const HelpSection = () => {
           <div className="mt-8 text-center">
             <p className="text-muted-foreground mb-4">¿Prefieres contactarnos directamente?</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <a
-                href={`tel:${contactPhone || "+524421063235"}`}
-                className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline"
-              >
-                <Phone className="h-4 w-4" />
-                {contactPhone || "+52 4421063235"}
+              <a className="inline-flex items-center justify-center gap-2 text-hasace-red hover:underline">
+                4421063235
               </a>
               <a
                 href={`tel:${whatsappNumber || "+524422137365"}`}
