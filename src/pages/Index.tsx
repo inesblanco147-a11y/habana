@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import PageLayout from "@/components/PageLayout";
 import Hero from "@/components/Hero";
 import AboutSection from "@/components/AboutSection";
 import CoursesSection from "@/components/CoursesSection";
@@ -7,24 +7,21 @@ import AppointmentSection from "@/components/AppointmentSection";
 import ProductsSection from "@/components/ProductsSection";
 import ServicesSection from "@/components/ServicesSection";
 import EventsSection from "@/components/EventsSection";
-import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow">
-        <Hero />
-        <AboutSection />
-        <CoursesSection />
-        <ProductsSection />
-        <ServicesSection />
-        <EventsSection />
-        <AppointmentSection />
-        <HelpSection />
-      </main>
-      <Footer />
-    </div>
+    <PageLayout showBreadcrumbs={false}>
+      <JsonLd />
+      <Hero />
+      <AboutSection />
+      <CoursesSection />
+      <ProductsSection />
+      <ServicesSection />
+      <EventsSection />
+      <AppointmentSection />
+      <HelpSection />
+    </PageLayout>
   );
 };
 
