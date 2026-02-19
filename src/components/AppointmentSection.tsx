@@ -170,7 +170,24 @@ const AppointmentSection = () => {
 
       // Open WhatsApp without pre-filled message
       const number = whatsappNumber || "5214422137365";
-      window.open(`https://wa.me/${number}`, "_blank", "noopener,noreferrer");
+      const dateDisplay = selectedDate.toLocaleDateString("es-MX", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
+      const message = encodeURIComponent(
+        `¡Hola! He agendado una cita:\n\n` +
+        `👤 ${firstName.trim()} ${lastName.trim()}\n` +
+        `📅 ${dateDisplay}\n` +
+        `🕐 ${selectedTime} hrs\n` +
+        (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
+        `📧 ${email.trim()}\n` +
+        `📱 ${phone}\n` +
+        `\n¡Gracias!`
+      );
+      window.open(`https://wa.me/${number}?text=${message}`, "_blank", "noopener,noreferrer");
     } catch {
       // Error handled by mutation hook
     }
