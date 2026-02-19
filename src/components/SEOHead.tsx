@@ -40,6 +40,12 @@ const seoConfig: Record<string, SEOConfig> = {
     keywords: "productos rehabilitación, ortopedia, equipos terapéuticos, Querétaro, HASACE",
     canonical: "https://hasace.mx/productos",
   },
+  "/productos/catalogo": {
+    title: "Catálogo de Productos | Habana Salud Center, HASACE Querétaro",
+    description: "Explora nuestro catálogo completo de productos de rehabilitación, ortopedia y equipamiento terapéutico en Querétaro.",
+    keywords: "catálogo productos, rehabilitación, ortopedia, equipamiento terapéutico, Querétaro, HASACE",
+    canonical: "https://hasace.mx/productos/catalogo",
+  },
   "/galeria": {
     title: "Galería de Eventos y Actividades | Habana Salud Center, HASACE",
     description: "Galería de fotos y videos de eventos, actividades y momentos en Habana Salud Center HASACE Querétaro.",

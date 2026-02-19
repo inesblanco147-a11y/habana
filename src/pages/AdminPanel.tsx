@@ -187,7 +187,7 @@ const AdminPanel = () => {
 
   // Product handlers
   const handleAddProduct = () => {
-    setEditingProduct({ id: "", name: "", description: "", price: 0, image: "", category: "", inStock: true, featured: false, showPrice: true, hasSizes: false, sizes: [], displayOrder: 0 });
+    setEditingProduct({ id: "", name: "", description: "", price: 0, image: "", images: [], mainImageIndex: 0, category: "", inStock: true, featured: false, showPrice: true, hasSizes: false, sizes: [], displayOrder: 0, specifications: {} });
     setIsProductModalOpen(true);
   };
   const handleEditProduct = (product: Product) => { setEditingProduct({ ...product }); setIsProductModalOpen(true); };
@@ -764,7 +764,35 @@ const AdminPanel = () => {
                 <div className="space-y-2"><Label>Categoría</Label><Select value={editingProduct.category} onValueChange={v => setEditingProduct({...editingProduct, category: v})}><SelectTrigger><SelectValue placeholder="Seleccionar categoría" /></SelectTrigger><SelectContent className="bg-card">{productCategoriesData.map(c => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></div>
                 <div className="space-y-2"><Label>Precio (MXN)</Label><Input type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})} /></div>
               </div>
-              <div className="space-y-2"><Label>Imagen del Producto</Label><ImageUpload value={editingProduct.image} onChange={url => setEditingProduct({...editingProduct, image: url})} folder="products" /></div>
+              <div className="space-y-2">
+                <Label>Imágenes del Producto (máx. 5)</Label>
+                <MultiImageUpload
+                  value={editingProduct.images}
+                  onChange={urls => {
+                    const mainIdx = editingProduct.mainImageIndex >= urls.length ? 0 : editingProduct.mainImageIndex;
+                    setEditingProduct({...editingProduct, images: urls, mainImageIndex: mainIdx, image: urls[mainIdx] || ""});
+                  }}
+                  folder="products"
+                  maxImages={5}
+                />
+                {editingProduct.images.length > 1 && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Imagen principal</Label>
+                    <div className="flex gap-2">
+                      {editingProduct.images.map((url, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setEditingProduct({...editingProduct, mainImageIndex: idx, image: url})}
+                          className={`w-12 h-12 rounded border-2 overflow-hidden ${idx === editingProduct.mainImageIndex ? "border-hasace-red" : "border-transparent opacity-60"}`}
+                        >
+                          <img src={url} alt={`Img ${idx + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2"><Switch checked={editingProduct.inStock} onCheckedChange={c => setEditingProduct({...editingProduct, inStock: c})} /><Label>En stock</Label></div>
                 <div className="flex items-center gap-2"><Switch checked={editingProduct.featured} onCheckedChange={c => setEditingProduct({...editingProduct, featured: c})} /><Label>Destacado</Label></div>

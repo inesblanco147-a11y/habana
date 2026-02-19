@@ -339,11 +339,14 @@ export type Database = {
           has_sizes: boolean
           id: string
           image: string | null
+          images: string[]
           in_stock: boolean
+          main_image_index: number
           name: string
           price: number
           show_price: boolean
           sizes: Json
+          specifications: Json
           updated_at: string
         }
         Insert: {
@@ -355,11 +358,14 @@ export type Database = {
           has_sizes?: boolean
           id?: string
           image?: string | null
+          images?: string[]
           in_stock?: boolean
+          main_image_index?: number
           name: string
           price: number
           show_price?: boolean
           sizes?: Json
+          specifications?: Json
           updated_at?: string
         }
         Update: {
@@ -371,11 +377,14 @@ export type Database = {
           has_sizes?: boolean
           id?: string
           image?: string | null
+          images?: string[]
           in_stock?: boolean
+          main_image_index?: number
           name?: string
           price?: number
           show_price?: boolean
           sizes?: Json
+          specifications?: Json
           updated_at?: string
         }
         Relationships: []
