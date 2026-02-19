@@ -11,15 +11,22 @@ export const useCreateProduct = () => {
   return useMutation({
     mutationFn: async (product: Omit<Product, "id">) => {
       return withTimeout(async () => {
+        const mainImage = product.images.length > 0
+          ? (product.images[product.mainImageIndex] || product.images[0])
+          : product.image;
+
         const { data, error } = await supabase
           .from("products")
           .insert({
             name: product.name, description: product.description, price: product.price,
-            image: product.image || "", category: product.category, in_stock: product.inStock,
+            image: mainImage || "", category: product.category, in_stock: product.inStock,
             featured: product.featured || false, show_price: product.showPrice,
             has_sizes: product.hasSizes, sizes: product.sizes as any,
             display_order: product.displayOrder ?? 0,
-          })
+            images: product.images,
+            main_image_index: product.mainImageIndex ?? 0,
+            specifications: product.specifications as any,
+          } as any)
           .select().single();
         if (error) throw error;
         return data;
@@ -38,15 +45,22 @@ export const useUpdateProduct = () => {
   return useMutation({
     mutationFn: async (product: Product) => {
       return withTimeout(async () => {
+        const mainImage = product.images.length > 0
+          ? (product.images[product.mainImageIndex] || product.images[0])
+          : product.image;
+
         const { data, error } = await supabase
           .from("products")
           .update({
             name: product.name, description: product.description, price: product.price,
-            image: product.image || "", category: product.category, in_stock: product.inStock,
+            image: mainImage || "", category: product.category, in_stock: product.inStock,
             featured: product.featured || false, show_price: product.showPrice,
             has_sizes: product.hasSizes, sizes: product.sizes as any,
             display_order: product.displayOrder ?? 0,
-          })
+            images: product.images,
+            main_image_index: product.mainImageIndex ?? 0,
+            specifications: product.specifications as any,
+          } as any)
           .eq("id", product.id).select().single();
         if (error) throw error;
         return data;

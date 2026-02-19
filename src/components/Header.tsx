@@ -21,7 +21,7 @@ const Header = () => {
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
     if (href.startsWith("/#")) return location.pathname === "/" && location.hash === href.replace("/", "");
-    return location.pathname === href;
+    return location.pathname === href || location.pathname.startsWith(href + "/");
   };
 
   const handleClick = (href: string) => {

@@ -180,49 +180,49 @@ export const products: Product[] = [
   {
     id: "prod1", name: "Banda Elástica de Resistencia - Set Completo",
     description: "Set de 5 bandas elásticas con diferentes niveles de resistencia para rehabilitación y fortalecimiento muscular.",
-    price: 450, image: "", category: "Equipamiento", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 0
+    price: 450, image: "", images: [], mainImageIndex: 0, category: "Equipamiento", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 0, specifications: {}
   },
   {
     id: "prod2", name: "Rodillera Ortopédica con Soporte Lateral",
     description: "Rodillera de neopreno con varillas laterales para estabilización de rodilla en lesiones ligamentarias.",
-    price: 890, image: "", category: "Ortopedia", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 1
+    price: 890, image: "", images: [], mainImageIndex: 0, category: "Ortopedia", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 1, specifications: {}
   },
   {
     id: "prod3", name: "Pelota de Ejercicio 65cm",
     description: "Pelota de ejercicio anti-explosión ideal para rehabilitación, fortalecimiento y mejora del equilibrio.",
-    price: 380, image: "", category: "Equipamiento", inStock: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 2
+    price: 380, image: "", images: [], mainImageIndex: 0, category: "Equipamiento", inStock: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 2, specifications: {}
   },
   {
     id: "prod4", name: "Muñequera con Soporte de Pulgar",
     description: "Muñequera ajustable con férula de pulgar para lesiones de muñeca y síndrome del túnel carpiano.",
-    price: 520, image: "", category: "Ortopedia", inStock: false,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 3
+    price: 520, image: "", images: [], mainImageIndex: 0, category: "Ortopedia", inStock: false,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 3, specifications: {}
   },
   {
     id: "prod5", name: "Kit de Masaje Miofascial",
     description: "Kit completo con rodillo de espuma, bola de lacrosse y palo de masaje para liberación miofascial.",
-    price: 680, image: "", category: "Terapia Manual", inStock: true, featured: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 4
+    price: 680, image: "", images: [], mainImageIndex: 0, category: "Terapia Manual", inStock: true, featured: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 4, specifications: {}
   },
   {
     id: "prod6", name: "Electro Estimulador TENS Portátil",
     description: "Dispositivo TENS de uso doméstico para control del dolor con 8 programas preestablecidos.",
-    price: 1250, image: "", category: "Electroterapia", inStock: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 5
+    price: 1250, image: "", images: [], mainImageIndex: 0, category: "Electroterapia", inStock: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 5, specifications: {}
   },
   {
     id: "prod7", name: "Tobillera Estabilizadora Premium",
     description: "Tobillera de alta gama con sistema de cordones y soporte en 8 para esguinces de tobillo.",
-    price: 750, image: "", category: "Ortopedia", inStock: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 6
+    price: 750, image: "", images: [], mainImageIndex: 0, category: "Ortopedia", inStock: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 6, specifications: {}
   },
   {
     id: "prod8", name: "Disco de Balance para Propiocepción",
     description: "Disco inflable para entrenamiento propioceptivo y rehabilitación de equilibrio.",
-    price: 290, image: "", category: "Equipamiento", inStock: true,
-    showPrice: true, hasSizes: false, sizes: [], displayOrder: 7
+    price: 290, image: "", images: [], mainImageIndex: 0, category: "Equipamiento", inStock: true,
+    showPrice: true, hasSizes: false, sizes: [], displayOrder: 7, specifications: {}
   }
 ];

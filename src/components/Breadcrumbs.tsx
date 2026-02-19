@@ -7,9 +7,14 @@ const routeLabels: Record<string, string> = {
   "/servicios": "Servicios",
   "/cursos": "Cursos",
   "/productos": "Productos",
+  "/productos/catalogo": "Catálogo",
   "/galeria": "Galería",
   "/cita": "Agenda tu Cita",
   "/contact": "Contáctanos",
+};
+
+const routeParents: Record<string, { href: string; label: string }> = {
+  "/productos/catalogo": { href: "/productos", label: "Productos" },
 };
 
 const Breadcrumbs = () => {
@@ -19,6 +24,8 @@ const Breadcrumbs = () => {
 
   const label = routeLabels[location.pathname];
   if (!label) return null;
+
+  const parent = routeParents[location.pathname];
 
   return (
     <nav aria-label="Breadcrumb" className="bg-muted/50 border-b">
@@ -31,10 +38,21 @@ const Breadcrumbs = () => {
             </Link>
             <meta itemProp="position" content="1" />
           </li>
+          {parent && (
+            <>
+              <ChevronRight className="h-3.5 w-3.5" />
+              <li className="flex items-center gap-1" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                <Link to={parent.href} className="hover:text-foreground transition-colors" itemProp="item">
+                  <span itemProp="name">{parent.label}</span>
+                </Link>
+                <meta itemProp="position" content="2" />
+              </li>
+            </>
+          )}
           <ChevronRight className="h-3.5 w-3.5" />
           <li className="text-foreground font-medium" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
             <span itemProp="name">{label}</span>
-            <meta itemProp="position" content="2" />
+            <meta itemProp="position" content={parent ? "3" : "2"} />
           </li>
         </ol>
       </div>

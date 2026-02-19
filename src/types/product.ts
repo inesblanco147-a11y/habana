@@ -9,6 +9,8 @@ export interface Product {
   description: string;
   price: number;
   image: string;
+  images: string[];
+  mainImageIndex: number;
   category: string;
   inStock: boolean;
   featured?: boolean;
@@ -16,4 +18,5 @@ export interface Product {
   hasSizes: boolean;
   sizes: ProductSize[];
   displayOrder: number;
+  specifications: Record<string, string>;
 }
