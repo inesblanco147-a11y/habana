@@ -73,7 +73,7 @@ const ProductosPage = () => {
             </div>
 
             {/* Categories */}
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
               <h3 className="text-xl font-bold text-foreground">Categorías Disponibles</h3>
               <div className="flex flex-wrap gap-3">
                 {categories.map(cat => (
@@ -85,7 +85,7 @@ const ProductosPage = () => {
                     {cat.name}
                   </Badge>
                 ))}
-              </div>
+              </div> */}
 
               {/* Benefits */}
               <div className="space-y-4 mt-8">
