@@ -75,17 +75,6 @@ const ProductosPage = () => {
             {/* Categories */}
             <div className="space-y-6">
               <h3 className="text-xl font-bold text-foreground">Categorías Disponibles</h3>
-              <div className="flex flex-wrap gap-3">
-                {categories.map((cat) => (
-                  <Badge
-                    key={cat.id}
-                    variant="outline"
-                    className="text-sm px-4 py-2 bg-hasace-red/10 text-hasace-red border-hasace-red/20"
-                  >
-                    {cat.name}
-                  </Badge>
-                ))}
-              </div>
 
               {/* Benefits */}
               <div className="space-y-4 mt-8">
