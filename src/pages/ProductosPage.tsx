@@ -11,10 +11,10 @@ const ProductosPage = () => {
   const { data: products = [] } = useProducts();
   const { data: categories = [] } = useProductCategories();
 
-  const featuredProducts = products.filter(p => p.featured).slice(0, 3);
+  const featuredProducts = products.filter((p) => p.featured).slice(0, 3);
   const displayProducts = featuredProducts.length >= 3 ? featuredProducts : products.slice(0, 3);
 
-  const getProductImage = (product: typeof products[0]) => {
+  const getProductImage = (product: (typeof products)[0]) => {
     if (product.images.length > 0) return product.images[product.mainImageIndex] || product.images[0];
     return product.image || productDefaultImage;
   };
@@ -37,7 +37,7 @@ const ProductosPage = () => {
           {/* Featured Images Grid */}
           {displayProducts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-              {displayProducts.map(product => (
+              {displayProducts.map((product) => (
                 <div key={product.id} className="relative group overflow-hidden rounded-lg shadow-xl">
                   <img
                     src={getProductImage(product)}
@@ -62,21 +62,21 @@ const ProductosPage = () => {
                 Productos para tu Recuperación
               </h2>
               <p className="text-base lg:text-lg leading-relaxed text-primary mb-4">
-                En HASACE ofrecemos una selección cuidada de productos y equipamiento de rehabilitación física, 
-                ortopedia y terapia. Cada artículo ha sido elegido por nuestro equipo médico para garantizar 
-                la mejor calidad en tu proceso de recuperación.
+                En HASACE ofrecemos una selección cuidada de productos y equipamiento de rehabilitación física,
+                ortopedia y terapia. Cada artículo ha sido elegido por nuestro equipo médico para garantizar la mejor
+                calidad en tu proceso de recuperación.
               </p>
               <p className="text-base leading-relaxed text-muted-foreground">
-                Desde equipos de electroterapia hasta productos ortopédicos especializados, 
-                encontrarás todo lo que necesitas para complementar tu tratamiento de rehabilitación.
+                Desde equipos de electroterapia hasta productos ortopédicos especializados, encontrarás todo lo que
+                necesitas para complementar tu tratamiento de rehabilitación.
               </p>
             </div>
 
             {/* Categories */}
-            {/* <div className="space-y-6">
+            <div className="space-y-6">
               <h3 className="text-xl font-bold text-foreground">Categorías Disponibles</h3>
               <div className="flex flex-wrap gap-3">
-                {categories.map(cat => (
+                {categories.map((cat) => (
                   <Badge
                     key={cat.id}
                     variant="outline"
@@ -85,7 +85,7 @@ const ProductosPage = () => {
                     {cat.name}
                   </Badge>
                 ))}
-              </div> */}
+              </div>
 
               {/* Benefits */}
               <div className="space-y-4 mt-8">
