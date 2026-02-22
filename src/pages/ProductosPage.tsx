@@ -65,10 +65,10 @@ const ProductosPage = () => {
                 ¡Mejora tu bienestar hoy! Tenemos artículos que ayudan a inmovilizar, proteger, estabilizar y mucho más.
                 Ve todo los productos que tenemos para ti, ¡Vive sin dolor!
               </p>
-              <p className="text-base leading-relaxed text-muted-foreground">
+              {/* <p className="text-base leading-relaxed text-muted-foreground">
                 Desde equipos de electroterapia hasta productos ortopédicos especializados, encontrarás todo lo que
                 necesitas para complementar tu tratamiento de rehabilitación.
-              </p>
+              </p> */}
             </div>
 
             {/* Categories */}
