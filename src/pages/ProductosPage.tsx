@@ -62,9 +62,8 @@ const ProductosPage = () => {
                 Productos para tu Recuperación
               </h2>
               <p className="text-base lg:text-lg leading-relaxed text-primary mb-4">
-                En HASACE ofrecemos una selección cuidada de productos y equipamiento de rehabilitación física,
-                ortopedia y terapia. Cada artículo ha sido elegido por nuestro equipo médico para garantizar la mejor
-                calidad en tu proceso de recuperación.
+                ¡Mejora tu bienestar hoy! Tenemos artículos que ayudan a inmovilizar, proteger, estabilizar y mucho más.
+                Ve todo los productos que tenemos para ti, ¡Vive sin dolor!
               </p>
               <p className="text-base leading-relaxed text-muted-foreground">
                 Desde equipos de electroterapia hasta productos ortopédicos especializados, encontrarás todo lo que
@@ -74,8 +73,6 @@ const ProductosPage = () => {
 
             {/* Categories */}
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-foreground">Categorías Disponibles</h3>
-
               {/* Benefits */}
               <div className="space-y-4 mt-8">
                 <div className="flex items-start gap-3">
