@@ -5,6 +5,7 @@ import CoursesSection from "@/components/CoursesSection";
 import HelpSection from "@/components/HelpSection";
 import AppointmentSection from "@/components/AppointmentSection";
 import ProductsSection from "@/components/ProductsSection";
+import ProductosPage from "@pages/ProductosPage";
 import ServicesSection from "@/components/ServicesSection";
 import EventsSection from "@/components/EventsSection";
 import JsonLd from "@/components/JsonLd";
