@@ -18,6 +18,8 @@ import ContactPage from "./pages/ContactPage";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PoliticaPrivacidadPage from "./pages/PoliticaPrivacidadPage";
+import TerminosCondicionesPage from "./pages/TerminosCondicionesPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 
