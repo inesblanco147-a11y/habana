@@ -18,6 +18,8 @@ import ContactPage from "./pages/ContactPage";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PoliticaPrivacidadPage from "./pages/PoliticaPrivacidadPage";
+import TerminosCondicionesPage from "./pages/TerminosCondicionesPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -83,6 +85,8 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/politica-de-privacidad" element={<PoliticaPrivacidadPage />} />
+            <Route path="/terminos-de-servicio" element={<TerminosCondicionesPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
