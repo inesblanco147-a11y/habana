@@ -85,6 +85,8 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/politica-de-privacidad" element={<PoliticaPrivacidadPage />} />
+            <Route path="/terminos-de-servicio" element={<TerminosCondicionesPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

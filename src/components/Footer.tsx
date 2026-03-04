@@ -128,12 +128,12 @@ const Footer = () => {
               © 2026 HASACE - Clínica de Rehabilitación Física. Todos los derechos reservados.
             </p>
             <div className="flex gap-6">
-              <a href="#" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
+              <Link to="/politica-de-privacidad" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                 Política de Privacidad
-              </a>
-              <a href="#" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
+              </Link>
+              <Link to="/terminos-de-servicio" className="text-sm text-white/70 hover:text-hasace-red transition-colors">
                 Términos de Servicio
-              </a>
+              </Link>
             </div>
           </div>
         </div>
