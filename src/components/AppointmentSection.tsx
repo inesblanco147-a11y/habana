@@ -273,7 +273,7 @@ const AppointmentSection = () => {
                 {copiedToClipboard ? "¡Copiado!" : "Copiar detalles"}
               </Button>
               <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
-                Agendar cita
+                Agendar otra cita
               </Button>
             </CardContent>
           </Card>
