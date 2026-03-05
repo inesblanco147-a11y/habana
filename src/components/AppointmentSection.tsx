@@ -179,13 +179,13 @@ const AppointmentSection = () => {
       const serviceLabel = services.find((s) => s.value === selectedService)?.label || "";
       const message = encodeURIComponent(
         `¡Hola! He agendado una cita:\n\n` +
-        `👤 ${firstName.trim()} ${lastName.trim()}\n` +
-        `📅 ${dateDisplay}\n` +
-        `🕐 ${selectedTime} hrs\n` +
-        (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
-        `📧 ${email.trim()}\n` +
-        `📱 ${phone}\n` +
-        `\n¡Gracias!`
+          `👤 ${firstName.trim()} ${lastName.trim()}\n` +
+          `📅 ${dateDisplay}\n` +
+          `🕐 ${selectedTime} hrs\n` +
+          (serviceLabel ? `📋 ${serviceLabel}\n` : "") +
+          `📧 ${email.trim()}\n` +
+          `📱 ${phone}\n` +
+          `\n¡Gracias!`,
       );
       window.open(`https://wa.me/${number}?text=${message}`, "_blank", "noopener,noreferrer");
     } catch {
@@ -273,7 +273,7 @@ const AppointmentSection = () => {
                 {copiedToClipboard ? "¡Copiado!" : "Copiar detalles"}
               </Button>
               <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
-                Agendar otra cita
+                Agendar cita
               </Button>
             </CardContent>
           </Card>
