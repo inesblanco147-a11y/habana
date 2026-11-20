@@ -135,9 +135,9 @@ const AppointmentSection = () => {
     if (!firstName.trim()) errors.firstName = "Nombre requerido";
     if (!lastName.trim()) errors.lastName = "Apellidos requeridos";
 
-    const phoneClean = phone.replace(/[\s\-\(\)]/g, "");
-    const phoneRegex = /^(\+?52)?[1-9]\d{9}$/;
-    if (!phoneRegex.test(phoneClean)) errors.phone = "Formato: +52 seguido de 10 dígitos";
+    const phoneClean = phone.replace(/[\s\-\(\)\+]/g, "");
+    // Acepta: 10 dígitos solos, o con 52 adelante (con o sin +)
+    if (phoneClean.length < 10 || !/^\d+$/.test(phoneClean)) errors.phone = "Ingresa un teléfono válido (10 dígitos)";
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) errors.email = "Email inválido";
@@ -167,6 +167,21 @@ const AppointmentSection = () => {
       });
 
       setShowConfirmation(true);
+
+      // Evento de conversión para Google Ads / Analytics
+      // Reemplaza AW-XXXXXXXXX/XXXXXXXXXXXXXXXX con tu ID de conversión real
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "conversion", {
+          send_to: "AW-XXXXXXXXX/XXXXXXXXXXXXXXXX",
+          event_category: "cita",
+          event_label: selectedService || "sin_servicio",
+        });
+        // También registra como evento estándar para Analytics
+        window.gtag("event", "generate_lead", {
+          event_category: "cita",
+          event_label: selectedService || "sin_servicio",
+        });
+      }
 
       // Open WhatsApp without pre-filled message
       const number = whatsappNumber || "5214422137365";
