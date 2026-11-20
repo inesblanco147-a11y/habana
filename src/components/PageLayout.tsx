@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import FloatingButtons from "@/components/FloatingButtons";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const PageLayout = ({ children, showBreadcrumbs = true }: PageLayoutProps) => {
         {children}
       </main>
       <Footer />
+      <FloatingButtons />
     </div>
   );
 };

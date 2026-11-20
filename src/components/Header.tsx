@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import hasaceLogo from "@/assets/hasace-logo.jpg";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
 
 const menuItems = [
   { label: "Inicio", href: "/" },
@@ -17,6 +18,9 @@ const menuItems = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const contactPhone = useSiteSetting("contact_phone") || "4421063235";
+  const phoneCleaned = contactPhone.replace(/[\s\-\(\)\+]/g, "");
+  const telHref = `tel:${phoneCleaned.startsWith("52") ? "+" : "+52"}${phoneCleaned}`;
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
@@ -77,7 +81,16 @@ const Header = () => {
             )}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-4" />
+          <div className="hidden lg:flex items-center gap-4">
+            <a
+              href={telHref}
+              aria-label="Llamar"
+              className="flex items-center gap-2 bg-hasace-red text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-hasace-red/90 active:scale-95 transition-all shadow"
+            >
+              <Phone className="h-4 w-4 flex-shrink-0" />
+              <span>{contactPhone}</span>
+            </a>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
