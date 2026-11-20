@@ -1,18 +1,16 @@
 import { useState, useMemo } from "react";
-import { Calendar, MapPin, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { Calendar, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { useEvents } from "@/hooks/useEvents";
 import { useGallery } from "@/hooks/useGallery";
-import { useVideos } from "@/hooks/useVideos";
 import { Event } from "@/types/event";
 
 const EventsSection = () => {
   const { data: events = [] } = useEvents();
   const { data: galleryItems = [] } = useGallery();
-  const { data: videos = [] } = useVideos();
 
   const allGalleryImages = useMemo(() => {
     const images: { src: string; alt: string }[] = [];
@@ -126,43 +124,6 @@ const EventsSection = () => {
           ))}
         </div>
 
-        {/* Videos Section */}
-        {videos.length > 0 && (
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold mb-6 text-center text-primary">Videos</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {videos.map((video) => {
-                const thumb = video.thumbnail || "/placeholder.svg";
-                return (
-                  <Card
-                    key={video.id}
-                    className="group overflow-hidden bg-card border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                    onClick={() => window.open(video.videoUrl, '_blank')}
-                  >
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={thumb}
-                        alt={video.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
-                        <div className="w-14 h-14 bg-hasace-red rounded-full flex items-center justify-center shadow-lg">
-                          <Play className="h-6 w-6 text-white ml-1" />
-                        </div>
-                      </div>
-                    </div>
-                    <CardContent className="p-5">
-                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{video.title}</h3>
-                      {video.description && (
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{video.description}</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Event Gallery Modal */}
