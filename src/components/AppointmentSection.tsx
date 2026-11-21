@@ -169,14 +169,16 @@ const AppointmentSection = () => {
       setShowConfirmation(true);
 
       // Evento de conversión para Google Ads / Analytics
-      // Reemplaza AW-XXXXXXXXX/XXXXXXXXXXXXXXXX con tu ID de conversión real
       if (typeof window.gtag === "function") {
-        window.gtag("event", "conversion", {
-          send_to: "AW-XXXXXXXXX/XXXXXXXXXXXXXXXX",
-          event_category: "cita",
-          event_label: selectedService || "sin_servicio",
-        });
-        // También registra como evento estándar para Analytics
+        const adsConversionId = import.meta.env.VITE_GOOGLE_ADS_CONVERSION_ID;
+        if (adsConversionId) {
+          window.gtag("event", "conversion", {
+            send_to: adsConversionId,
+            event_category: "cita",
+            event_label: selectedService || "sin_servicio",
+          });
+        }
+        // Evento estándar para Analytics (siempre se envía si gtag está cargado)
         window.gtag("event", "generate_lead", {
           event_category: "cita",
           event_label: selectedService || "sin_servicio",
