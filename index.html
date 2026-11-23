@@ -45,16 +45,25 @@
 
     <style>
       /* Ocultar badge de Netlify */
-      #nl-badge-frame, iframe[id="nl-badge-frame"] { display: none !important; }
+      #nl-badge-frame, iframe[id="nl-badge-frame"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
     </style>
     <script>
-      // Eliminar badge de Netlify cuando aparezca en el DOM
       (function() {
-        var observer = new MutationObserver(function(mutations) {
+        function removeBadge() {
           var badge = document.getElementById('nl-badge-frame');
-          if (badge) { badge.remove(); observer.disconnect(); }
-        });
+          if (badge) badge.remove();
+        }
+        // Intentar inmediatamente
+        removeBadge();
+        // Observer para cuando aparezca después
+        var observer = new MutationObserver(removeBadge);
         observer.observe(document.documentElement, { childList: true, subtree: true });
+        // También revisar periódicamente por si acaso
+        var interval = setInterval(function() {
+          removeBadge();
+        }, 500);
+        // Dejar de revisar después de 10 segundos
+        setTimeout(function() { clearInterval(interval); }, 10000);
       })();
     </script>
 
