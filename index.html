@@ -42,9 +42,18 @@
 
     <style>
       /* Ocultar badge de Netlify */
-      #netlify-badge, [data-netlify-badge], .netlify-badge,
-      iframe[src*="netlify"], div[style*="netlify.com/v1/badge"] { display: none !important; }
+      #nl-badge-frame, iframe[id="nl-badge-frame"] { display: none !important; }
     </style>
+    <script>
+      // Eliminar badge de Netlify cuando aparezca en el DOM
+      (function() {
+        var observer = new MutationObserver(function(mutations) {
+          var badge = document.getElementById('nl-badge-frame');
+          if (badge) { badge.remove(); observer.disconnect(); }
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
