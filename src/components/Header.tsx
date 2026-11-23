@@ -92,14 +92,23 @@ const Header = () => {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-white lg:hidden p-2"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Mobile: teléfono + botón hamburguesa */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <a
+              href={telHref}
+              aria-label="Llamar"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-hasace-red text-white hover:bg-hasace-red/90 active:scale-95 transition-all"
+            >
+              <Phone className="h-4 w-4" />
+            </a>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white p-2"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
